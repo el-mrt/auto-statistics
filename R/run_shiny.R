@@ -10,5 +10,5 @@ run_shiny <- function(){
   if(shiny_path == "")
     stop("couldnt find the path to the shiny application. Try reinstalling `autoStatistics`", .call = FALSE)
 
-  shiny::shinyAppDir(shiny_path, display.mode = "normal")
+  shiny::shinyAppDir(shiny_path)
 }
