@@ -4,7 +4,12 @@
 \alias{update_package}
 \title{Function to update the package from github. Mainly for simpler updating on the shiny server}
 \usage{
-update_package(repo = "elMrt/auto-statistics", token_file, token)
+update_package(
+  repo = "elMrt/auto-statistics",
+  token_file,
+  token,
+  branch = "main"
+)
 }
 \arguments{
 \item{repo}{user/repo name}
@@ -12,12 +17,14 @@ update_package(repo = "elMrt/auto-statistics", token_file, token)
 \item{token_file}{file with token}
 
 \item{token}{auth_token for devtools::install_github}
+
+\item{branch}{name of branch to update from}
 }
 \description{
 Function to update the package from github. Mainly for simpler updating on the shiny server
 }
 \examples{
 update_package()
-update_package(repo = "User/Repo_Name", token = "your_token")
+update_package(repo = "User/Repo_Name", token = "your_token", branch = "shiny")
 
 }
