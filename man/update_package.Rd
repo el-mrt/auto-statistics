@@ -8,7 +8,8 @@ update_package(
   repo = "elMrt/auto-statistics",
   token_file,
   token,
-  branch = "main"
+  branch = "main",
+  ...
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ update_package(
 \item{token}{auth_token for devtools::install_github}
 
 \item{branch}{name of branch to update from}
+
+\item{...}{used for devtools::install_github}
 }
 \description{
 Function to update the package from github. Mainly for simpler updating on the shiny server

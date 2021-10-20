@@ -4,6 +4,7 @@
 #' @param token_file file with token
 #' @param token auth_token for devtools::install_github
 #' @param branch name of branch to update from
+#' @param ... used for devtools::install_github
 #'
 #' @examples
 #' update_package()
@@ -13,7 +14,7 @@
 #' @export
 
 
-update_package <- function(repo = "elMrt/auto-statistics", token_file, token, branch = "main"){
+update_package <- function(repo = "elMrt/auto-statistics", token_file, token, branch = "main", ...){
   if(!missing(token_file)){
     token <- readLines(token_file, warn = FALSE)
     # read branch from second Line -> token has length of 2
@@ -23,7 +24,7 @@ update_package <- function(repo = "elMrt/auto-statistics", token_file, token, br
     }
   }
   tryCatch({
-    devtools::install_github(repo = repo, auth_token = token, ref = branch)
+    devtools::install_github(repo = repo, auth_token = token, ref = branch, ...)
   },
   error=function(cond) {
     message(cond)
