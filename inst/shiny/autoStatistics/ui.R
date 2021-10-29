@@ -1,7 +1,6 @@
-library("shiny")
 
 
-ui <- fluidPage(
-  titlePanel("Hello World!")
-)
-
+ui <- navbarPage(
+  title = "AutoStats",
+  tabPanel("Upload Data",
+           data_upload_ui("data"))
