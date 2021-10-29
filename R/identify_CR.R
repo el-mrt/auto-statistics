@@ -33,6 +33,3 @@ identify_CR <- function(df, target_var){
     return("regr")
   } else return("classif")
 }
-
-identify_CR(mtcars, 2)
-
