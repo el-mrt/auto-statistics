@@ -2,5 +2,6 @@ library("shiny")
 
 
 ui <- fluidPage(
-  titlePanel("Hello")
+  titlePanel("Hello World!")
 )
+
