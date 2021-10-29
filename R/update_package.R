@@ -14,7 +14,7 @@
 #' @export
 
 
-update_package <- function(repo = "elMrt/auto-statistics", token_file, token, branch = "main", ...){
+update_package <- function(repo = "el-mrt/auto-statistics", token_file, token, branch = "main", ...){
   if(!missing(token_file)){
     token <- readLines(token_file, warn = FALSE)
     # read branch from second Line -> token has length of 2

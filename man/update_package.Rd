@@ -5,7 +5,7 @@
 \title{Function to update the package from github. Mainly for simpler updating on the shiny server}
 \usage{
 update_package(
-  repo = "elMrt/auto-statistics",
+  repo = "el-mrt/auto-statistics",
   token_file,
   token,
   branch = "main",
