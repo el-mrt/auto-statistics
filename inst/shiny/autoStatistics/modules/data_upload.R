@@ -9,6 +9,8 @@ data_upload_ui <- function(id){
              fileInput(ns("file"), "Upload Data"),
              textInput(ns("sep"), "seperator", value = ";"),
              checkboxInput(ns("header"), "Has Header?"),
+             textInput(ns("NA_string"), "NA string", value = "NA"),
+             textInput(ns("dec_symbol"), "decimal symbol", value = ".")
 
       ),
       column(width = 8,
@@ -29,7 +31,13 @@ data_upload_server <- function(id){
     output$debug_file_type <- renderText({print(file_ext())})
 
     raw_data <- reactive({
-        read.csv(file = user_file()$datapath, header = input$header, sep = input$sep)
+      if(file_ext() == "csv"){
+        user_df <- read.csv(file = user_file()$datapath, header = input$header, sep = input$sep, na.strings = input$NA_string, dec = input$dec_symbol)
+      }
+      else if(file_ext() == "txt"){
+        user_df <- read.table(file = user_file()$datapath, header = input$header, sep = input$sep, na.strings = input$NA_string, dec = input$dec_symbol)
+      }
+      user_df
     })
     output$table <- renderDT({raw_data()})
 
