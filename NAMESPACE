@@ -2,8 +2,13 @@
 
 export(create_task)
 export(identify_CR)
+export(missing_combinations)
 export(run_shiny)
 export(update_package)
+import(ggplot2)
 import(mlr3)
+importFrom(R6,R6Class)
 importFrom(devtools,install_github)
+importFrom(dplyr,top_n)
 importFrom(shiny,runApp)
+importFrom(stringr,str_replace_all)
