@@ -10,4 +10,4 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.2
-Depends: shiny, devtools, ggplot2, stringr
+Depends: shiny, devtools, mlr3, R6, dplyr, ggplot2, stringr
