@@ -65,7 +65,6 @@ missings_server <- function(id, user_data){
       selectInput(ns("na_hist_col2"), "Column 2", c("None", names(user_data()[["data"]])))
     })
     output$na_hist_plot <- renderPlot({
-
       col_name1 <- {{input$na_hist_col1}}
       col_name2 <- {{input$na_hist_col2}}
       na_hist_data <- user_data()[["data"]]

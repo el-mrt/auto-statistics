@@ -14,20 +14,10 @@ data_upload_ui <- function(id){
              uiOutput(ns("target_col"))
 
       ),
-      column(width = 10,
-      column(width = 4,
-             fileInput(ns("file"), "Upload Data"),
-             textInput(ns("sep"), "seperator", value = ";"),
-             checkboxInput(ns("header"), "Has Header?"),
-             textInput(ns("NA_string"), "NA string", value = "NA"),
-             textInput(ns("dec_symbol"), "decimal symbol", value = ".")
-
-      ),
       column(width = 8,
              textOutput(ns("debug_file_type")),
              DTOutput(ns("table")))
-      )
-    )
+  )
   )
 }
 
