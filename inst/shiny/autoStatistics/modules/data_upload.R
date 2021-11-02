@@ -50,7 +50,7 @@ data_upload_server <- function(id){
 
     return(reactive({list(
       "data" = raw_data(),
-      "target_col" = input$taget_col
+      "target_col" = input$target_col
       )}))
 
 })

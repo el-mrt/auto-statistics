@@ -16,21 +16,20 @@ missings_ui <- function(id){
              )
     ),
 # UI na_distribution ---------------------------------------------------------------------------------------------------------------------
-    fluidRow(
+    fluidRow(div(style = "height:50px;"),
       column(4,
              uiOutput(ns("na_hist_col1")),
+             sliderInput(ns("na_hist_bins"), "bin width", min = 0.001, max = 0.3, value = 0.02, step = 0.001),
              uiOutput(ns("na_hist_col2"))
              ),
       column(8,
-             plotOutput(ns("na_hist_plot")),
+             plotOutput(ns("na_hist_plot"), height = "500px"),
              uiOutput(ns("debug_text")),
              uiOutput(ns("debug_selected_col"))
              )
     )
   )
 }
-
-
 
 missings_server <- function(id, user_data){
   moduleServer(id, function(input, output, session){
@@ -66,19 +65,30 @@ missings_server <- function(id, user_data){
       selectInput(ns("na_hist_col2"), "Column 2", c("None", names(user_data()[["data"]])))
     })
     output$na_hist_plot <- renderPlot({
+
+      col_name1 <- {{input$na_hist_col1}}
+      col_name2 <- {{input$na_hist_col2}}
+      na_hist_data <- user_data()[["data"]]
+      target_col <- user_data()[["target_col"]]
+      na_hist_data[["isna"]] <- is.na(na_hist_data[[col_name1]])
+
       # plot if only one col selected
       if(input$na_hist_col2 == "None"){
-        col_name <- {{input$na_hist_col1}}
-        na_hist_data <- user_data()[["data"]]
-        na_hist_data[["isna"]] <- is.na(na_hist_data[[{{ input$na_hist_col1 }}]])
-
-        plot <-
-          ggplot(data = na_hist_data, aes(x = user_data()[["target_col"]], fill = isna)) +
-          stat_count(binwidth = 0.05)
+        cur_plot <- ggplot(na_hist_data, aes(x = get(target_col), fill = isna)) +
+          geom_histogram(binwidth = input$na_hist_bins) +
+          scale_fill_manual(values = c("#377EB8", "#E41A1C")) +
+          labs(x = target_col) +
+          theme_minimal()
       }else{
+        cur_plot <- ggplot(na_hist_data, aes(x = get(target_col), y = get(col_name2), color = isna)) +
+          geom_jitter() +
+          scale_color_manual(values = c("#377EB8", "#E41A1C")) +
+          labs(x = target_col, y = col_name2) +
+          theme_minimal()
+
 
       }
-      plot
+      cur_plot
     })
     output$debug_text <- renderUI({
       renderText({print(names(user_data()[["data"]]))})
