@@ -5,7 +5,7 @@ data_upload_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidRow(
-      column(width = 4,
+      column(width = 2,
              fileInput(ns("file"), "Upload Data"),
              textInput(ns("sep"), "seperator", value = ","),
              checkboxInput(ns("header"), "Has Header?", value = TRUE),
@@ -14,7 +14,7 @@ data_upload_ui <- function(id){
              uiOutput(ns("target_col"))
 
       ),
-      column(width = 8,
+      column(width = 10,
              textOutput(ns("debug_file_type")),
              DTOutput(ns("table")))
     )
@@ -24,7 +24,7 @@ data_upload_ui <- function(id){
 
 data_upload_server <- function(id){
   moduleServer(id, function(input, output, session){
-    ns <- NS(session)
+    ns <- session$ns
     user_file <- reactive({
       validate(need(input$file, message = FALSE))
       input$file
@@ -43,9 +43,15 @@ data_upload_server <- function(id){
     })
     output$table <- renderDT({raw_data()})
     # ToDo: select target column
+    output$target_col <- renderUI({
+      selectInput(ns("target_col"), "select Target Column", names(raw_data()))
+    })
 
 
-    return(reactive({raw_data()}))
+    return(reactive({list(
+      "data" = raw_data(),
+      "target_col" = input$taget_col
+      )}))
 
 })
 }

@@ -44,7 +44,7 @@ missings_server <- function(id, user_data){
     })
     output$plot_na_per_col <- renderPlot({
       # get missings per col
-      missings_per_col <- sapply(user_data(), function(x){sum(is.na(x))}, simplify = TRUE)
+      missings_per_col <- sapply(user_data()[["data"]], function(x){sum(is.na(x))}, simplify = TRUE)
       missings_per_col <- as.data.frame(missings_per_col)
       missings_per_col[["col_name"]] <- rownames(missings_per_col)
       missings_per_col[["col_name"]] <- autoStatistics::insert_line_break(missings_per_col[["col_name"]], n = input$na_per_col_line_break)
@@ -60,29 +60,20 @@ missings_server <- function(id, user_data){
 
 # server na_distribution ---------------------------------------------------------------------------------------------------------------------
     output$na_hist_col1 <- renderUI({
-      selectInput(ns("na_hist_col1"), "Column 1", names(user_data()))
+      selectInput(ns("na_hist_col1"), "Column 1", names(user_data()[["data"]]))
     })
     output$na_hist_col2 <- renderUI({
-      selectInput(ns("na_hist_col2"), "Column 2", c("None", names(user_data())))
+      selectInput(ns("na_hist_col2"), "Column 2", c("None", names(user_data()[["data"]])))
     })
     output$na_hist_plot <- renderPlot({
       # plot if only one col selected
       if(input$na_hist_col2 == "None"){
         col_name <- {{input$na_hist_col1}}
-        na_hist_data <- user_data()
-        na_hist_data[["isna"]] <-
-
-
-
-        na_hist_data <- as.data.frame(na_hist_data[[col_name]])
-        colnames(na_hist_data) <- c(col_name)
-        print(head(na_hist_data))
-        na_hist_data[["isna"]] <- is.na(na_hist_data[[col_name]])
-        print(head(na_hist_data))
-
+        na_hist_data <- user_data()[["data"]]
+        na_hist_data[["isna"]] <- is.na(na_hist_data[[{{ input$na_hist_col1 }}]])
 
         plot <-
-          ggplot(data = na_hist_data, aes(x = col_name, fill = isna)) +
+          ggplot(data = na_hist_data, aes(x = user_data()[["target_col"]], fill = isna)) +
           stat_count(binwidth = 0.05)
       }else{
 
@@ -90,7 +81,7 @@ missings_server <- function(id, user_data){
       plot
     })
     output$debug_text <- renderUI({
-      renderText({print(names(user_data()))})
+      renderText({print(names(user_data()[["data"]]))})
     })
     output$debug_selected_col <- renderUI({
       renderText({print(input$col)})
