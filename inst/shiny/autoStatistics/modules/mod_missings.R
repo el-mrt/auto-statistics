@@ -74,18 +74,18 @@ missings_server <- function(id, user_data){
     output$plot_na_per_col <- renderPlot({
       # get missings per col
       req(user_data()[["data"]])  # req()
-      missings_per_col <- sapply(user_data()[["data"]], function(x){sum(is.na(x))}, simplify = TRUE)
-      missings_per_col <- as.data.frame(missings_per_col)
+      missings_per_col <- as.data.frame(sapply(user_data()[["data"]], function(x){sum(is.na(x))}, simplify = TRUE))
       missings_per_col[["col_name"]] <- rownames(missings_per_col)
       missings_per_col[["col_name"]] <- autoStatistics::insert_line_break(missings_per_col[["col_name"]], n = input$na_per_col_line_break)
       colnames(missings_per_col) <- c("number_na", "col_name")
+      missings_per_col[["col_name"]] <- factor(missings_per_col[["col_name"]], levels = missings_per_col[["col_name"]])
       # plot
-      plot <- ggplot(missings_per_col, aes(x = col_name, y = number_na)) +
+      cur_plot <- ggplot(missings_per_col, aes(x = col_name, y = number_na)) +
         geom_bar(stat="identity", fill = input$na_per_col_color) +
         {if(input$na_per_col_flip_coord) {coord_flip()}} +
         labs(x = "column", y = "number of missing values") +
         theme_minimal()
-      plot
+      return(cur_plot)
     })
 
     # server na_combinations --------------------------------------------------------------------------------------------------------------
