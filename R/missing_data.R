@@ -17,7 +17,7 @@ missing_combinations <- function(x, names_col = TRUE){
   })
   # summarise with table()
   row_na_comb <- as.data.frame(table(row_na_comb))
-  # drop no NAs
+  # drop rows without NA
   row_na_comb <- row_na_comb[row_na_comb[, 1] != "", ]
   colnames(row_na_comb) <- c("index", "freq")
   row_na_comb[["index"]] <- as.character(row_na_comb[["index"]])
@@ -37,7 +37,9 @@ missing_combinations <- function(x, names_col = TRUE){
   return(return_object)
 }
 
-#' R6 Class for missing combinaions
+
+
+#' R6 Class for missing combinations
 #' The class has the field for the combinations and custom plot function
 #' @importFrom R6 R6Class
 #' @importFrom dplyr top_n
@@ -80,8 +82,3 @@ MissComb <- R6::R6Class("MissComb", list(
     )
   }
 ))
-
-
-
-
-

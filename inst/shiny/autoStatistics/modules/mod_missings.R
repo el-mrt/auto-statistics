@@ -4,9 +4,11 @@
 missings_ui <- function(id){
   ns <- NS(id)
   tagList(
-# UI na_per_col --------------------------------------------------------------------------------------------------------------------------
+    # UI na_per_col --------------------------------------------------------------------------------------------------------------------------
+    h3(HTML("<u><i>Missing values per column</i></u>")),
     fluidRow(
       column(4,
+             p(HTML("<i>description.....</i>")),
              uiOutput(ns("na_per_col_color")),
              uiOutput(ns("na_per_col_line_break")),
              uiOutput(ns("na_per_col_flip_coord"))
@@ -15,9 +17,25 @@ missings_ui <- function(id){
              plotOutput(ns("plot_na_per_col"), height = "500px")
              )
     ),
-# UI na_distribution ---------------------------------------------------------------------------------------------------------------------
-    fluidRow(div(style = "height:50px;"),
+    # UI na_combinations ------------------------------------------------------------------------------------------------------------------
+    h3(HTML("<u><i>Missing combinations</u></i>")),
+    fluidRow(
       column(4,
+             p(HTML("<i>description.....</i>")),
+             uiOutput(ns("na_comb_color")),
+             uiOutput(ns("na_comb_topn")),
+             uiOutput(ns("na_comb_line_break")),
+             uiOutput(ns("na_comb_use_names"))
+      ),
+      column(8,
+             plotOutput(ns("na_comb_plot"))
+      )
+    ),
+    # UI na_distribution ---------------------------------------------------------------------------------------------------------------------
+    h3(HTML("<u><i>Missing values distribution</i></u>")),
+    fluidRow(
+      column(4,
+             p(HTML("<i>description.....</i>")),
              uiOutput(ns("na_hist_col1")),
              uiOutput(ns("na_hist_bins")),
              uiOutput(ns("na_hist_col2"))
@@ -33,16 +51,14 @@ missings_ui <- function(id){
 
 
 
-
-
 missings_server <- function(id, user_data){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
-# server na_per_col --------------------------------------------------------------------------------------------------------------------------
+    # server na_per_col --------------------------------------------------------------------------------------------------------------------------
     # color
     output$na_per_col_color <- renderUI({
       req(user_data()[["data"]])  # req()
-      textInput(ns("na_per_col_color"), "Color", value = "#E41A1C")
+      textInput(ns("na_per_col_color"), "Color", value = "#BD3631")
     })
     # x_label line break
     output$na_per_col_line_break <- renderUI({
@@ -52,7 +68,7 @@ missings_server <- function(id, user_data){
     # flip coordinates
     output$na_per_col_flip_coord <- renderUI({
       req(user_data()[["data"]])  # req()
-      checkboxInput(ns("na_per_col_flip_coord"), "flip Coordinates?", value = FALSE)
+      checkboxInput(ns("na_per_col_flip_coord"), "flip Coordinates?", value = TRUE)
     })
     # plot
     output$plot_na_per_col <- renderPlot({
@@ -72,9 +88,45 @@ missings_server <- function(id, user_data){
       plot
     })
 
+    # server na_combinations --------------------------------------------------------------------------------------------------------------
+    # color
+    output$na_comb_color <- renderUI({
+      req(user_data()[["data"]])  # req()
+      textInput(ns("na_comb_color"), "Color", value = "#BD3631")
+    })
+    # top n
+    output$na_comb_topn <- renderUI({
+      req(user_data()[["data"]])  # req()
+      numericInput(ns("na_comb_topn"), "show top n combinations", 10, 1, 200, 1)
+    })
+    # line break
+    output$na_comb_line_break <- renderUI({
+      req(user_data()[["data"]])  # req()
+      numericInput(ns("na_comb_line_break"), "x_label linebreak", 30, 1, 200, 1)
+    })
+    # use names
+    output$na_comb_use_names <- renderUI({
+      req(user_data()[["data"]])  # req()
+      checkboxInput(ns("na_comb_use_names"), "use names?", value = FALSE)
+    })
+    # plot
+    output$na_comb_plot <- renderPlot({
+      req(user_data()[["data"]])  # req()
+      missing_obj <- autoStatistics::missing_combinations(user_data()[["data"]], names_col = TRUE)
 
-# server na_distribution ---------------------------------------------------------------------------------------------------------------------
+      na_comb_label <- if (input$na_comb_use_names) "name" else "index"
 
+
+      cur_plot <- plot(missing_obj, labels = na_comb_label, label_length = input$na_comb_line_break, show_numbers = FALSE,
+                       top_n = input$na_comb_topn, bar_color = input$na_comb_color, plot_title = "NA combinations",
+                       x_lab = "combination", y_lab = "n")
+
+      return(cur_plot)
+    })
+
+
+
+    # server na_distribution ---------------------------------------------------------------------------------------------------------------------
     # col1
     output$na_hist_col1 <- renderUI({
       req(user_data()[["data"]])  # req()
@@ -106,13 +158,13 @@ missings_server <- function(id, user_data){
       if(input$na_hist_col2 == "None"){
         cur_plot <- ggplot(na_hist_data, aes(x = get(target_col), fill = isna)) +
           geom_histogram(binwidth = input$na_hist_bins) +
-          scale_fill_manual(values = c("#377EB8", "#E41A1C")) +
+          scale_fill_manual(values = c("#377EB8", "#BD3631")) +
           labs(x = target_col) +
           theme_minimal()
       }else{
         cur_plot <- ggplot(na_hist_data, aes(x = get(target_col), y = get(col_name2), color = isna)) +
           geom_jitter() +
-          scale_color_manual(values = c("#377EB8", "#E41A1C")) +
+          scale_color_manual(values = c("#377EB8", "#BD3631")) +
           labs(x = target_col, y = col_name2) +
           theme_minimal()
 
@@ -126,5 +178,5 @@ missings_server <- function(id, user_data){
     output$debug_selected_col <- renderUI({
       renderText({print(input$col)})
     })
-  })
+    })
 }

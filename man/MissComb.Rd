@@ -2,13 +2,13 @@
 % Please edit documentation in R/missing_data.R
 \name{MissComb}
 \alias{MissComb}
-\title{R6 Class for missing combinaions
+\title{R6 Class for missing combinations
 The class has the field for the combinations and custom plot function}
 \description{
-R6 Class for missing combinaions
+R6 Class for missing combinations
 The class has the field for the combinations and custom plot function
 
-R6 Class for missing combinaions
+R6 Class for missing combinations
 The class has the field for the combinations and custom plot function
 }
 \section{Public fields}{
