@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_task.R
 \name{create_task}
 \alias{create_task}
-\title{Function that given a dataframe}
+\title{Function that given a dataframe and variable creates an mlr3 task}
 \usage{
 create_task(df, target_var)
 }
@@ -15,7 +15,7 @@ create_task(df, target_var)
 returns a mlr3 task object
 }
 \description{
-Function that given a dataframe
+Function that given a dataframe and variable creates an mlr3 task
 }
 \examples{
 create_task(iris, "Species")
