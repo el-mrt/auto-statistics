@@ -11,13 +11,14 @@ data_upload_ui <- function(id){
              checkboxInput(ns("header"), "Has Header?", value = TRUE),
              textInput(ns("NA_string"), "NA string", value = "NaN"),
              textInput(ns("dec_symbol"), "decimal symbol", value = "."),
-             uiOutput(ns("target_col"))
+             uiOutput(ns("target_col")),
+             checkboxInput(ns("na_omit"), "omit NAs from Target Column[not implemented yet]", value = FALSE)
 
       ),
       column(width = 8,
              textOutput(ns("debug_file_type")),
              DTOutput(ns("table")))
-  )
+      )
   )
 }
 
@@ -39,19 +40,24 @@ data_upload_server <- function(id){
       else if(file_ext() == "txt"){
         user_df <- read.table(file = user_file()$datapath, header = input$header, sep = input$sep, na.strings = input$NA_string, dec = input$dec_symbol)
       }
+      # omit NAs from target column
+      if(input$na_omit){
+        cat("not implemented yet\n")
+      }
+
+
+      rV$user_data <- user_df
       user_df
     })
-    output$table <- renderDT({raw_data()})
+    output$table <- renderDT({rV$user_data})
     # ToDo: select target column
     output$target_col <- renderUI({
       selectInput(ns("target_col"), "select Target Column", names(raw_data()))
     })
-
-
-    return(reactive({list(
-      "data" = raw_data(),
-      "target_col" = input$target_col
-      )}))
+    observeEvent(input$target_col, {
+      rV$target_column <- input$target_col
+    })
 })
 }
+
 
