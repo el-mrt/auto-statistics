@@ -1,4 +1,4 @@
-#' Function that given a dataframe
+#' Function that given a dataframe and variable creates an mlr3 task
 #'
 #' @param df input data frame
 #' @param target_var target variable

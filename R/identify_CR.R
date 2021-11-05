@@ -27,9 +27,11 @@ identify_CR <- function(df, target_var){
     target_vector <- df[[{{ target_var }}]]
   } else stop("Input for target variable not supported")
 
+  #transforms to ordered / factor if necessary
+  target_vector <- var_format(target_vector, 6)
+
   #test classification or regression
-  if (is.numeric(target_vector) &
-      length(unique(target_vector)) > 5){
+  if (is.numeric(target_vector)){
     return("regr")
   } else return("classif")
 }
