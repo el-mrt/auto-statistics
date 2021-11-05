@@ -29,4 +29,15 @@ lapply(files, source)
 options(shiny.maxRequestSize = 30*1024^2) # set max size of uploaded file to 30 Mb
 
 
+
+# reactive Values ---------------------------------------------------------
+
+rV <- reactiveValues(
+  user_data = NULL,
+  target_column = NULL
+)
+
+
+
+
 cat("global.R called\n")
