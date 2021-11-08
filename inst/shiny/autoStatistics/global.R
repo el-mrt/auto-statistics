@@ -19,9 +19,9 @@ library("shinydashboard")
 
 # load all files from modules folder --------------------------------------------------------------------------------------------------
 
-modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
-files <- list.files(modules_path, full.names = TRUE)
-lapply(files, source)
+#modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
+#files <- list.files(modules_path, full.names = TRUE)
+#lapply(files, source)
 
 
 # shiny options -----------------------------------------------------------------------------------------------------------------------
@@ -32,11 +32,8 @@ options(shiny.maxRequestSize = 30*1024^2) # set max size of uploaded file to 30 
 
 # reactive Values ---------------------------------------------------------
 
-rV <- reactiveValues(
-  user_data = NULL,
-  target_column = NULL
-)
-
+user_data <- reactiveVal(NULL, "user_data")
+target_column <- reactiveVal(NULL, "targ_col")
 
 
 

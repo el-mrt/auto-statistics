@@ -33,3 +33,14 @@ run_shiny <- function(){
 
   shiny::shinyAppDir(shiny_path)
 }
+
+#' Function to print some logs into the console
+#' @export
+#' @param message message print to console
+#' @param lvl level for the message
+debug_console <- function(message, lvl = "INFO"){
+  cur_time <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
+
+  cat(sprintf("%s [%s]: %s \n", cur_time, lvl, message))
+
+}
