@@ -26,36 +26,27 @@ data_upload_ui <- function(id){
 data_upload_server <- function(id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
-    user_file <- reactive({
-      validate(need(input$file, message = FALSE))
-      input$file
-      })
-    file_ext <- reactive({tools::file_ext(user_file()$datapath)})
-    output$debug_file_type <- renderText({print(file_ext())})
 
-    raw_data <- reactive({
-      if(file_ext() == "csv"){
-        user_df <- read.csv(file = user_file()$datapath, header = input$header, sep = input$sep, na.strings = input$NA_string, dec = input$dec_symbol)
-      }
-      else if(file_ext() == "txt"){
-        user_df <- read.table(file = user_file()$datapath, header = input$header, sep = input$sep, na.strings = input$NA_string, dec = input$dec_symbol)
-      }
-      # omit NAs from target column
-      if(input$na_omit){
-        cat("not implemented yet\n")
-      }
-
-
-      rV$user_data <- user_df
-      user_df
+    # upload data
+    observeEvent(input$file, {
+      debug_console(sprintf("File was uploaded: %s", input$file$name))
+      temp <- switch(tools::file_ext(input$file$datapath),
+                     txt = read.table(file = input$file$datapath, header = input$header, sep = input$sep, na.strings = input$NA_string, dec = input$dec_symbol),
+                     csv = read.csv(file = input$file$datapath, header = input$header, sep = input$sep, na.strings = input$NA_string, dec = input$dec_symbol))
+      user_data(temp)
     })
-    output$table <- renderDT({rV$user_data})
-    # ToDo: select target column
+
+    output$table <- renderDT({
+      validate(need(user_data(), message = "upload your data"))
+      user_data()
+    })
+
+    # select target column
     output$target_col <- renderUI({
-      selectInput(ns("target_col"), "select Target Column", names(raw_data()))
+      selectInput(ns("target_col"), "select Target Column", names(user_data()))
     })
     observeEvent(input$target_col, {
-      rV$target_column <- input$target_col
+      target_column(input$target_col)
     })
 })
 }
