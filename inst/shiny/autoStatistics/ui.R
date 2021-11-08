@@ -5,5 +5,7 @@ ui <- navbarPage(
   tabPanel("Upload Data",
            data_upload_ui("data")),
   tabPanel("Missing Data",
-           missings_ui("missing_data"))
+           missings_ui("missing_data")),
+  tabPanel("Edit Data",
+           data_man_ui("edit_data"))
 )
