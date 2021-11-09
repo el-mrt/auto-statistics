@@ -12,7 +12,7 @@
 #' @export
 #'
 
-identify_CR <- function(df, target_var){
+identify_CR <- function(df, target_var, classif_threshold = 6){
 
   #test if target variable is a string or number
   if (is.numeric(target_var)) {
@@ -28,7 +28,7 @@ identify_CR <- function(df, target_var){
   } else stop("Input for target variable not supported")
 
   #transforms to ordered / factor if necessary
-  target_vector <- var_format(target_vector, 6)
+  target_vector <- var_format(target_vector, classif_threshold)
 
   #test classification or regression
   if (is.numeric(target_vector)){
