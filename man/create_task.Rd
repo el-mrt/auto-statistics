@@ -4,12 +4,14 @@
 \alias{create_task}
 \title{Function that given a dataframe and variable creates an mlr3 task}
 \usage{
-create_task(df, target_var)
+create_task(df, target_var, type = NULL)
 }
 \arguments{
 \item{df}{input data frame}
 
 \item{target_var}{target variable}
+
+\item{type}{user defined type}
 }
 \value{
 returns a mlr3 task object
