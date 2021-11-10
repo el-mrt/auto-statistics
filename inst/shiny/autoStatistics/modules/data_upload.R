@@ -32,45 +32,32 @@ data_upload_server <- function(id){
     ns <- session$ns
 
     # upload data
-    listen_upload <- reactive({
-      list(input$file, input$sep, input$header, input$NA_string, input$dec_symbol)
+    observeEvent(input$file, {
+      user_file(input$file$datapath)
+      autoStatistics::debug_console(sprintf("new file uploaded: ", input$file$name))
+    })
+    observeEvent(c(input$file,input$sep,input$header,input$NA_string,input$dec_symbol), {
+      req(user_file())
+      tryCatch(
+        {
+          temp <- switch(tools::file_ext(user_file()),
+                         txt = read.table(file = user_file(), header = input$header, sep = input$sep,
+                                          na.strings = input$NA_string, dec = input$dec_symbol),
+                         csv = read.csv(file = user_file(), header = input$header, sep = input$sep,
+                                        na.strings = input$NA_string, dec = input$dec_symbol))
+          user_data(temp)
+          autoStatistics::debug_console(sprintf("Data loaded into a dataframe"))
+
+        },
+        error = function(cond){
+          message(paste(cond))
+        }
+      )
     })
     output$table <- renderDT({
       validate(need(user_data(), message = "upload your data"))
       user_data()
-    })
-    observeEvent(listen_upload(), {
-      req(input$file)
-      tryCatch(
-        {
-          autoStatistics::debug_console(sprintf("File changed: %s", input$file$name))
-          temp <- switch(tools::file_ext(input$file$datapath),
-                         txt = read.table(file = input$file$datapath, header = input$header, sep = input$sep,
-                                          na.strings = input$NA_string, dec = input$dec_symbol),
-                         csv = read.csv(file = input$file$datapath, header = input$header, sep = input$sep,
-                                        na.strings = input$NA_string, dec = input$dec_symbol))
-          user_data(temp)
-          # detect factor cols
-          #n_cols <- ncol(user_data())
-          #is_col_fct <- vector(length = n_cols)
-          #for(i in seq(n_cols)){
-          #  is_col_fct[i] <- autoStatistics::identify_CR(user_data(), i)
-          #}
-          #is_col_fct[is_col_fct == "classif"] <- TRUE
-          #is_col_fct[is_col_fct == "regr"] <- FALSE
-          #fct_cols <- which(is_col_fct == TRUE)
-          #factor_columns(names(user_data())[fct_cols])
-
-        },
-      error=function(cond){
-        # update header checkbox to avoid that the table is getting stuck -> remove when error message is shown to the user
-        updateCheckboxInput(inputId = "header", label = "Has Header?!", value = FALSE)
-        output$error_message_upload <-
-        output$error_message_upload <- autoStatistics::render_error("FILETOTABLE", cond = cond)
-          #renderText({autoStatistics::print_error("FILETOTABLE", cond)})
       })
-    })
-
 
     # select target column and create task
     output$target_col <- renderUI({

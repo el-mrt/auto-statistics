@@ -26,7 +26,7 @@ options(shiny.maxRequestSize = 30*1024^2) # set max size of uploaded file to 30 
 
 
 # reactive Values ---------------------------------------------------------
-
+user_file <- reactiveVal(NULL, "user_file")
 user_data <- reactiveVal(NULL, "user_data")
 target_column <- reactiveVal(NULL, "targ_col")
 factor_columns <- reactiveVal(NULL, "factor_cols")
