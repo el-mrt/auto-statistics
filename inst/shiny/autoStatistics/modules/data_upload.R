@@ -46,9 +46,9 @@ data_upload_server <- function(id){
           autoStatistics::debug_console(sprintf("File changed: %s", input$file$name))
           temp <- switch(tools::file_ext(input$file$datapath),
                          txt = read.table(file = input$file$datapath, header = input$header, sep = input$sep,
-                                          na.strings = input$NA_string, dec = input$dec_symbol),
+                                          na.strings = input$NA_string, dec = input$dec_symbol, check.names = FALSE),
                          csv = read.csv(file = input$file$datapath, header = input$header, sep = input$sep,
-                                        na.strings = input$NA_string, dec = input$dec_symbol))
+                                        na.strings = input$NA_string, dec = input$dec_symbol, check.names = FALSE))
           user_data(temp)
           # detect factor cols
           n_cols <- ncol(user_data())
