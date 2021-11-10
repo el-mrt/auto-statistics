@@ -2,6 +2,7 @@
 #'
 #' @param df input data frame
 #' @param target_var target variable
+#' @param type type of task. ´regr´ or ´classif´. if ´NULL´ the type is estimated.
 #'
 #' @examples
 #' create_task(iris, "Species")
@@ -14,8 +15,11 @@
 #' @import mlr3
 #'
 
-create_task <- function(df, target_var){
-  type <- identify_CR(df, target_var)
+create_task <- function(df, target_var, type = NULL){
+  if(is.null(type)){
+    type <- identify_CR(df, target_var)
+  }
+
 
   #check for numeric input of target variable
   if (is.numeric(target_var)) {
