@@ -12,8 +12,8 @@ library("shinydashboard")
 # load all files from modules folder --------------------------------------------------------------------------------------------------
 
 
-modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
-#modules_path <- "./modules"
+#modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
+modules_path <- "./modules"
 
 files <- list.files(modules_path, full.names = TRUE)
 lapply(files, source)
