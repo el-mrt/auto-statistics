@@ -79,9 +79,9 @@ custom plot function for the Class
 
 \item{\code{plot_title}}{title of the plot}
 
-\item{\code{xlab}}{x axis label}
+\item{\code{x_lab}}{x axis label}
 
-\item{\code{ylab}}{y axis label}
+\item{\code{y_lab}}{y axis label}
 }
 \if{html}{\out{</div>}}
 }

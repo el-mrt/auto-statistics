@@ -1,13 +1,5 @@
 cat("global called")
 
-# DEV loading files -------------------------------------------------------------------------------------------------------------------
-
-#modules_path <- "./modules"
-#files <- list.files(modules_path, pattern = ".R", full.names = TRUE, ignore.case = TRUE)
-#lapply(files, source)
-
-
-
 # load libraries ----------------------------------------------------------------------------------------------------------------------
 
 library("shiny")
@@ -37,8 +29,9 @@ options(shiny.maxRequestSize = 30*1024^2) # set max size of uploaded file to 30 
 
 user_data <- reactiveVal(NULL, "user_data")
 target_column <- reactiveVal(NULL, "targ_col")
-factor_columns <- reactiveVal(NULL, "reactive_cols")
-
+factor_columns <- reactiveVal(NULL, "factor_cols")
+task_type <- reactiveVal(NULL, "task_type")
+user_task <- reactiveVal(NULL, "user_task")
 
 
 cat("global.R called\n")

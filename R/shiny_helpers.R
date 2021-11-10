@@ -44,3 +44,34 @@ debug_console <- function(message, lvl = "INFO"){
   cat(sprintf("%s [%s]: %s \n", cur_time, lvl, message))
 
 }
+
+#' Function to generate an error string
+#'
+#' @param error_list list with the errors
+#' @param err_name name of the error within the list
+#' @param cond passed Condition
+#'
+#' @return string
+#'
+#' @import shiny
+#' @export
+
+
+render_error <- function(err_name, cond = NULL, error_list = list_error_mess){
+  if(is.null(cond)){cond <- ""}
+
+  error_string <- paste(error_list[[err_name]])
+  output_html <- shiny::HTML(paste0(
+    '<p style="color:red; background:#f0f0f0; border-radius: 10px;padding: 10px;">',
+    error_string, '<br>&emsp;', cond, '</p>'))
+
+  return(shiny::renderUI({output_html}))
+}
+
+
+
+
+
+
+
+
