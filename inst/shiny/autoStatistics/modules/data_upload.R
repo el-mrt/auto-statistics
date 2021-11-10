@@ -5,6 +5,9 @@ data_upload_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidRow(
+      verbatimTextOutput(ns("session_id"))
+    ),
+    fluidRow(
       uiOutput(ns("error_message_upload"))
     ),
     fluidRow(
@@ -30,6 +33,10 @@ data_upload_ui <- function(id){
 data_upload_server <- function(id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
+
+    output$session_id <- renderPrint({
+      session$token
+    })
 
     # upload data
     observeEvent(input$file, {
@@ -63,6 +70,9 @@ data_upload_server <- function(id){
     output$target_col <- renderUI({
       selectInput(ns("target_col"), "select Target Column", names(user_data()))
     })
+
+
+
     observeEvent(input$target_col, {
       target_column(input$target_col)
       req(user_data())
