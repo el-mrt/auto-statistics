@@ -51,17 +51,15 @@ data_upload_server <- function(id){
                                         na.strings = input$NA_string, dec = input$dec_symbol))
           user_data(temp)
           # detect factor cols
-          n_cols <- ncol(user_data())
-          is_col_fct <- vector(length = n_cols)
-          for(i in seq(n_cols)){
-            is_col_fct[i] <- autoStatistics::identify_CR(user_data(), i)
-          }
-          is_col_fct[is_col_fct == "classif"] <- TRUE
-          is_col_fct[is_col_fct == "regr"] <- FALSE
-          fct_cols <- which(is_col_fct == TRUE)
-          factor_columns(names(user_data())[fct_cols])
-          output$error_message_upload <- renderUI({})
-
+          #n_cols <- ncol(user_data())
+          #is_col_fct <- vector(length = n_cols)
+          #for(i in seq(n_cols)){
+          #  is_col_fct[i] <- autoStatistics::identify_CR(user_data(), i)
+          #}
+          #is_col_fct[is_col_fct == "classif"] <- TRUE
+          #is_col_fct[is_col_fct == "regr"] <- FALSE
+          #fct_cols <- which(is_col_fct == TRUE)
+          #factor_columns(names(user_data())[fct_cols])
 
         },
       error=function(cond){
