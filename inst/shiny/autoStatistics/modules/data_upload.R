@@ -59,9 +59,8 @@ data_upload_server <- function(id){
           is_col_fct[is_col_fct == "classif"] <- TRUE
           is_col_fct[is_col_fct == "regr"] <- FALSE
           fct_cols <- which(is_col_fct == TRUE)
-
           factor_columns(names(user_data())[fct_cols])
-
+          output$error_message_upload <- renderUI({})
 
 
         },
