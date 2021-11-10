@@ -10,7 +10,7 @@ library("shinydashboard")
 
 
 # load all files from modules folder --------------------------------------------------------------------------------------------------
-
+options("encoding" = "UTF-8")
 
 #modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
 modules_path <- "./modules"
