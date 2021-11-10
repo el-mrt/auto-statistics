@@ -64,8 +64,8 @@ MissComb <- R6::R6Class("MissComb", list(
   #' @param top_n show the `top_n` cases
   #' @param bar_color defines the color of the bars
   #' @param plot_title title of the plot
-  #' @param xlab x axis label
-  #' @param ylab y axis label
+  #' @param x_lab x axis label
+  #' @param y_lab y axis label
   plot = function(labels = "index", label_length = 30, show_numbers = TRUE, text_offset = 50, top_n = 10, bar_color = "#FC8D62",
                   plot_title = "NA combinations", x_lab = "combination", y_lab = "n"){
     # split labels by length to avoid too long row names
