@@ -2,6 +2,7 @@
 #'
 #' @param df input data frame
 #' @param target_var target variable
+#' @param classif_threshold max number of unique values for detecting a classification
 #'
 #' @examples
 #' identify_CR(mtcars, "mpg")
