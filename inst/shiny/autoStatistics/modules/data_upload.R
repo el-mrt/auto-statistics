@@ -34,8 +34,9 @@ data_upload_server <- function(id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
 
+    #debug
     output$session_id <- renderPrint({
-      session$token
+      paste0("session id:  ", session$token)
     })
 
     # upload data
@@ -46,7 +47,7 @@ data_upload_server <- function(id){
           autoStatistics::debug_console(sprintf("new file uploaded: ", input$file$name))
         },
         error=function(cond){
-          message(paste0(cond))
+          output$error_message_upload <- renderUI({autoStatistics::render_error("UPLOAD", cond)})
         }
       )
 
@@ -66,10 +67,26 @@ data_upload_server <- function(id){
 
         },
         error = function(cond){
-          message(paste(cond))
+          output$error_message_upload <- renderUI({autoStatistics::render_error("FILETOTABLE", cond)})
+        }
+      )
+    # detect factor columns
+      tryCatch(
+        {
+          col_types <- lapply(names(user_data()), function(col_name){
+            autoStatistics::identify_CR(user_data(), col_name, 10)
+          })
+          col_types <- as.vector(unlist(col_types))
+          factor_col_index <- which(col_types == "classif")
+          factor_columns(names(user_data()[factor_col_index]))
+          updateSelectInput(ns("fct_cols"), "select factor columns", choices = names(user_data()), selected = factor_columns())
+
+        }, error = function(cond){
+          message(paste0(cond))
         }
       )
     })
+    # render DT
     output$table <- renderDT({
       validate(need(user_data(), message = "upload your data"))
       user_data()
@@ -82,10 +99,10 @@ data_upload_server <- function(id){
     })
 
 
-
     observeEvent(input$target_col, {
       req(user_data())
-      target_column(input$target_col)
+      target_column(input$target_col) # update target column
+
       # detect type of task
       task_type(autoStatistics::identify_CR(user_data(), input$target_col))
       autoStatistics::debug_console(sprintf("new task type detected: %s", task_type()))
@@ -108,6 +125,7 @@ data_upload_server <- function(id){
       selectInput(ns("fct_cols"), "select factor columns", choices = names(user_data()), multiple = TRUE, selected = factor_columns())
     })
     observeEvent(input$fct_cols, {
+      req(user_data())
       # update reactive val with factor cols
       factor_columns(input$fct_cols)
       temp_data <- user_data()
