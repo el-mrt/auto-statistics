@@ -25,8 +25,10 @@ auto_ml_server <- function(id, user_data){
 
     # task type
     output$task_type <- renderUI({
-      selectInput(ns("task_type"), "Select task type", choices = c("Regression" = "regr", "Classification" = "classif"), selected = "Regression")
+      req(task_type())
+      selectInput(ns("task_type"), "Select task type", choices = c("To be removed"))
     })
+
     # NAs
     output$task_na <- renderUI({
       selectInput(ns("task_na"), "Select Imputation of missings", choices = c("Auto" = "auto", "Omit" = "omit", "Mean" = "mean", "Mode" = "mode", "Histogram" = "hist"),

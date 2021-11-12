@@ -79,7 +79,7 @@ data_upload_server <- function(id){
           col_types <- as.vector(unlist(col_types))
           factor_col_index <- which(col_types == "classif")
           factor_columns(names(user_data()[factor_col_index]))
-          updateSelectInput(ns("fct_cols"), "select factor columns", choices = names(user_data()), selected = factor_columns())
+          updateSelectInput(inputId = ns("fct_cols"), label = "select factor columns", choices = names(user_data()), selected = factor_columns())
 
         }, error = function(cond){
           message(paste0(cond))
@@ -104,13 +104,14 @@ data_upload_server <- function(id){
       target_column(input$target_col) # update target column
 
       # detect type of task
-      task_type(autoStatistics::identify_CR(user_data(), input$target_col))
+      task_type(autoStatistics::identify_CR(user_data(), target_column()))
       autoStatistics::debug_console(sprintf("new task type detected: %s", task_type()))
       # create task
       tryCatch(
         {
-          user_task(autoStatistics::create_task(user_data(), input$target_col, task_type()))
-          autoStatistics::debug_console(sprintf("new created: %s", user_task()))
+          req(task_type())
+          user_task(autoStatistics::create_task(user_data(), target_column(), task_type()))
+          autoStatistics::debug_console(sprintf("new task created with type: %s", user_task()$task_type))
         },
         error=function(cond){
           message(paste("test: ", cond))
@@ -131,6 +132,12 @@ data_upload_server <- function(id){
       temp_data <- user_data()
       temp_data[input$fct_cols] <- lapply(temp_data[input$fct_cols], as.factor)
       user_data(temp_data)
+      # update task
+      task_type(autoStatistics::identify_CR(user_data(), target_column()))
+      autoStatistics::debug_console(sprintf("new task type detected: %s", task_type()))
+      req(task_type())
+      user_task(autoStatistics::create_task(user_data(), target_column(), task_type()))
+      autoStatistics::debug_console(sprintf("new task created with type: %s", user_task()$task_type))
     })
 })
 }
