@@ -40,9 +40,18 @@ data_upload_server <- function(id){
 
     # upload data
     observeEvent(input$file, {
-      user_file(input$file$datapath)
-      autoStatistics::debug_console(sprintf("new file uploaded: ", input$file$name))
+      tryCatch(
+        {
+          user_file(input$file$datapath)
+          autoStatistics::debug_console(sprintf("new file uploaded: ", input$file$name))
+        },
+        error=function(cond){
+          message(paste0(cond))
+        }
+      )
+
     })
+    # read data into dataframe
     observeEvent(c(input$file,input$sep,input$header,input$NA_string,input$dec_symbol), {
       req(user_file())
       tryCatch(
@@ -68,14 +77,15 @@ data_upload_server <- function(id){
 
     # select target column and create task
     output$target_col <- renderUI({
-      selectInput(ns("target_col"), "select Target Column", names(user_data()))
+      if(is.null(target_column())){target_column(names(user_data())[1])}
+      selectInput(ns("target_col"), "select Target Column", names(user_data()), selected = target_column())
     })
 
 
 
     observeEvent(input$target_col, {
-      target_column(input$target_col)
       req(user_data())
+      target_column(input$target_col)
       # detect type of task
       task_type(autoStatistics::identify_CR(user_data(), input$target_col))
       autoStatistics::debug_console(sprintf("new task type detected: %s", task_type()))
