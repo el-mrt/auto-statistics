@@ -69,9 +69,40 @@ render_error <- function(err_name, cond = NULL, error_list = list_error_mess){
 }
 
 
+#' Function for updating column
+#' @param data your data
+#' @param old_cols vector of names of old factor columns
+#' @param new_cols vector of names of new factor columns
+#'
+#' @return dataframe
+#' @export
 
+update_factor_cols <- function(data, old_cols, new_cols){
+  col_diff <- c(setdiff(old_cols, new_cols), setdiff(new_cols, old_cols)) # check difference
 
-
-
+  for(col in col_diff){
+    if(col %in% new_cols){
+      # if col is in new cols
+      tryCatch(
+        {data[[{{ col }}]] <- as.factor(data[[{{ col }}]])},
+        error = function(cond) print(cond),
+        warning = function(cond) print(cond)
+      )
+    }else{
+      # if col is just in old cols
+      tryCatch(
+        {data[[{{ col }}]] <- as.numeric(levels(data[[{{ col }}]]))[data[[{{ col }}]]]},
+        error = function(cond) print(cond),
+        warning = function(cond) print(cond)
+      )
+    }
+  }
+  cols_is_factor <- sapply(data, is.factor) # check which are factors
+  new_factors <- names(cols_is_factor[cols_is_factor]) # get names of new factors
+  return(list(
+    data = data,
+    new_factors_names = new_factors
+  ))
+}
 
 
