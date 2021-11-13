@@ -1,6 +1,9 @@
 cat("data... called\n")
 
 
+# data_upload -------------------------------------------------------------------------------------------------------------------------
+
+
 data_upload_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -17,15 +20,23 @@ data_upload_ui <- function(id){
              checkboxInput(ns("header"), "Has Header?", value = TRUE),
              textInput(ns("NA_string"), "NA string", value = "NaN"),
              textInput(ns("dec_symbol"), "decimal symbol", value = "."),
-             uiOutput(ns("target_col")),
-             hr(),
-             h4("Factors"),
-             uiOutput(ns("fct_cols"))
-
+             uiOutput(ns("target_col"))
       ),
       column(width = 10,
              DTOutput(ns("table")))
+      ),
+    fluidRow(hr()),
+    fluidRow(
+      column(width = 2,
+             h4("Factors"),
+             uiOutput(ns("fct_cols"))
+             ),
+      column(width = 10,
+             fluidRow(
+               h4("")
+               )
       )
+    )
   )
 }
 
@@ -79,7 +90,12 @@ data_upload_server <- function(id){
           col_types <- as.vector(unlist(col_types))
           factor_col_index <- which(col_types == "classif")
           factor_columns(names(user_data()[factor_col_index]))
-          updateSelectInput(inputId = ns("fct_cols"), label = "select factor columns", choices = names(user_data()), selected = factor_columns())
+          # update columns from numeric to factors
+          temp_data <- user_data()
+          for(col in factor_columns()){
+            temp_data[[{{ col }}]] <- as.factor(temp_data[[{{ col }}]])
+          }
+          user_data(temp_data)
 
         }, error = function(cond){
           message(paste0(cond))
@@ -126,20 +142,29 @@ data_upload_server <- function(id){
       selectInput(ns("fct_cols"), "select factor columns", choices = names(user_data()), multiple = TRUE, selected = factor_columns())
     })
     observeEvent(input$fct_cols, {
-      req(user_data())
-      # update reactive val with factor cols
-      factor_columns(input$fct_cols)
-      temp_data <- user_data()
-      temp_data[input$fct_cols] <- lapply(temp_data[input$fct_cols], as.factor)
-      user_data(temp_data)
-      # update task
-      task_type(autoStatistics::identify_CR(user_data(), target_column()))
-      autoStatistics::debug_console(sprintf("new task type detected: %s", task_type()))
-      req(task_type())
-      user_task(autoStatistics::create_task(user_data(), target_column(), task_type()))
-      autoStatistics::debug_console(sprintf("new task created with type: %s", user_task()$task_type))
+
+      if(length(setdiff(factor_columns(), input$fct_cols)) > 0 ||
+         length(setdiff(input$fct_cols, factor_columns())) > 0){
+
+        temp_fct_updated <- autoStatistics::update_factor_cols(user_data(), old_cols = factor_columns(), new_cols = input$fct_cols)
+        user_data(temp_fct_updated$data)
+        factor_columns(temp_fct_updated$new_factors_names)
+      }
+
+
     })
 })
 }
 
 
+# data_fct_warn -----------------------------------------------------------------------------------------------------------------------
+data_factor_warn_ui <- function(id){
+
+}
+
+data_factor_warn_server <- function(id) {
+  moduleServer(id, function(input, output, session){
+
+
+  })
+}
