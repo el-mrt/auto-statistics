@@ -4,12 +4,14 @@
 \alias{create_learners}
 \title{Function that given "classif" or "regr" returns a suitable list of learners}
 \usage{
-create_learners(task, vec_learners = NULL)
+create_learners(task, vec_learners = NULL, hpo = TRUE)
 }
 \arguments{
 \item{task}{mlr3 task}
 
 \item{vec_learners}{vector of choosen learners}
+
+\item{hpo}{choose if searchspaces for hyperparameter optimization should be initialized}
 }
 \value{
 list of mlr3 learners
@@ -20,5 +22,6 @@ Function that given "classif" or "regr" returns a suitable list of learners
 \examples{
 create_learners(tsk("iris"))
 create_learners(tsk("bike_sharing"))
+create_learners(task = tsk("german_credit"), vec_learners = c("rf"), hpo = FALSE)
 
 }
