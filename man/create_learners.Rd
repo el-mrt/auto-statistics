@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_learners.R
 \name{create_learners}
 \alias{create_learners}
-\title{Function that given "classif" or "regr" returns a suitable list of learners}
+\title{Function that given a task returns a suitable list of learners}
 \usage{
 create_learners(task, vec_learners = NULL, hpo = TRUE)
 }
@@ -17,7 +17,7 @@ create_learners(task, vec_learners = NULL, hpo = TRUE)
 list of mlr3 learners
 }
 \description{
-Function that given "classif" or "regr" returns a suitable list of learners
+Function that given a task returns a suitable list of learners
 }
 \examples{
 create_learners(tsk("iris"))

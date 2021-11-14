@@ -1,4 +1,4 @@
-#' Function that given "classif" or "regr" returns a suitable list of learners
+#' Function that given a task returns a suitable list of learners
 #'
 #' @param task mlr3 task
 #' @param vec_learners vector of choosen learners
@@ -13,7 +13,7 @@
 #'
 #' @export
 #'
-#' @import mlr3verse
+#' @import mlr3verse e1071 ranger xgboost kknn
 #'
 
 create_learners <- function(task, vec_learners = NULL, hpo = TRUE){
@@ -51,7 +51,7 @@ create_learners <- function(task, vec_learners = NULL, hpo = TRUE){
       id <- sub(paste0(cr, "."), "",l$id)
 
       if (id == "kknn") {
-        l$param_set$values$k <- to_tune(1, task$nrow / 10)
+        l$param_set$values$k <- to_tune(1, round(task$nrow / 10))
       } else if (id == "svm") {
         l$param_set$values$cost <- to_tune(1e-10, 10, logscale = TRUE)
       } else if (id == "ranger") {
