@@ -182,6 +182,10 @@ data_upload_server <- function(id){
     # warn text
     output$warn_fct_col <- renderText({print(fct_col_warn$text)})
     observeEvent(input$btn_warn_fct_cont,{
+      temp_data <- user_data()
+      temp_data[[{{ fct_col_warn$col_name }}]] <- as.numeric(levels(temp_data[[{{ fct_col_warn$col_name }}]]))[temp_data[[{{ fct_col_warn$col_name }}]]]
+      user_data(temp_data)
+      factor_columns(factor_col_names(user_data()))
       fct_col_warn$text <- ""
 
     })
