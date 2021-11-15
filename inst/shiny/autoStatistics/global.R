@@ -32,6 +32,14 @@ target_column <- reactiveVal(NULL, "targ_col")
 factor_columns <- reactiveVal(NULL, "factor_cols")
 task_type <- reactiveVal(NULL, "task_type")
 user_task <- reactiveVal(NULL, "user_task")
+fct_col_warn_text <- reactiveVal(NULL)
+
+fct_col_warn <- reactiveValues(
+  text = "",
+  col_name = "",
+  col_data = NULL
+)
+
 
 
 cat("global.R called\n")

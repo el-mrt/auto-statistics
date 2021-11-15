@@ -33,10 +33,15 @@ data_upload_ui <- function(id){
              ),
       column(width = 10,
              fluidRow(
-               h4("")
+               h4(""),
+                 column(8,
+                        verbatimTextOutput(ns("warn_fct_col"), placeholder = TRUE)),
+                 column(1,
+                        actionButton(ns("btn_warn_fct_cont"), "", icon = icon("glyphicon glyphicon-ok", lib = "glyphicon")),
+                        actionButton(ns("btn_warn_fct_discard"), "", icon = icon("glyphicon glyphicon-remove", lib = "glyphicon")))
                )
-      )
-    )
+               )
+             )
   )
 }
 
@@ -55,7 +60,7 @@ data_upload_server <- function(id){
       tryCatch(
         {
           user_file(input$file$datapath)
-          autoStatistics::debug_console(sprintf("new file uploaded: ", input$file$name))
+          autoStatistics::debug_console(sprintf("new file uploaded: %s", input$file$name))
         },
         error=function(cond){
           output$error_message_upload <- renderUI({autoStatistics::render_error("UPLOAD", cond)})
@@ -98,7 +103,7 @@ data_upload_server <- function(id){
           user_data(temp_data)
 
         }, error = function(cond){
-          message(paste0(cond))
+          message(paste0("ERROR HERE 2:  ", cond))
         }
       )
     })
@@ -113,15 +118,18 @@ data_upload_server <- function(id){
       if(is.null(target_column())){target_column(names(user_data())[1])}
       selectInput(ns("target_col"), "select Target Column", names(user_data()), selected = target_column())
     })
-
-
     observeEvent(input$target_col, {
       req(user_data())
       target_column(input$target_col) # update target column
 
       # detect type of task
-      task_type(autoStatistics::identify_CR(user_data(), target_column()))
-      autoStatistics::debug_console(sprintf("new task type detected: %s", task_type()))
+      tryCatch({
+        task_type(autoStatistics::identify_CR(user_data(), target_column()))
+        autoStatistics::debug_console(sprintf("new task type detected: %s", task_type()))
+      }, error=function(cond){
+        message(paste("ERROR HERE: ", cond))
+      })
+
       # create task
       tryCatch(
         {
@@ -142,29 +150,45 @@ data_upload_server <- function(id){
       selectInput(ns("fct_cols"), "select factor columns", choices = names(user_data()), multiple = TRUE, selected = factor_columns())
     })
     observeEvent(input$fct_cols, {
+        if(length(setdiff(factor_columns(), input$fct_cols)) > 0 ||
+           length(setdiff(input$fct_cols, factor_columns())) > 0){
 
-      if(length(setdiff(factor_columns(), input$fct_cols)) > 0 ||
-         length(setdiff(input$fct_cols, factor_columns())) > 0){
+          tryCatch(
+            {
+              temp_fct_updated <- autoStatistics::update_factor_cols(user_data(), old_cols = factor_columns(), new_cols = input$fct_cols)
+              user_data(temp_fct_updated$data)
+              # update factor columns
+              factor_columns(factor_col_names(user_data()))
+              #factor_columns(temp_fct_updated$new_factors_names)
+              },
+            error = function(cond){
+              message(cond)
+            },
+            warning = function(cond){
+              updateSelectInput(session, inputId = "fct_cols", label = "select factor column", choices = names(user_data()), selected = factor_columns())
+              fct_col_warn$col_name <- c(setdiff(factor_columns(), input$fct_cols), setdiff(input$fct_cols, factor_columns()))
+              temp_data <- user_data()
+              temp_data <- temp_data[[{{fct_col_warn$col_name}}]]
+              # get numbers of new NAs
+              n_new_na <- sum(is.na(as.numeric(levels(temp_data))[temp_data]))
+              n_old_na <-sum(is.na(temp_data))
+              n_na <- abs(n_new_na - n_old_na)
+              fct_col_warn$text <- paste0("Converting the column '", fct_col_warn$col_name, "' would insert ", n_na, " new NAs to the column. Continue?")
+            }
+          )
+        }
 
-        temp_fct_updated <- autoStatistics::update_factor_cols(user_data(), old_cols = factor_columns(), new_cols = input$fct_cols)
-        user_data(temp_fct_updated$data)
-        factor_columns(temp_fct_updated$new_factors_names)
-      }
+    })
+    # warn text
+    output$warn_fct_col <- renderText({print(fct_col_warn$text)})
+    observeEvent(input$btn_warn_fct_cont,{
+      fct_col_warn$text <- ""
 
-
+    })
+    observeEvent(input$btn_warn_fct_discard,{
+      fct_col_warn$text <- ""
     })
 })
 }
 
 
-# data_fct_warn -----------------------------------------------------------------------------------------------------------------------
-data_factor_warn_ui <- function(id){
-
-}
-
-data_factor_warn_server <- function(id) {
-  moduleServer(id, function(input, output, session){
-
-
-  })
-}
