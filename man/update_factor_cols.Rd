@@ -14,7 +14,7 @@ update_factor_cols(data, old_cols, new_cols)
 \item{new_cols}{vector of names of new factor columns}
 }
 \value{
-dataframe
+list with new data and new factor columns
 }
 \description{
 Function for updating column

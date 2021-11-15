@@ -74,7 +74,7 @@ render_error <- function(err_name, cond = NULL, error_list = list_error_mess){
 #' @param old_cols vector of names of old factor columns
 #' @param new_cols vector of names of new factor columns
 #'
-#' @return dataframe
+#' @return list with new data and new factor columns
 #' @export
 
 update_factor_cols <- function(data, old_cols, new_cols){
@@ -83,18 +83,10 @@ update_factor_cols <- function(data, old_cols, new_cols){
   for(col in col_diff){
     if(col %in% new_cols){
       # if col is in new cols
-      tryCatch(
-        {data[[{{ col }}]] <- as.factor(data[[{{ col }}]])},
-        error = function(cond) print(cond),
-        warning = function(cond) print(cond)
-      )
+        data[[{{ col }}]] <- as.factor(data[[{{ col }}]])
     }else{
       # if col is just in old cols
-      tryCatch(
-        {data[[{{ col }}]] <- as.numeric(levels(data[[{{ col }}]]))[data[[{{ col }}]]]},
-        error = function(cond) print(cond),
-        warning = function(cond) print(cond)
-      )
+        data[[{{ col }}]] <- as.numeric(levels(data[[{{ col }}]]))[data[[{{ col }}]]]
     }
   }
   cols_is_factor <- sapply(data, is.factor) # check which are factors
@@ -104,5 +96,18 @@ update_factor_cols <- function(data, old_cols, new_cols){
     new_factors_names = new_factors
   ))
 }
+
+#' Function to get all column names which are factors
+#' @param x data
+#'
+#' @return vector of factor columns
+#' @export
+
+factor_col_names <- function(x){
+  is_col_factor <- sapply(x, is.factor)
+  return(names(is_col_factor[is_col_factor]))
+}
+
+
 
 
