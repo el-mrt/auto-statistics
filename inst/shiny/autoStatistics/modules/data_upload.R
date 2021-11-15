@@ -16,7 +16,7 @@ data_upload_ui <- function(id){
     fluidRow(
       column(width = 2,
              fileInput(ns("file"), "Upload Data"),
-             textInput(ns("sep"), "seperator", value = ","),
+             textInput(ns("sep"), "seperator", value = ";"),
              checkboxInput(ns("header"), "Has Header?", value = TRUE),
              textInput(ns("NA_string"), "NA string", value = "NaN"),
              textInput(ns("dec_symbol"), "decimal symbol", value = "."),
@@ -77,7 +77,7 @@ data_upload_server <- function(id){
                          txt = read.table(file = user_file(), header = input$header, sep = input$sep,
                                           na.strings = input$NA_string, dec = input$dec_symbol),
                          csv = read.csv(file = user_file(), header = input$header, sep = input$sep,
-                                        na.strings = input$NA_string, dec = input$dec_symbol, fileEncoding = "Latin1"))
+                                        na.strings = input$NA_string, dec = input$dec_symbol))
 
           user_data(temp)
           autoStatistics::debug_console(sprintf("Data loaded into a dataframe"))

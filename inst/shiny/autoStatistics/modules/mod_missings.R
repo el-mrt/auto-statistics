@@ -81,7 +81,7 @@ missings_server <- function(id, user_data, target_col){
       missings_per_col[["col_name"]] <- factor(missings_per_col[["col_name"]], levels = missings_per_col[["col_name"]])
       # plot
       cur_plot <- ggplot(missings_per_col, aes(x = col_name, y = number_na)) +
-        geom_bar(stat="identity", fill = input$na_per_col_color) +
+        geom_bar(stat="identity", fill = input$na_per_col_color, na.rm = TRUE) +
         {if(input$na_per_col_flip_coord) {coord_flip()}} +
         labs(x = "column", y = "number of missing values") +
         theme_minimal()
@@ -155,11 +155,20 @@ missings_server <- function(id, user_data, target_col){
       req(na_hist_data)  # req()
       # plot if only one col selected
       if(input$na_hist_col2 == "None"){
-        cur_plot <- ggplot(na_hist_data, aes(x = get(target_col()), fill = isna)) +
-          geom_histogram(binwidth = input$na_hist_bins) +
-          scale_fill_manual(values = c("#377EB8", "#BD3631")) +
-          labs(x = target_col()) +
-          theme_minimal()
+        if(is.factor(na_hist_data[[{{ target_col() }}]])){
+          cur_plot <- ggplot(na_hist_data, aes(x = get(target_col()), fill = isna)) +
+            geom_bar(na.rm = TRUE) +
+            scale_fill_manual(values = c("#377EB8", "#BD3631")) +
+            labs(x = target_col()) +
+            theme_minimal()
+        }else{
+          cur_plot <- ggplot(na_hist_data, aes(x = get(target_col()), fill = isna)) +
+            geom_histogram(binwidth = input$na_hist_bins) +
+            scale_fill_manual(values = c("#377EB8", "#BD3631")) +
+            labs(x = target_col()) +
+            theme_minimal()
+        }
+
       }else{
         cur_plot <- ggplot(na_hist_data, aes(x = target_col(), y = get(col_name2), color = isna)) +
           geom_jitter() +
