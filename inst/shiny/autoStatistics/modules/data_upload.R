@@ -159,7 +159,7 @@ data_upload_server <- function(id){
               temp_fct_updated <- autoStatistics::update_factor_cols(user_data(), old_cols = factor_columns(), new_cols = input$fct_cols)
               user_data(temp_fct_updated$data)
               # update factor columns
-              factor_columns(factor_col_names(user_data()))
+              factor_columns(autoStatistics::factor_col_names(user_data()))
               #factor_columns(temp_fct_updated$new_factors_names)
               },
             error = function(cond){
