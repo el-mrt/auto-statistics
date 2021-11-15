@@ -77,9 +77,8 @@ data_upload_server <- function(id){
                          txt = read.table(file = user_file(), header = input$header, sep = input$sep,
                                           na.strings = input$NA_string, dec = input$dec_symbol),
                          csv = read.csv(file = user_file(), header = input$header, sep = input$sep,
-                                        na.strings = input$NA_string, dec = input$dec_symbol))
-          print(iconv(names(temp), to = "ASCII", sub = ""))
-          names(temp) <- iconv(names(temp), to = "ASCII", sub = "")
+                                        na.strings = input$NA_string, dec = input$dec_symbol, fileEncoding = "Latin1"))
+
           user_data(temp)
           autoStatistics::debug_console(sprintf("Data loaded into a dataframe"))
 
