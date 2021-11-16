@@ -15,7 +15,9 @@ auto_ml_ui <- function(id){
       column(9,
              h3("Result")
              )
-    )
+    ),
+    fluidRow(
+      save_plot_ui(ns("test")))
   )
 }
 
@@ -31,32 +33,55 @@ auto_ml_server <- function(id, user_data){
 
     # NAs
     output$task_na <- renderUI({
-      selectInput(ns("task_na"), "Select Imputation of missings", choices = c("Auto" = "auto", "Omit" = "omit", "Mean" = "mean", "Mode" = "mode", "Histogram" = "hist"),
-                  selected = "auto")
+      selectInput(ns("task_na"), "Select Imputation of missings", choices = available_na_imp, selected = "auto")
+    })
+    observeEvent(input$task_na, {
+      user_task$na <- input$task_na
+      autoStatistics::debug_console(sprintf("NA imputation changed. New Value: %s", user_task$na))
     })
 
     #FS
     output$task_feature <- renderUI({
-      selectInput(ns("task_feature"), "Select Feature Selection", choices = c("None", "Others"), selected = "None")
+      if(is.null(user_task$type)){
+        selectInput(ns("task_feature"), "Select Feature Selection", choices = c(""), selected = "")
+      }else{
+        selectInput(ns("task_feature"), "Select Feature Selection", choices = available_fs[[user_task$type]], selected = "auto", multiple = TRUE)
+      }
+    })
+    observeEvent(input$task_feature, {
+      user_task$fs <- input$task_feature
+      autoStatistics::debug_console(paste(c("FS updated. New FS are: ", user_task$fs), collapse = ","))
     })
 
     # learner
     output$task_learner <- renderUI({
-      selectInput(ns("task_learner"), "Select learners", multiple = TRUE,
-                  choices = c(
-                    "Auto" = "auto",
-                    "KNN" = "kknn",
-                    "Random Forest" = "ranger",
-                    "SVM" = "svm",
-                    "XGBoost" = "xgboost"
-                  ), selected = "auto")
+      if(is.null(user_task$type)){
+        selectInput(ns("task_learner"), "Select learners",
+                    choices = c(""), selected = "")
+      }else{
+        selectInput(ns("task_learner"), "Select learners", multiple = TRUE,
+                    choices = available_learners[[user_task$type]], selected = "auto")
+      }
+    })
+    observeEvent(input$task_learner, {
+      user_task$learners <- input$task_learner
+      autoStatistics::debug_console(paste(c("learners updated. New Learners are: ", user_task$learners), collapse = ", "))
     })
     #ensemble
     output$task_ensemble <- renderUI({
       checkboxInput(ns("task_ensemble"), label = "Ensemble Learner?", value = FALSE)
     })
+    observeEvent(input$task_ensemble, {
+      user_task$ensemble <- input$task_ensemble
+      autoStatistics::debug_console(sprintf("ensemble learner changed. New Value: %s", user_task$ensemble))
+    })
+
+    # tuning
     output$task_tuning <- renderUI({
       checkboxInput(ns("task_tuning"), label = "Hyperparameter Tuning?", value = FALSE)
+    })
+    observeEvent(input$task_tuning, {
+
     })
 
   })

@@ -9,5 +9,7 @@ ui <- navbarPage(
   tabPanel("Edit Data",
            data_man_ui("edit_data")),
   tabPanel("autoML",
-           auto_ml_ui("autoML"))
+           auto_ml_ui("autoML")),
+  tabPanel("Report",
+           report_ui("report"))
 )

@@ -16,7 +16,8 @@ data_upload_ui <- function(id){
     fluidRow(
       column(width = 2,
              fileInput(ns("file"), "Upload Data"),
-             textInput(ns("sep"), "seperator", value = ";"),
+             selectInput(ns("encoding"), "File encoding", choices = c("Default" = "", "Latin1" = "Latin1", "UTF-8" = "UTF-8", "UCS-2LE" = "UCS-2LE", "UTF-16LE" = "UTF-16LE", "German_Germany.1252" = "German_Germany.1252"), selected = ""),
+             textInput(ns("sep"), "seperator", value = ","),
              checkboxInput(ns("header"), "Has Header?", value = TRUE),
              textInput(ns("NA_string"), "NA string", value = "NaN"),
              textInput(ns("dec_symbol"), "decimal symbol", value = "."),
@@ -69,15 +70,15 @@ data_upload_server <- function(id){
 
     })
     # read data into dataframe
-    observeEvent(c(input$file,input$sep,input$header,input$NA_string,input$dec_symbol), {
+    observeEvent(c(input$file,input$sep,input$header,input$NA_string,input$dec_symbol, input$encoding), {
       req(user_file())
       tryCatch(
         {
           temp <- switch(tools::file_ext(user_file()),
                          txt = read.table(file = user_file(), header = input$header, sep = input$sep,
-                                          na.strings = input$NA_string, dec = input$dec_symbol),
+                                          na.strings = input$NA_string, dec = input$dec_symbol, fileEncoding = input$encoding),
                          csv = read.csv(file = user_file(), header = input$header, sep = input$sep,
-                                        na.strings = input$NA_string, dec = input$dec_symbol, fileEncoding = "Latin1"))
+                                        na.strings = input$NA_string, dec = input$dec_symbol, fileEncoding = input$encoding))
 
           user_data(temp)
           autoStatistics::debug_console(sprintf("Data loaded into a dataframe"))
@@ -191,7 +192,6 @@ data_upload_server <- function(id){
       user_data(temp_data)
       factor_columns(autoStatistics::factor_col_names(user_data()))
       fct_col_warn$text <- ""
-
     })
     observeEvent(input$btn_warn_fct_discard,{
       fct_col_warn$text <- ""

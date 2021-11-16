@@ -2,18 +2,30 @@
 data_man_ui <- function(id){
   ns <- NS(id)
   tagList(
-    uiOutput(ns("select_col")),
-    uiOutput(ns("btn_remove"))
+    fluidRow(
+      column(4, h3("Remove Column")), column(4, h3("Remove NAs")), column(4, h3("Replace Values"))
+    ),
+    fluidRow(hr()),
+    fluidRow(
+      column(4,
+             uiOutput(ns("select_col_remove")),
+             uiOutput(ns("btn_remove"))),
+      column(4,
+             uiOutput(ns("select_col_na")),
+             fluidRow(column(2, uiOutput(ns("btn_naomit"))), column(2,uiOutput(ns("btn_naomit_all"))), column(8))
+             )
+    )
+
   )
 }
 
 data_man_server <- function(id, user_data){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
-    # select col
-    output$select_col <- renderUI({
-      validate(need(user_data(), message = FALSE))
-      selectInput(ns("select_col"), "select column", choices = names(user_data()))
+    # select col remove
+    output$select_col_remove <- renderUI({
+      validate(need(user_data(), message = "upload your data"))
+      selectInput(ns("select_col_remove"), "select column", choices = names(user_data()))
     })
     # remove btn
     output$btn_remove <- renderUI({
@@ -22,12 +34,30 @@ data_man_server <- function(id, user_data){
       })
     observeEvent(input$btn_remove, {
       temp_data <- user_data()
-      temp_data <- temp_data[, -which(names(temp_data) %in% c(input$select_col))]
+      temp_data <- temp_data[, -which(names(temp_data) %in% c(input$select_col_remove))]
       user_data(temp_data)
-
-
-
     })
-
+    # remove NAS
+    output$select_col_na <- renderUI({
+      validate(need(user_data(), message = "upload your data"))
+      selectInput(ns("select_col_na"), "select column", choices = names(user_data()))
+    })
+    output$btn_naomit <- renderUI({
+      validate(need(user_data(), message = FALSE))
+      actionButton(ns("btn_naomit"), "omit")
+    })
+    output$btn_naomit_all <- renderUI({
+      validate(need(user_data(), message = FALSE))
+      actionButton(ns("btn_naomit_all"), "omit all")
+    })
+    observeEvent(input$btn_naomit,{
+      temp_data <- user_data()
+      temp_data <- temp_data[!is.na(temp_data[[{{ input$select_col_na }}]]), ]
+      user_data(temp_data)
+    })
+    observeEvent(input$btn_naomit_all, {
+      temp_data <- user_data()
+      user_data(na.omit(temp_data))
+    })
   })
 }

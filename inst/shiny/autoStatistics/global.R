@@ -22,7 +22,7 @@ lapply(files, source)
 # shiny options -----------------------------------------------------------------------------------------------------------------------
 
 options(shiny.maxRequestSize = 30*1024^2) # set max size of uploaded file to 30 Mb
-
+options(htmlwidgets.TOJSON_ARGS = list(na = 'string')) # show NAs in
 
 
 # reactive Values ---------------------------------------------------------
@@ -42,8 +42,11 @@ fct_col_warn <- reactiveValues(
 user_task <-  reactiveValues(
   type = NULL,
   task = NULL,
-  learners = NULL
-
+  learners = NULL,
+  ensemble = NULL,
+  fs = NULL,
+  na = NULL,
+  tuning = NULL,
 )
 
 
