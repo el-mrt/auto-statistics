@@ -125,8 +125,9 @@ data_upload_server <- function(id){
 
       # detect type of task
       tryCatch({
-        task_type(autoStatistics::identify_CR(user_data(), target_column()))
-        autoStatistics::debug_console(sprintf("new task type detected: %s", task_type()))
+        user_task$type <- autoStatistics::identify_CR(user_data(), target_column())
+        #task_type(autoStatistics::identify_CR(user_data(), target_column()))
+        autoStatistics::debug_console(sprintf("new task type detected: %s", user_task$type))
       }, error=function(cond){
         message(paste("ERROR HERE: ", cond))
       })
@@ -134,9 +135,11 @@ data_upload_server <- function(id){
       # create task
       tryCatch(
         {
-          req(task_type())
-          user_task(autoStatistics::create_task(user_data(), target_column(), task_type()))
-          autoStatistics::debug_console(sprintf("new task created with type: %s", user_task()$task_type))
+          req(user_task$type)
+          user_task$task <- autoStatistics::create_task(user_data(), target_column(), user_task$type)
+          #user_task(autoStatistics::create_task(user_data(), target_column(), task_type()))
+          #autoStatistics::debug_console(sprintf("new task created with type: %s", user_task()$task_type))
+          autoStatistics::debug_console(sprintf("new task created with type: %s", user_task$type))
         },
         error=function(cond){
           message(paste("test: ", cond))

@@ -31,7 +31,7 @@ user_data <- reactiveVal(NULL, "user_data")
 target_column <- reactiveVal(NULL, "targ_col")
 factor_columns <- reactiveVal(NULL, "factor_cols")
 task_type <- reactiveVal(NULL, "task_type")
-user_task <- reactiveVal(NULL, "user_task")
+user_task_old <- reactiveVal(NULL, "user_task")
 fct_col_warn_text <- reactiveVal(NULL)
 
 fct_col_warn <- reactiveValues(
@@ -39,7 +39,7 @@ fct_col_warn <- reactiveValues(
   col_name = "",
   col_data = NULL
 )
-user_task_temp <-  reactiveValues(
+user_task <-  reactiveValues(
   type = NULL,
   task = NULL,
   learners = NULL
