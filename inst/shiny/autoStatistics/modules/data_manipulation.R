@@ -62,6 +62,6 @@ data_man_server <- function(id, user_data){
       temp_data <- user_data()
       user_data(na.omit(temp_data))
     })
-    feature_importance_server("feature_imp", task = user_task$task, filters = pre_feature_import_filter)
+    feature_importance_server("feature_imp", user_task = user_task$task, user_filters = pre_feature_import_filter)
   })
 }

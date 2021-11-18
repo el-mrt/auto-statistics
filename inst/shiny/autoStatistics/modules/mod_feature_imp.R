@@ -25,7 +25,7 @@ feature_importance_ui <- function(id){
 }
 
 
-feature_importance_server <- function(id, task, filters){
+feature_importance_server <- function(id, user_task, user_filters){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
 
@@ -33,14 +33,8 @@ feature_importance_server <- function(id, task, filters){
     observeEvent(input$start, {
       shinybusy::show_spinner() # show the spinner
 
-      tryCatch({
-        importance_table <- autoStatistics::feature_importance(task = task, filters = filters, ranks = TRUE)
-      }, warning = function(cond){
-        message(paste0(cond))
-      }, error = function(cond){
-        message(paste0(cond))
-      })
 
+      importance_table <- autoStatistics::feature_importance(task = user_task, filters = user_filters, ranks = TRUE)
 
 
       output$table <- renderDT({
