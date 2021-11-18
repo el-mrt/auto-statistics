@@ -113,6 +113,9 @@ data_upload_server <- function(id){
         },
         error = function(cond){
           output$error_message_upload <- renderUI({autoStatistics::render_error("FILETOTABLE", cond)})
+        },
+        warn = function(cond){
+          output$error_message_upload <- renderUI({autoStatistics::render_error("FILETOTABLE", cond)})
         }
       )
     # detect factor columns
