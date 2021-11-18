@@ -69,19 +69,6 @@ data_upload_server <- function(id){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     # upload data
     observeEvent(input$file, {
       target_column(NULL)
@@ -113,9 +100,11 @@ data_upload_server <- function(id){
         },
         error = function(cond){
           output$error_message_upload <- renderUI({autoStatistics::render_error("FILETOTABLE", cond)})
+          user_data(NULL)
         },
         warn = function(cond){
           output$error_message_upload <- renderUI({autoStatistics::render_error("FILETOTABLE", cond)})
+          user_data(NULL)
         }
       )
     # detect factor columns
