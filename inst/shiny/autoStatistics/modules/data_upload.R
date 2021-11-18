@@ -57,6 +57,7 @@ data_upload_server <- function(id){
     })
     observeEvent(user_data(), {
       req(target_column())
+      print("BEEEEEEER")
       user_task$type <- autoStatistics::identify_CR(user_data(), target_column())
       autoStatistics::debug_console(sprintf("new task type detected: %s", user_task$type))
       req(user_task$type)
@@ -157,6 +158,7 @@ data_upload_server <- function(id){
       tryCatch(
         {
           req(user_task$type)
+          req(user_data())
           temp_data <- user_data()
           temp_data <- temp_data[!is.na(temp_data[[{{ target_column() }}]]), ]
 
@@ -165,7 +167,7 @@ data_upload_server <- function(id){
           print(user_task$task)
         },
         error=function(cond){
-          message(paste("test: ", cond))
+          message(paste("test12: ", cond))
         }
       )
 
