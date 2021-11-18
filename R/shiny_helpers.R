@@ -108,6 +108,43 @@ factor_col_names <- function(x){
   return(names(is_col_factor[is_col_factor]))
 }
 
+#' Function to get the importance of the features of a mlr3 task
+#' @param task mlr task
+#' @param filters list of lists with filters. list("regr"=list(), "classif" = list())
+#' @param ranks should ranks be computed. -> make it more robust
+#' @return dataframe
+#' @export
+feature_importance <- function(task, filters, ranks = TRUE){
+  used_filters <- filters[[task$task_type]]
+  used_filters_len <- length(used_filters)
 
+  # create output df
 
+  importance_df <- data.frame("feature" = task$feature_names)
+
+  tryCatch({
+    for(i in seq(used_filters_len)){
+      temp_result<- used_filters[[i]]$calculate(task)
+      flt_result <- data.frame("feature" = names(temp_result$scores),
+                               "score" = unname(temp_result$scores))
+      importance_df <- dplyr::left_join(importance_df, flt_result, by = "feature")
+      names(importance_df)[i+1] <- used_filters[[i]]$id
+    }
+  }, warning = function(cond){
+    warning(paste0(cond))
+  }, error = function(cond){
+    stop(paste0(cond))
+  })
+
+  if(ranks){
+    temp_ranks <- sapply(importance_df[,-1], function(x){rank(-x)})
+    importance_df[,-1] <- temp_ranks
+    importance_df$mean <- rowMeans(importance_df[,-1])
+    importance_df$mean <- round(importance_df$mean, digits = 2)
+  }else{
+    importance_df$mean <- rowMeans(importance_df[,-1], na.rm = TRUE)
+    importance_df$mean <- round(importance_df$mean, digits = 2)
+  }
+  return(importance_df)
+}
 
