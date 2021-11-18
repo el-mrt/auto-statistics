@@ -55,18 +55,6 @@ data_upload_server <- function(id){
     output$session_id <- renderPrint({
       paste0("session id:  ", session$token)
     })
-    observeEvent(user_data(), {
-      req(target_column())
-      print("BEEEEEEER")
-      user_task$type <- autoStatistics::identify_CR(user_data(), target_column())
-      autoStatistics::debug_console(sprintf("new task type detected: %s", user_task$type))
-      req(user_task$type)
-      temp_data <- user_data()
-      temp_data <- temp_data[!is.na(temp_data[[{{ target_column() }}]]), ]
-      user_task$task <- autoStatistics::create_task(temp_data, target_column(), user_task$type)
-      autoStatistics::debug_console(sprintf("new task created with type: %s", user_task$type))
-      print(user_task$task)
-    })
 
 
 
