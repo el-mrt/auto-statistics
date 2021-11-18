@@ -89,11 +89,9 @@ data_upload_server <- function(id){
         },
         error = function(cond){
           output$error_message_upload <- renderUI({autoStatistics::render_error("FILETOTABLE", cond)})
-          user_data(NULL)
         },
         warn = function(cond){
           output$error_message_upload <- renderUI({autoStatistics::render_error("FILETOTABLE", cond)})
-          user_data(NULL)
         }
       )
       req(user_data())
