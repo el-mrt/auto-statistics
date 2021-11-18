@@ -17,6 +17,7 @@ missings_ui <- function(id){
              plotOutput(ns("plot_na_per_col"), height = "500px")
              )
     ),
+    fluidRow(save_plot_ui(ns("save_na_per_col"))), # download button
     # UI na_combinations ------------------------------------------------------------------------------------------------------------------
     h3(HTML("<u><i>Missing combinations</u></i>")),
     fluidRow(
@@ -31,6 +32,7 @@ missings_ui <- function(id){
              plotOutput(ns("na_comb_plot"))
       )
     ),
+    fluidRow(save_plot_ui(ns("save_na_comb"))), # download button
     # UI na_distribution ---------------------------------------------------------------------------------------------------------------------
     h3(HTML("<u><i>Missing values distribution</i></u>")),
     fluidRow(
@@ -43,7 +45,8 @@ missings_ui <- function(id){
       column(10,
              plotOutput(ns("na_hist_plot"), height = "500px")
              )
-    )
+    ),
+    fluidRow(save_plot_ui(ns("save_na_dist"))), # download button
   )
 }
 
@@ -85,6 +88,7 @@ missings_server <- function(id, user_data, target_col){
         {if(input$na_per_col_flip_coord) {coord_flip()}} +
         labs(x = "column", y = "number of missing values") +
         theme_minimal()
+      user_plot$na_per_col <- cur_plot
       return(cur_plot)
     })
 
@@ -178,5 +182,11 @@ missings_server <- function(id, user_data, target_col){
       }
       cur_plot
       })
+
+    # download buttons ------------------------------------------------------------------------------------------------------------------------
+    save_plot_server("save_na_per_col", plot_save = reactive({user_plot$na_per_col}))
+    #save_plot_server("save_na_comb", plot = user_plot$na_comb)
+    #save_plot_server("save_na_dist", plot = user_plot$na_dist)
+
     })
 }

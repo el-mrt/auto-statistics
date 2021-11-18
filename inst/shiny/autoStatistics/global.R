@@ -7,6 +7,7 @@ library("DT")
 library("ggplot2")
 library("RColorBrewer")
 library("shinydashboard")
+library("dplyr")
 
 
 # load all files from modules folder --------------------------------------------------------------------------------------------------
@@ -34,11 +35,13 @@ task_type <- reactiveVal(NULL, "task_type")
 user_task_old <- reactiveVal(NULL, "user_task")
 fct_col_warn_text <- reactiveVal(NULL)
 
+# warning transform numeric to factor
 fct_col_warn <- reactiveValues(
   text = "",
   col_name = "",
   col_data = NULL
 )
+# task
 user_task <-  reactiveValues(
   type = NULL,
   task = NULL,
@@ -48,6 +51,17 @@ user_task <-  reactiveValues(
   na = NULL,
   tuning = NULL,
 )
+# plots shown to the user
+user_plot <- reactiveValues(
+  na_per_col = NULL,
+  na_comb = NULL,
+  na_dist = NULL
+)
+# plots to be added to the custom report
+custom_report <- reactiveValues(
+
+)
+
 
 
 

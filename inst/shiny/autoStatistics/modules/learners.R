@@ -18,3 +18,24 @@ cat("available_fs loaded\n")
 
 available_na_imp <- c("Auto" = "auto", "Omit" = "omit", "Mean" = "mean", "Mode" = "mode", "Histogram" = "hist")
 cat("available_na_imp loaded\n")
+
+
+# pre var importance ------------------------------------------------------------------------------------------------------------------
+
+pre_feature_import_filter <- list(
+  "regr" = list(
+    mlr3filters::flt("information_gain"),
+    mlr3filters::flt("importance", learner = mlr3::lrn("regr.rpart")),
+    #mlr3filters::flt("relief"),
+    mlr3filters::flt("performance", learner = mlr3::lrn("regr.rpart"))
+  ),
+  "classif" = list(
+    mlr3filters::flt("information_gain"),
+    mlr3filters::flt("importance", learner = mlr3::lrn("classif.rpart")),
+    #mlr3filters::flt("relief"),
+    mlr3filters::flt("performance", learner = mlr3::lrn("classif.rpart"))
+  )
+)
+
+
+
