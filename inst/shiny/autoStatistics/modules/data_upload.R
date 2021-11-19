@@ -82,6 +82,7 @@ data_upload_server <- function(id){
                                           na.strings = input$NA_string, dec = input$dec_symbol, fileEncoding = input$encoding),
                          csv = read.csv(file = user_file(), header = input$header, sep = input$sep,
                                         na.strings = input$NA_string, dec = input$dec_symbol, fileEncoding = input$encoding))
+          colnames(temp) <- make.names(colnames(temp),unique = T)
 
           user_data(temp)
           autoStatistics::debug_console(sprintf("Data loaded into a dataframe"))
