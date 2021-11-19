@@ -92,7 +92,7 @@ auto_ml_server <- function(id, user_data){
 
     # tuning----
     output$task_tuning <- renderUI({
-      checkboxInput(ns("task_tuning"), label = "Perform Hyperparameter Tuning", value = T)
+      checkboxInput(ns("task_tuning"), label = "Perform Hyperparameter Tuning", value = FALSE)
     })
 
 
