@@ -13,8 +13,8 @@ library("dplyr")
 # load all files from modules folder --------------------------------------------------------------------------------------------------
 
 
-modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
-#modules_path <- "./modules"
+#modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
+modules_path <- "./modules"
 
 files <- list.files(modules_path, full.names = TRUE)
 lapply(files, source)
@@ -46,10 +46,13 @@ user_task <-  reactiveValues(
   type = NULL,
   task = NULL,
   learners = NULL,
+  resampling = NULL,
+  measure = NULL,
   ensemble = NULL,
   fs = NULL,
   na = NULL,
   tuning = NULL,
+  terminator = NULL
 )
 # plots shown to the user
 user_plot <- reactiveValues(
