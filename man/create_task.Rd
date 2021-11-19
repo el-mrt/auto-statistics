@@ -4,7 +4,7 @@
 \alias{create_task}
 \title{Function that given a dataframe and variable creates an mlr3 task}
 \usage{
-create_task(df, target_var, type = NULL)
+create_task(df, target_var, type = NULL, rm_na_target = TRUE)
 }
 \arguments{
 \item{df}{input data frame}
@@ -12,6 +12,8 @@ create_task(df, target_var, type = NULL)
 \item{target_var}{target variable}
 
 \item{type}{type of task. ´regr´ or ´classif´. if ´NULL´ the type is estimated.}
+
+\item{rm_na_target}{remove NAs from target column?}
 }
 \value{
 returns a mlr3 task object
