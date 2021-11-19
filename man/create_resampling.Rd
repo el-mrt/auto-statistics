@@ -2,11 +2,13 @@
 % Please edit documentation in R/create_resampling.R
 \name{create_resampling}
 \alias{create_resampling}
-\title{Function that outputs a MLR resampling object, igven specification}
+\title{Function that outputs a MLR resampling object, given specification}
 \usage{
-create_resampling(strat, params)
+create_resampling(task, strat = NULL, params = NULL)
 }
 \arguments{
+\item{task}{mlr3 task}
+
 \item{strat}{resampling strategy}
 
 \item{params}{list of parameters}
@@ -15,16 +17,5 @@ create_resampling(strat, params)
 resampling object
 }
 \description{
-Function that outputs a MLR resampling object, igven specification
-}
-\examples{
-holdout <- list(ration = 0.8)
-create_resampling("holdout", holdout)
-
-cv <- list(folds = 2)
-create_resampling("cv", cv)
-
-repeated_cv <- list(folds = 2, repeats = 10)
-create_resampling("repeated_cv", repeated_cv)
-
+Function that outputs a MLR resampling object, given specification
 }

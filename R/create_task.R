@@ -13,7 +13,7 @@
 #'
 #' @export
 #'
-#' @import mlr3
+#' @import mlr3verse
 #'
 
 create_task <- function(df, target_var, type = NULL, rm_na_target = TRUE){
@@ -24,22 +24,21 @@ create_task <- function(df, target_var, type = NULL, rm_na_target = TRUE){
     type <- identify_CR(df, target_var)
   }
 
-
   #check for numeric input of target variable
   if (is.numeric(target_var)) {
     target_var <- colnames(df)[target_var]
   }
 
   if (type == "regr") {
-    task <- mlr3::as_task_regr(df, target = target_var)
+    task <- as_task_regr(df, target = target_var)
   } else if (type == "classif") {
     #check two class vs multi class classification
     if (length(unique(target_var)) == 2) {
       positive <- levels(df[[{{ target_var }}]])[1]
 
-      task <- mlr3::as_task_classif(df, target = target_var, positive = positive)
+      task <- as_task_classif(df, target = target_var, positive = positive)
     } else{
-      task <- mlr3::as_task_classif(df, target = target_var)
+      task <- as_task_classif(df, target = target_var)
     }
   } else stop("variable type not supported")
 
