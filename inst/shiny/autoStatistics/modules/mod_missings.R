@@ -7,43 +7,46 @@ missings_ui <- function(id){
     # UI na_per_col --------------------------------------------------------------------------------------------------------------------------
     h3(HTML("<u><i>Missing values per column</i></u>")),
     fluidRow(
-      column(4,
+      column(2,
              p(HTML("<i>description.....</i>")),
              uiOutput(ns("na_per_col_color")),
              uiOutput(ns("na_per_col_line_break")),
              uiOutput(ns("na_per_col_flip_coord"))
              ),
-      column(8,
+      column(10,
              plotOutput(ns("plot_na_per_col"), height = "500px")
              )
     ),
+    fluidRow(save_plot_ui(ns("save_na_per_col"))), # download button
     # UI na_combinations ------------------------------------------------------------------------------------------------------------------
     h3(HTML("<u><i>Missing combinations</u></i>")),
     fluidRow(
-      column(4,
+      column(2,
              p(HTML("<i>description.....</i>")),
              uiOutput(ns("na_comb_color")),
              uiOutput(ns("na_comb_topn")),
              uiOutput(ns("na_comb_line_break")),
              uiOutput(ns("na_comb_use_names"))
       ),
-      column(8,
+      column(10,
              plotOutput(ns("na_comb_plot"))
       )
     ),
+    fluidRow(save_plot_ui(ns("save_na_comb"))), # download button
     # UI na_distribution ---------------------------------------------------------------------------------------------------------------------
     h3(HTML("<u><i>Missing values distribution</i></u>")),
     fluidRow(
-      column(4,
+      column(2,
              p(HTML("<i>description.....</i>")),
              uiOutput(ns("na_hist_col1")),
              uiOutput(ns("na_hist_bins")),
              uiOutput(ns("na_hist_col2"))
              ),
-      column(8,
+      column(10,
              plotOutput(ns("na_hist_plot"), height = "500px")
              )
-    )
+    ),
+    fluidRow(save_plot_ui(ns("save_na_dist"))), # download button
   )
 }
 
@@ -81,10 +84,11 @@ missings_server <- function(id, user_data, target_col){
       missings_per_col[["col_name"]] <- factor(missings_per_col[["col_name"]], levels = missings_per_col[["col_name"]])
       # plot
       cur_plot <- ggplot(missings_per_col, aes(x = col_name, y = number_na)) +
-        geom_bar(stat="identity", fill = input$na_per_col_color) +
+        geom_bar(stat="identity", fill = input$na_per_col_color, na.rm = TRUE) +
         {if(input$na_per_col_flip_coord) {coord_flip()}} +
         labs(x = "column", y = "number of missing values") +
         theme_minimal()
+      user_plot$na_per_col <- cur_plot
       return(cur_plot)
     })
 
@@ -155,11 +159,20 @@ missings_server <- function(id, user_data, target_col){
       req(na_hist_data)  # req()
       # plot if only one col selected
       if(input$na_hist_col2 == "None"){
-        cur_plot <- ggplot(na_hist_data, aes(x = get(target_col()), fill = isna)) +
-          geom_histogram(binwidth = input$na_hist_bins) +
-          scale_fill_manual(values = c("#377EB8", "#BD3631")) +
-          labs(x = target_col()) +
-          theme_minimal()
+        if(is.factor(na_hist_data[[{{ target_col() }}]])){
+          cur_plot <- ggplot(na_hist_data, aes(x = get(target_col()), fill = isna)) +
+            geom_bar(na.rm = TRUE) +
+            scale_fill_manual(values = c("#377EB8", "#BD3631")) +
+            labs(x = target_col()) +
+            theme_minimal()
+        }else{
+          cur_plot <- ggplot(na_hist_data, aes(x = get(target_col()), fill = isna)) +
+            geom_histogram(binwidth = input$na_hist_bins) +
+            scale_fill_manual(values = c("#377EB8", "#BD3631")) +
+            labs(x = target_col()) +
+            theme_minimal()
+        }
+
       }else{
         cur_plot <- ggplot(na_hist_data, aes(x = target_col(), y = get(col_name2), color = isna)) +
           geom_jitter() +
@@ -169,5 +182,11 @@ missings_server <- function(id, user_data, target_col){
       }
       cur_plot
       })
+
+    # download buttons ------------------------------------------------------------------------------------------------------------------------
+    save_plot_server("save_na_per_col", plot_save = reactive({user_plot$na_per_col}))
+    #save_plot_server("save_na_comb", plot = user_plot$na_comb)
+    #save_plot_server("save_na_dist", plot = user_plot$na_dist)
+
     })
 }
