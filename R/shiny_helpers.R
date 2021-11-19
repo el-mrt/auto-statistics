@@ -117,15 +117,10 @@ factor_col_names <- function(x){
 feature_importance <- function(task, filters, ranks = TRUE){
   used_filters <- filters[[task$task_type]]
   used_filters_len <- length(used_filters)
-  message(paste0("used_filters: ", used_filters))
-
-
-
 
   # create output df
 
   importance_df <- data.frame("feature" = task$feature_names)
-  message(paste0(importance_df))
 
   tryCatch({
     for(i in seq(used_filters_len)){

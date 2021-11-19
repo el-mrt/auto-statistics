@@ -51,14 +51,14 @@ data_upload_server <- function(id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
 
-    #debug
+    #debug----
     output$session_id <- renderPrint({
       paste0("session id:  ", session$token)
     })
 
 
 
-    # upload data
+    # upload data----
     observeEvent(input$file, {
       target_column(NULL)
       tryCatch(
@@ -72,7 +72,7 @@ data_upload_server <- function(id){
       )
 
     })
-    # read data into dataframe
+    # read data into dataframe----
     observeEvent(c(input$file,input$sep,input$header,input$NA_string,input$dec_symbol, input$encoding), {
       req(user_file())
       tryCatch(
@@ -82,7 +82,8 @@ data_upload_server <- function(id){
                                           na.strings = input$NA_string, dec = input$dec_symbol, fileEncoding = input$encoding),
                          csv = read.csv(file = user_file(), header = input$header, sep = input$sep,
                                         na.strings = input$NA_string, dec = input$dec_symbol, fileEncoding = input$encoding))
-          colnames(temp) <- make.names(colnames(temp),unique = T)
+          colnames(temp) <- unlist(lapply(names(temp), function(x) stringi::stri_trans_general(x, id = "Latin-ASCII")))
+
 
           user_data(temp)
           autoStatistics::debug_console(sprintf("Data loaded into a dataframe"))
@@ -117,13 +118,13 @@ data_upload_server <- function(id){
         }
       )
     })
-    # render DT
+    # render DT----
     output$table <- renderDT({
       validate(need(user_data(), message = "upload your data"))
       user_data()
       })
 
-    # select target column and create task
+    # select target column and create task----
     output$target_col <- renderUI({
       if(is.null(target_column())){target_column(names(user_data())[1])}
       selectInput(ns("target_col"), "select Target Column", names(user_data()), selected = target_column())
@@ -138,9 +139,8 @@ data_upload_server <- function(id){
         #task_type(autoStatistics::identify_CR(user_data(), target_column()))
         autoStatistics::debug_console(sprintf("new task type detected: %s", user_task$type))
       }, error=function(cond){
-        message(paste("ERROR HERE: ", cond))
+        message(paste("error while detect the task type while observing the data inputs: ", cond))
       })
-
       # create task
       tryCatch(
         {
@@ -154,13 +154,12 @@ data_upload_server <- function(id){
           print(user_task$task)
         },
         error=function(cond){
-          message(paste("test12: ", cond))
+          message(paste("Error while creating  while observing the data inputs: ", cond))
         }
       )
-
     })
 
-    # select factor cols
+    # select factor cols----
     output$fct_cols <- renderUI({
       req(user_data())
       selectInput(ns("fct_cols"), "select factor columns", choices = names(user_data()), multiple = TRUE, selected = factor_columns())
@@ -176,6 +175,27 @@ data_upload_server <- function(id){
               # update factor columns
               factor_columns(autoStatistics::factor_col_names(user_data()))
               #factor_columns(temp_fct_updated$new_factors_names)
+              # get task type
+              tryCatch({
+                user_task$type <- autoStatistics::identify_CR(user_data(), target_column())
+                autoStatistics::debug_console(sprintf("new task type detected: %s", user_task$type))
+              }, error=function(cond){
+                message(paste("error while detect the task type when updating factor columns: ", cond))
+              })
+              # create task
+              tryCatch(
+                {
+                  temp_data <- user_data()
+                  temp_data <- temp_data[!is.na(temp_data[[{{ target_column() }}]]), ]
+
+                  user_task$task <- autoStatistics::create_task(temp_data, target_column(), user_task$type)
+                  autoStatistics::debug_console(sprintf("new task created with type: %s", user_task$type))
+                  print(user_task$task)
+                },
+                error=function(cond){
+                  message(paste("Error while creating  when updating factor columns: ", cond))
+                }
+              )
               },
             error = function(cond){
               message(cond)
@@ -195,7 +215,7 @@ data_upload_server <- function(id){
         }
 
     })
-    # warn text
+    # warn text----
     output$warn_fct_col <- renderText({print(fct_col_warn$text)})
     observeEvent(input$btn_warn_fct_cont,{
       temp_data <- user_data()
@@ -203,6 +223,27 @@ data_upload_server <- function(id){
       user_data(temp_data)
       factor_columns(autoStatistics::factor_col_names(user_data()))
       fct_col_warn$text <- ""
+      # get task type
+      tryCatch({
+        user_task$type <- autoStatistics::identify_CR(user_data(), target_column())
+        autoStatistics::debug_console(sprintf("new task type detected: %s", user_task$type))
+      }, error=function(cond){
+        message(paste("error while detect the task type when updating factor columns after the warning: ", cond))
+      })
+      # create task
+      tryCatch(
+        {
+          temp_data <- user_data()
+          temp_data <- temp_data[!is.na(temp_data[[{{ target_column() }}]]), ]
+
+          user_task$task <- autoStatistics::create_task(temp_data, target_column(), user_task$type)
+          autoStatistics::debug_console(sprintf("new task created with type: %s", user_task$type))
+          print(user_task$task)
+        },
+        error=function(cond){
+          message(paste("Error while creating  when updating factor columns after the warning: ", cond))
+        }
+      )
     })
     observeEvent(input$btn_warn_fct_discard,{
       fct_col_warn$text <- ""
