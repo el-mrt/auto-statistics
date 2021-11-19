@@ -34,7 +34,7 @@ feature_importance_server <- function(id, user_task, user_filters){
       shinybusy::show_spinner() # show the spinner
 
       tryCatch({
-        importance_table <- autoStatistics::feature_importance(task = user_task, filters = filters, ranks = TRUE)
+        importance_table <- autoStatistics::feature_importance(task = user_task, filters = user_filters, ranks = TRUE)
       }, warning = function(cond){
         message(paste0(cond))
       }, error = function(cond){
