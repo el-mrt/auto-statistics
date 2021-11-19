@@ -15,7 +15,7 @@
 #' @import mlr3verse e1071 ranger xgboost kknn
 #'
 
-create_learners <- function(task, vec_learners = NULL, hpo = TRUE){
+create_learners <- function(task, vec_learners = NULL){
   cr <- task$task_type
 
   make_name <- function(cr, lrn){
