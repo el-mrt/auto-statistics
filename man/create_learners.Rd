@@ -10,8 +10,6 @@ create_learners(task, vec_learners = NULL, hpo = TRUE)
 \item{task}{mlr3 task}
 
 \item{vec_learners}{vector of choosen learners}
-
-\item{hpo}{choose if searchspaces for hyperparameter optimization should be initialized}
 }
 \value{
 list of mlr3 learners
@@ -22,6 +20,6 @@ Function that given a task returns a suitable list of learners
 \examples{
 create_learners(tsk("iris"))
 create_learners(tsk("bike_sharing"))
-create_learners(task = tsk("german_credit"), vec_learners = c("rf"), hpo = FALSE)
+create_learners(task = tsk("german_credit"), vec_learners = c("rf"))
 
 }
