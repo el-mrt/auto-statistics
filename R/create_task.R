@@ -2,7 +2,8 @@
 #'
 #' @param df input data frame
 #' @param target_var target variable
-#' @param type user defined type
+#' @param type type of task. ´regr´ or ´classif´. if ´NULL´ the type is estimated.
+#' @param rm_na_target remove NAs from target column?
 #'
 #' @examples
 #' create_task(iris, "Species")
@@ -15,8 +16,11 @@
 #' @import mlr3verse
 #'
 
-create_task <- function(df, target_var, type = NULL){
-  if (is.null(type)) {
+create_task <- function(df, target_var, type = NULL, rm_na_target = TRUE){
+  if(rm_na_target){
+    df <- df[!is.na(df[[{{ target_var }}]]), ]
+  }
+  if(is.null(type)){
     type <- identify_CR(df, target_var)
   }
 

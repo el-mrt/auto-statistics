@@ -25,8 +25,8 @@ var_format <- function(vect, n){
 
   len <- length(unique(vect))
 
-  c1 <- !any((unique(vect) == 1:len) == FALSE)
-  c2 <- !any((unique(vect) == 0:(len-1)) == FALSE)
+  c1 <- !any((unique(vect) == 1:len) == FALSE, na.rm = TRUE)
+  c2 <- !any((unique(vect) == 0:(len-1)) == FALSE, na.rm = TRUE)
 
   if (c1 || c2) {
     return(as.ordered(vect))

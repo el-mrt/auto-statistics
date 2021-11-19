@@ -4,12 +4,14 @@
 \alias{identify_CR}
 \title{Function to find out, if the Task is Classification or Regression}
 \usage{
-identify_CR(df, target_var)
+identify_CR(df, target_var, classif_threshold = 6)
 }
 \arguments{
 \item{df}{input data frame}
 
 \item{target_var}{target variable}
+
+\item{classif_threshold}{max number of unique values for detecting a classification}
 }
 \value{
 returns a string of `regr` or `classif`
