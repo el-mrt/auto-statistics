@@ -5,7 +5,7 @@ auto_ml_ui <- function(id){
     fluidRow(
       column(3,
              h3("Settings"),
-             uiOutput(ns("task_type")),
+             actionButton(ns("start"), "Start"),
              uiOutput(ns("task_na")),
              uiOutput(ns("task_learner")),
              uiOutput(ns("task_ensemble")),
@@ -39,11 +39,6 @@ auto_ml_server <- function(id, user_data){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
 
-    # task type----
-    output$task_type <- renderUI({
-      req(task_type())
-      selectInput(ns("task_type"), "Select task type", choices = c("To be removed"))
-    })
 
     # NAs----
     output$task_na <- renderUI({
@@ -92,13 +87,32 @@ auto_ml_server <- function(id, user_data){
 
     # tuning----
     output$task_tuning <- renderUI({
-      checkboxInput(ns("task_tuning"), label = "Perform Hyperparameter Tuning", value = T)
+      checkboxInput(ns("task_tuning"), label = "Perform Hyperparameter Tuning", value = TRUE)
     })
-
-
     observeEvent(input$task_tuning, {
-
+      user_task$tuning <- input$task_tuning
+      autoStatistics::debug_console(sprintf("tuning changed. New Value: %s", user_task$tuning))
     })
+
+
+    # start----
+    observeEvent(input$start ,{
+      req(user_task$task)
+
+
+
+      param_list <- list(
+        "learners" = user_task$learners,
+        "ensemle" = user_task$ensemble,
+        "resampling" = user_task$resampling,
+        "measure" = user_task$measure,
+        "fs" = user_task$fs,
+        "na_imp" = user_task$na,
+        "tuning" = user_task$tuning,
+        "terminator" = user_task$terminator
+      )
+    })
+
 
   })
 }
