@@ -83,9 +83,13 @@ missings_server <- function(id, user_data, target_col){
 
       colnames(missings_per_col) <- c("number_na", "col_name")
       missings_per_col[["col_name"]] <- factor(missings_per_col[["col_name"]], levels = missings_per_col[["col_name"]])
+      # get color from setting
+      plot_color <- ifelse(is.null(app_settings$plot_color_miss_custom),
+                           RColorBrewer::brewer.pal(n = 3, name = app_settings$plot_color_set)[2],
+                           app_settings$plot_color_miss_custom[2])
       # plot
       cur_plot <- ggplot(missings_per_col, aes(x = col_name, y = number_na)) +
-        geom_bar(stat="identity", fill = input$na_per_col_color, na.rm = TRUE) +
+        geom_bar(stat="identity", fill = plot_color, na.rm = TRUE) +
         {if(input$na_per_col_flip_coord) {coord_flip()}} +
         labs(x = "column", y = "number of missing values") +
         theme_minimal()
@@ -118,16 +122,17 @@ missings_server <- function(id, user_data, target_col){
     observeEvent(input$start_na_comb, {
       req(user_data()) # req()
       output$na_comb_plot <- renderPlot({
-
         missing_obj <- autoStatistics::missing_combinations(isolate(user_data()), names_col = TRUE)
-
         na_comb_label <- if (input$na_comb_use_names) "name" else "index"
-
+        # get color from setting
+        plot_color <- ifelse(is.null(app_settings$plot_color_miss_custom),
+                             RColorBrewer::brewer.pal(n = 3, name = app_settings$plot_color_set)[2],
+                             app_settings$plot_color_miss_custom[2])
 
         cur_plot <- plot(missing_obj, labels = na_comb_label, label_length = input$na_comb_line_break, show_numbers = FALSE,
-                         top_n = input$na_comb_topn, bar_color = input$na_comb_color, plot_title = "NA combinations",
+                         top_n = input$na_comb_topn, bar_color = plot_color, plot_title = "NA combinations",
                          x_lab = "combination", y_lab = "n")
-
+        user_plot$na_comb <- cur_plot
         return(cur_plot)
       })
     })
@@ -162,18 +167,24 @@ missings_server <- function(id, user_data, target_col){
 
       na_hist_data[["isna"]] <- is.na(na_hist_data[[col_name1]])
       req(na_hist_data)  # req()
+      # get plot color from settings
+      if(is.null(app_settings$plot_color_miss_custom)){
+        plot_color <- RColorBrewer::brewer.pal(n = 3, name = app_settings$plot_color_set)[1:2]
+      }else{
+        plot_color <- app_settings$plot_color_miss_custom
+      }
       # plot if only one col selected
       if(input$na_hist_col2 == "None"){
         if(is.factor(na_hist_data[[{{ target_col() }}]])){
           cur_plot <- ggplot(na_hist_data, aes(x = get(target_col()), fill = isna)) +
             geom_bar(na.rm = TRUE) +
-            scale_fill_manual(values = c("#377EB8", "#BD3631")) +
+            scale_fill_manual(values = plot_color) +
             labs(x = target_col()) +
             theme_minimal()
         }else{
           cur_plot <- ggplot(na_hist_data, aes(x = get(target_col()), fill = isna)) +
             geom_histogram(binwidth = input$na_hist_bins) +
-            scale_fill_manual(values = c("#377EB8", "#BD3631")) +
+            scale_fill_manual(values = plot_color) +
             labs(x = target_col()) +
             theme_minimal()
         }
@@ -181,17 +192,19 @@ missings_server <- function(id, user_data, target_col){
       }else{
         cur_plot <- ggplot(na_hist_data, aes(x = target_col(), y = get(col_name2), color = isna)) +
           geom_jitter() +
-          scale_color_manual(values = c("#377EB8", "#BD3631")) +
+          scale_color_manual(values = plot_color) +
           labs(x = target_col(), y = col_name2) +
           theme_minimal()
       }
+      user_plot$na_dist <- cur_plot
       cur_plot
       })
 
     # download buttons ------------------------------------------------------------------------------------------------------------------------
-    save_plot_server("save_na_per_col", plot_save = reactive({user_plot$na_per_col}))
-    #save_plot_server("save_na_comb", plot = user_plot$na_comb)
-    #save_plot_server("save_na_dist", plot = user_plot$na_dist)
+    save_plot_server("save_na_per_col", plot_save = reactive({user_plot$na_per_col}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi)
+    save_plot_server("save_na_comb", plot_save = reactive({user_plot$na_comb}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi)
+    save_plot_server("save_na_dist", plot_save = reactive({user_plot$na_dist}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi)
+
 
     })
 }

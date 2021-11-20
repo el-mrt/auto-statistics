@@ -64,7 +64,13 @@ user_plot <- reactiveValues(
 custom_report <- reactiveValues(
 
 )
-
+app_settings <- reactiveValues(
+  plot_color_set = "Set2",
+  plot_color_miss_custom = c("#377EB8", "#BD3631"),
+  plot_download_dpi = 300,
+  plot_download_width = 1920,
+  plot_download_height = 1080
+)
 
 
 

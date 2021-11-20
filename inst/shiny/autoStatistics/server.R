@@ -8,5 +8,6 @@ server <- function(input, output, session){
   data_man_server("edit_data", user_data())
   auto_ml_server("autoML", user_data = user_data())
   report_server("report")
+  setting_server("settings")
 
 }

@@ -16,12 +16,10 @@ save_plot_ui <- function(id){
 
 }
 
-save_plot_server <- function(id, plot_save){
+save_plot_server <- function(id, plot_save, plot_width = 1920, plot_height = 1080, plot_dpi = 300){
   moduleServer(id, function(input, output, session){
 
     observeEvent(input$test_btn, {
-
-
 
     })
     output$download <- downloadHandler(
@@ -29,7 +27,7 @@ save_plot_server <- function(id, plot_save){
         paste0(input$filename)
       },
       content = function(file){
-        ggsave(file, plot = plot_save())
+        ggsave(file, plot = plot_save(), width = plot_width, height = plot_height, dpi = plot_dpi, units = "px")
       }
     )
 
