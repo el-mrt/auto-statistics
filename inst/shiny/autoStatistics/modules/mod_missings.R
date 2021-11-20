@@ -22,6 +22,7 @@ missings_ui <- function(id){
     h3(HTML("<u><i>Missing combinations</u></i>")),
     fluidRow(
       column(2,
+             actionButton(ns("start_na_comb"), "Start"),
              p(HTML("<i>description.....</i>")),
              uiOutput(ns("na_comb_color")),
              uiOutput(ns("na_comb_topn")),
@@ -114,19 +115,23 @@ missings_server <- function(id, user_data, target_col){
       checkboxInput(ns("na_comb_use_names"), "use names?", value = FALSE)
     })
     # plot
-    output$na_comb_plot <- renderPlot({
+    observeEvent(input$start_na_comb, {
       req(user_data()) # req()
-      missing_obj <- autoStatistics::missing_combinations(user_data(), names_col = TRUE)
+      output$na_comb_plot <- renderPlot({
 
-      na_comb_label <- if (input$na_comb_use_names) "name" else "index"
+        missing_obj <- autoStatistics::missing_combinations(isolate(user_data()), names_col = TRUE)
+
+        na_comb_label <- if (input$na_comb_use_names) "name" else "index"
 
 
-      cur_plot <- plot(missing_obj, labels = na_comb_label, label_length = input$na_comb_line_break, show_numbers = FALSE,
-                       top_n = input$na_comb_topn, bar_color = input$na_comb_color, plot_title = "NA combinations",
-                       x_lab = "combination", y_lab = "n")
+        cur_plot <- plot(missing_obj, labels = na_comb_label, label_length = input$na_comb_line_break, show_numbers = FALSE,
+                         top_n = input$na_comb_topn, bar_color = input$na_comb_color, plot_title = "NA combinations",
+                         x_lab = "combination", y_lab = "n")
 
-      return(cur_plot)
+        return(cur_plot)
+      })
     })
+
 
 
 
