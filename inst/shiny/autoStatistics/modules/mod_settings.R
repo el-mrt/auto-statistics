@@ -33,8 +33,8 @@ setting_server <- function(id){
     output$color_set <- renderUI({selectInput(ns("color_set"), "Color Set", choices = rownames(RColorBrewer::brewer.pal.info), selected = app_settings$plot_color_set)})
     output$color_custom_missing <- renderUI({
       fluidRow(
-        column(2,textInput(ns("color_custom_missing_not_na"), "not NA")),
-        column(2,textInput(ns("color_custom_missing_na"), "NA"))
+        column(2,textInput(ns("color_custom_missing_not_na"), "not NA", value = app_settings$plot_color_miss_custom[1])),
+        column(2,textInput(ns("color_custom_missing_na"), "NA", value = app_settings$plot_color_miss_custom[2]))
       )
     })
     output$color_custom_missing_check <- renderUI({
