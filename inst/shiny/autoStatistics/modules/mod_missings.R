@@ -9,7 +9,6 @@ missings_ui <- function(id){
     fluidRow(
       column(2,
              p(HTML("<i>description.....</i>")),
-             uiOutput(ns("na_per_col_color")),
              uiOutput(ns("na_per_col_line_break")),
              uiOutput(ns("na_per_col_flip_coord"))
              ),
@@ -24,7 +23,6 @@ missings_ui <- function(id){
       column(2,
              actionButton(ns("start_na_comb"), "Start"),
              p(HTML("<i>description.....</i>")),
-             uiOutput(ns("na_comb_color")),
              uiOutput(ns("na_comb_topn")),
              uiOutput(ns("na_comb_line_break")),
              uiOutput(ns("na_comb_use_names"))
@@ -57,11 +55,7 @@ missings_server <- function(id, user_data, target_col){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     # server na_per_col --------------------------------------------------------------------------------------------------------------------------
-    # color
-    output$na_per_col_color <- renderUI({
-      req(user_data())  # req()
-      textInput(ns("na_per_col_color"), "Color", value = "#BD3631")
-    })
+
     # x_label line break
     output$na_per_col_line_break <- renderUI({
       req(user_data())  # req()
@@ -92,17 +86,15 @@ missings_server <- function(id, user_data, target_col){
         geom_bar(stat="identity", fill = plot_color, na.rm = TRUE) +
         {if(input$na_per_col_flip_coord) {coord_flip()}} +
         labs(x = "column", y = "number of missing values") +
-        theme_minimal()
+        theme_minimal()+
+        theme(axis.text=element_text(size=12),
+               axis.title=element_text(size=14,face="bold"))
+
       user_plot$na_per_col <- cur_plot
       return(cur_plot)
     })
 
     # server na_combinations --------------------------------------------------------------------------------------------------------------
-    # color
-    output$na_comb_color <- renderUI({
-      req(user_data()) # req()
-      textInput(ns("na_comb_color"), "Color", value = "#BD3631")
-    })
     # top n
     output$na_comb_topn <- renderUI({
       req(user_data()) # req()
