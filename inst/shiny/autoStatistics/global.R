@@ -14,7 +14,7 @@ library("dplyr")
 
 
 modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
-modules_path <- "./modules"
+#modules_path <- "./modules"
 
 files <- list.files(modules_path, full.names = TRUE)
 lapply(files, source)
@@ -52,6 +52,7 @@ user_task <-  reactiveValues(
   fs = NULL,
   na = NULL,
   tuning = NULL,
+  tuning_method = NULL,
   terminator = NULL
 )
 # plots shown to the user
@@ -69,7 +70,9 @@ app_settings <- reactiveValues(
   plot_color_miss_custom = c("#377EB8", "#BD3631"),
   plot_download_dpi = 300,
   plot_download_width = 1920,
-  plot_download_height = 1080
+  plot_download_height = 1080,
+  plot_download_format = "pdf",
+  plot_download_text_size = 4
 )
 
 
