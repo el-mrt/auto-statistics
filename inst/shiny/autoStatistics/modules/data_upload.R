@@ -37,7 +37,7 @@ data_upload_ui <- function(id){
                h4(""),
                  column(8,
                         verbatimTextOutput(ns("warn_fct_col"), placeholder = TRUE)),
-                 column(1,
+                 column(2,
                         actionButton(ns("btn_warn_fct_cont"), "", icon = icon("glyphicon glyphicon-ok", lib = "glyphicon")),
                         actionButton(ns("btn_warn_fct_discard"), "", icon = icon("glyphicon glyphicon-remove", lib = "glyphicon")))
                )

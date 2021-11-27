@@ -47,7 +47,7 @@ auto_ml_server <- function(id, user_data){
     # FS----
     output$task_feature <- renderUI({
       if(is.null(user_task$type)){
-        selectInput(ns("task_feature"), "Select Feature Selection", choices = c(""), selected = "")
+        selectInput(ns("task_feature"), "Select Feature Selection", choices = c("Auto"), selected = "Auto")
       }else{
         selectInput(ns("task_feature"), "Select Feature Selection", choices = available_fs[[user_task$type]], selected = "auto", multiple = TRUE)
       }
@@ -62,7 +62,7 @@ auto_ml_server <- function(id, user_data){
       print(paste0("=======:", user_task$type))
       if(is.null(user_task$type)){
         selectInput(ns("task_learner"), "Learners",
-                    choices = c(""), selected = "")
+                    choices = c("Auto"), selected = "Auto")
       }else{
         selectInput(ns("task_learner"), "Learners", multiple = TRUE,
                     choices = available_learners[[user_task$type]], selected = "auto")
@@ -132,9 +132,9 @@ auto_ml_server <- function(id, user_data){
    })
 
     # measure ####
-   output$task_learner <- renderUI({
+   output$task_measure <- renderUI({
      if(is.null(user_task$type)){
-       selectInput(ns("task_measure"), "Measure", choices = c(""), selected = "")
+       selectInput(ns("task_measure"), "Measure", choices = c("Auto"), selected = "Auto")
      }else{
        selectInput(ns("task_measure"), "Measure", choices = available_measure[[user_task$task$task_type]])
      }
@@ -144,11 +144,11 @@ auto_ml_server <- function(id, user_data){
 
     # terminator####
    output$task_term_runtime <- renderUI({
-     fluidRow(column(1, checkboxInput(ns("task_term_runtime"), "", value = FALSE)),
+     fluidRow(column(1, checkboxInput(ns("task_term_runtime"), "", value = FALSE), style = "margin-top: 20px;"),
               column(8, numericInput(ns("task_term_runtime_param"), "runtime", min = 1, max = 1000000, value = 120)))
    })
    output$task_term_evals <- renderUI({
-     fluidRow(column(1, checkboxInput(ns("task_term_eval"), "", value = FALSE)),
+     fluidRow(column(1, checkboxInput(ns("task_term_eval"), "", value = FALSE), style = "margin-top: 20px;"),
               column(8, numericInput(ns("task_term_eval_param"), "evals", min = 1, max = 100000, value = 10)))
      })
    observeEvent(c(input$task_term_runtime, input$task_term_runtime_param, input$task_term_eval, input$task_term_eval_param), {
