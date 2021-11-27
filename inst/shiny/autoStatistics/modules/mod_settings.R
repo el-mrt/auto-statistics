@@ -14,7 +14,9 @@ settings_ui <- function(id){
     fluidRow(h4("Download"),style = "margin-left: 30px;",
       column(1, uiOutput(ns("plot_download_width"))),
       column(1, uiOutput(ns("plot_download_height"))),
-      column(1, uiOutput(ns("plot_download_dpi")))
+      column(1, uiOutput(ns("plot_download_dpi"))),
+      column(1, uiOutput(ns("plot_download_format"))),
+      column(1, uiOutput(ns("plot_download_text_size")))
 
 
 
@@ -44,6 +46,8 @@ setting_server <- function(id){
     output$plot_download_width <- renderUI({numericInput(ns("plot_download_width"), "width [px]", min = 0, max = 10000, value = app_settings$plot_download_width)})
     output$plot_download_height <- renderUI({numericInput(ns("plot_download_height"), "height [px]", min = 0, max = 10000, value = app_settings$plot_download_height)})
     output$plot_download_dpi <- renderUI({numericInput(ns("plot_download_dpi"), "dpi", min = 0, max = 1000, value = app_settings$plot_download_dpi)})
+    output$plot_download_format <- renderUI({selectInput(ns("plot_download_format"), "format", c("PDF" = "pdf", "PNG" = "png", "JPEG" = "jpeg", "SVG" = "svg"), "pdf")})
+    output$plot_download_text_size <- renderUI({numericInput(ns("plot_download_text_size"), "text size", 4, 1, 50, 1)})
 
     observeEvent(input$plot_btn, {
       app_settings$plot_color_set <- input$color_set
@@ -56,6 +60,8 @@ setting_server <- function(id){
       app_settings$plot_download_width <- input$plot_download_width
       app_settings$plot_download_height <- input$plot_download_height
       app_settings$plot_download_dpi <- input$plot_download_dpi
+      app_settings$plot_download_format <- input$plot_download_format
+      app_settings$plot_download_text_size <- input$plot_download_text_size
 
 
 
