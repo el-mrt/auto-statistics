@@ -16,9 +16,15 @@ cat("available_fs loaded\n")
 
 # NA imp ------------------------------------------------------------------
 
-available_na_imp <- c("Auto" = "auto", "Omit" = "omit", "Mean" = "mean", "Mode" = "mode", "Histogram" = "hist")
+available_na_imp <- c("Auto" = "auto", "Omit" = "omit")
 cat("available_na_imp loaded\n")
 
+available_measure <- list(
+  "regr" = c("Auto" = "auto", "rmse" = "regr.rmse", "mse" = "regr.mse", "mae" = "regr.mae"),
+  "classif" = c("Auto" = "auto", "Accurity" = "classif.acc", "Balanced Accuracy" = "classif.bacc")
+)
+
+available_tuning_methods <- c("Auto" = "auto", "grid search" = "grid_search", "cmaes" = "cmaes", "random search" = "random_search")
 
 # pre var importance ------------------------------------------------------------------------------------------------------------------
 
