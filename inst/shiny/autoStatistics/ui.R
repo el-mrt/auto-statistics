@@ -11,5 +11,7 @@ ui <- navbarPage(
   tabPanel("autoML",
            auto_ml_ui("autoML")),
   tabPanel("Report",
-           report_ui("report"))
+           report_ui("report")),
+  tabPanel("Settings",
+           settings_ui("settings"))
 )
