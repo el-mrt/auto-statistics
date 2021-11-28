@@ -122,7 +122,7 @@ data_upload_server <- function(id){
     output$table <- renderDT({
       validate(need(user_data(), message = "upload your data"))
       user_data()
-      })
+      }, server = FALSE)
 
     # select target column and create task----
     output$target_col <- renderUI({
