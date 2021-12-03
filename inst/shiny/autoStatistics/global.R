@@ -36,7 +36,21 @@ user_task_old <- reactiveVal(NULL, "user_task")
 fct_col_warn_text <- reactiveVal(NULL)
 
 # warning transform numeric to factor
+UserWarning <- R6::R6Class(
+  classname = "UserWarning",
+  public = list(
+    id = NULL,
+    is_active = FALSE,
+    text = "",
+    additional_params = vector(mode = "list"),
+    initialize = function(id, is_active = FALSE, text = "", additional_params = vector(mode = "list")){
+
+    }
+    )
+)
+
 fct_col_warn <- reactiveValues(
+  is_active = FALSE,
   text = "",
   col_name = "",
   col_data = NULL
@@ -46,14 +60,16 @@ user_task <-  reactiveValues(
   type = NULL,
   task = NULL,
   learners = NULL,
-  resampling = NULL,
+  i.resampling = NULL,
+  o.resamping = NULL,
   measure = NULL,
   ensemble = NULL,
-  fs = NULL,
+  feature_filter = NULL,
   na = NULL,
   tuning = NULL,
   tuning_method = NULL,
-  terminator = NULL
+  terminator = NULL,
+  incl_featureless = FALSE
 )
 # plots shown to the user
 user_plot <- reactiveValues(
@@ -72,7 +88,8 @@ app_settings <- reactiveValues(
   plot_download_width = 1920,
   plot_download_height = 1080,
   plot_download_format = "pdf",
-  plot_download_text_size = 4
+  plot_download_text_size = 4,
+  plot_download_text_font = "serif"
 )
 
 
