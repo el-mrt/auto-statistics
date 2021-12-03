@@ -17,8 +17,9 @@
 
 create_measure <- function(task, measure = NULL){
 
+  cr <- task$task_type
+
   if (is.null(measure)) {
-    cr <- task$task_type
 
     if (cr == "regr") {
       type <- cr
@@ -26,24 +27,27 @@ create_measure <- function(task, measure = NULL){
       type <- task$properties
     }
 
-    msr <- switch (type,
+    meas <- switch (type,
                    regr = msr("regr.rmse"),
-                   twoclass = msr("classif.auc"),
-                   multiclass = msr("classif.bacc"),
+                   twoclass = msr("classif.bacc"),
+                   multiclass = msr("classif.bacc")
     )
   } else {
-    msr <- msr(measure)
+    meas <- msr(measure)
 
-    if (task$task_type != msr$task_type) {
+    if (task$task_type != meas$task_type) {
       stop("measure not supported")
     }
 
-    if (task$properties == "multiclass") {
-      if (msr$task_properties == "twoclass") {
-        stop("measure not supported")
+    if (cr == "classif") {
+      if (task$properties == "multiclass") {
+        if (meas$task_properties == "twoclass") {
+          stop("measure not supported")
+        }
       }
     }
+
   }
 
-  return(msr)
+  return(meas)
 }

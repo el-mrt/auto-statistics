@@ -19,8 +19,8 @@ create_terminator <- function(vec_terminators = NULL){
   if (is.null(vec_terminators)) {
     terminator <- trm("combo",
       list(
-        trm("evals", n_evals = 1000),
-        trm("run_time", secs = 1800)
+        trm("evals", n_evals = 100),
+        trm("run_time", secs = 120)
       ),
       any = TRUE
     )
@@ -42,3 +42,4 @@ create_terminator <- function(vec_terminators = NULL){
 
   return(terminator)
 }
+

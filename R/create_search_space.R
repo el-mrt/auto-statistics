@@ -21,6 +21,11 @@ create_search_space <- function(task, learners){
     if (id == "kknn") {
       l$param_set$values$k <- to_tune(1, round(sqrt(task$nrow)))
     } else if (id == "svm") {
+      if (cr == "regr") {
+        l$param_set$values$type <- "eps-regression"
+      } else {
+        l$param_set$values$type <- "C-classification"
+      }
       l$param_set$values$cost <- to_tune(1e-10, 10, logscale = TRUE)
     } else if (id == "ranger") {
       l$param_set$values$min.node.size <- to_tune(1, 5)
@@ -31,7 +36,3 @@ create_search_space <- function(task, learners){
 
   return(learners)
 }
-
-lrns <- create_learners(tsk("iris"))
-lrns_t <- create_search_space(tsk("iris"), lrns)
-lrns_t
