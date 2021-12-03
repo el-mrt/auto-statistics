@@ -37,7 +37,7 @@ data_upload_ui <- function(id){
                h4(""),
                  column(8,
                         verbatimTextOutput(ns("warn_fct_col"), placeholder = TRUE)),
-                 column(1,
+                 column(2,
                         actionButton(ns("btn_warn_fct_cont"), "", icon = icon("glyphicon glyphicon-ok", lib = "glyphicon")),
                         actionButton(ns("btn_warn_fct_discard"), "", icon = icon("glyphicon glyphicon-remove", lib = "glyphicon")))
                )
@@ -218,6 +218,7 @@ data_upload_server <- function(id){
     # warn text----
     output$warn_fct_col <- renderText({print(fct_col_warn$text)})
     observeEvent(input$btn_warn_fct_cont,{
+      req(fct_col_warn$col_name)
       temp_data <- user_data()
       temp_data[[{{ fct_col_warn$col_name }}]] <- as.numeric(levels(temp_data[[{{ fct_col_warn$col_name }}]]))[temp_data[[{{ fct_col_warn$col_name }}]]]
       user_data(temp_data)

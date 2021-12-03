@@ -1,14 +1,14 @@
 # learners ----------------------------------------------------------------
 available_learners <- list(
-  "regr" = c("Auto" = "auto","KNN" = "regr.kknn", "Random Forest" = "regr.ranger", "SVM" = "regr.svm", "XGBoost" = "regr.xgboost"),
-  "classif" = c("Auto" = "auto", "KNN" = "classif.kknn", "Random Forest" = "classif.ranger", "SVM" = "classif.svm", "XGBoost" = "classif.xgboost")
+  "regr" = c("Auto" = "auto","KNN" = "knn", "Random Forest" = "rf", "SVM" = "svm", "XGBoost" = "xgb"),
+  "classif" = c("Auto" = "auto", "KNN" = "knn", "Random Forest" = "rf", "SVM" = "svm", "XGBoost" = "xgb")
 )
 cat("available_learners loaded\n")
 
 
 # fs ----------------------------------------------------------------------
 
-available_fs <- list(
+available_feature_filter <- list(
   "regr" = c("Auto" = "auto", "None" = "none", "Featureless" = "regr.featureless", "Rpart" = "regr.rpart", "XGBoost" = "regr.xgboost"),
   "classif" = c("Auto" = "auto", "None" = "none", "Featureless" = "classif.featureless", "Rpart" = "classif.rpart", "XGBoost" = "classif.xgboost")
 )
@@ -16,9 +16,15 @@ cat("available_fs loaded\n")
 
 # NA imp ------------------------------------------------------------------
 
-available_na_imp <- c("Auto" = "auto", "Omit" = "omit", "Mean" = "mean", "Mode" = "mode", "Histogram" = "hist")
+available_na_imp <- c("Auto" = "auto", "Omit" = "omit")
 cat("available_na_imp loaded\n")
 
+available_measure <- list(
+  "regr" = c("Auto" = "auto", "rmse" = "regr.rmse", "mse" = "regr.mse", "mae" = "regr.mae"),
+  "classif" = c("Auto" = "auto", "Accurity" = "classif.acc", "Balanced Accuracy" = "classif.bacc")
+)
+
+available_tuning_methods <- c("Auto" = "auto", "grid search" = "grid_search", "cmaes" = "cmaes", "random search" = "random_search")
 
 # pre var importance ------------------------------------------------------------------------------------------------------------------
 
@@ -38,4 +44,6 @@ pre_feature_import_filter <- list(
 )
 
 
+# app settings ------------------------------------------------------------
 
+available_fonts <- c("serif", "sans","mono", "Times")
