@@ -2,6 +2,8 @@
 
 ui <- navbarPage(
   title = "AutoStats",
+  tabPanel("Home",
+           landing_ui("landing_page")),
   tabPanel("Upload Data",
            data_upload_ui("data")),
   tabPanel("Missing Data",
