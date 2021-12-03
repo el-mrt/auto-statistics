@@ -197,6 +197,12 @@ auto_ml_server <- function(id, user_data){
      if(input$task_term_eval){
        list_term[["eval"]] <- c("eval", input$task_term_eval_param)
      }
+     if(!input$task_term_runtime && !input$task_term_eval){
+       list_term <- "auto"
+     }
+
+
+
      user_task$terminator <- list_term
    }
 
