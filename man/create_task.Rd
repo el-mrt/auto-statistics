@@ -14,7 +14,6 @@ create_task(df, target_var, type = NULL, rm_na_target = TRUE)
 \item{type}{type of task. ´regr´ or ´classif´. if ´NULL´ the type is estimated.}
 
 \item{rm_na_target}{remove NAs from target column?}
-
 }
 \value{
 returns a mlr3 task object

@@ -4,7 +4,7 @@
 \alias{create_learners}
 \title{Function that given a task returns a suitable list of learners}
 \usage{
-create_learners(task, vec_learners = NULL, hpo = TRUE)
+create_learners(task, vec_learners = NULL)
 }
 \arguments{
 \item{task}{mlr3 task}
