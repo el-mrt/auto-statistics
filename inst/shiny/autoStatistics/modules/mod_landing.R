@@ -3,17 +3,14 @@
 landing_ui <- function(id){
   ns <- NS(id)
   tagList(
-    fluidRow(style="margin-bottom:50px;",
-      column(8, offset = 3,
-             img(src="ad_top_01.gif", height = "200px", width="1000px")
-             )
-
-    ),
     fluidRow(
       column(2,
             img(src="ad_02.gif", align = "left",height='300px',width='250px'),
             img(src="ad_03.gif", align = "left",height='300px',width='250px')
             ),
+      column(8,
+             img(src="ad_top_01.gif", height = "200px", width="1000px")
+             ),
       column(2, offset = 8,
              img(src="ad_01.gif", align = "left",height='800px',width='250px')
              )
