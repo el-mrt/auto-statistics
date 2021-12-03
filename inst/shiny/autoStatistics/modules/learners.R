@@ -1,7 +1,7 @@
 # learners ----------------------------------------------------------------
 available_learners <- list(
-  "regr" = c("Auto" = "auto","KNN" = "kknn", "Random Forest" = "ranger", "SVM" = "svm", "XGBoost" = "xgboost"),
-  "classif" = c("Auto" = "auto", "KNN" = "kknn", "Random Forest" = "ranger", "SVM" = "svm", "XGBoost" = "xgboost")
+  "regr" = c("Auto" = "auto","KNN" = "knn", "Random Forest" = "rf", "SVM" = "svm", "XGBoost" = "xgb"),
+  "classif" = c("Auto" = "auto", "KNN" = "knn", "Random Forest" = "rf", "SVM" = "svm", "XGBoost" = "xgb")
 )
 cat("available_learners loaded\n")
 

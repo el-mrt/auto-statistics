@@ -5,7 +5,7 @@ landing_ui <- function(id){
   tagList(
     fluidRow(style="margin-bottom:50px;",
       column(8, offset = 3,
-             img(src="ad_top.gif", align = "left",height='200px',width='1100px')
+             img(src="ad_top.gif")
              )
 
     ),
