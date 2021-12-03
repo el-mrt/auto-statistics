@@ -1,14 +1,14 @@
 # learners ----------------------------------------------------------------
 available_learners <- list(
-  "regr" = c("Auto" = "auto","KNN" = "regr.kknn", "Random Forest" = "regr.ranger", "SVM" = "regr.svm", "XGBoost" = "regr.xgboost"),
-  "classif" = c("Auto" = "auto", "KNN" = "classif.kknn", "Random Forest" = "classif.ranger", "SVM" = "classif.svm", "XGBoost" = "classif.xgboost")
+  "regr" = c("Auto" = "auto","KNN" = "kknn", "Random Forest" = "ranger", "SVM" = "svm", "XGBoost" = "xgboost"),
+  "classif" = c("Auto" = "auto", "KNN" = "kknn", "Random Forest" = "ranger", "SVM" = "svm", "XGBoost" = "xgboost")
 )
 cat("available_learners loaded\n")
 
 
 # fs ----------------------------------------------------------------------
 
-available_fs <- list(
+available_feature_filter <- list(
   "regr" = c("Auto" = "auto", "None" = "none", "Featureless" = "regr.featureless", "Rpart" = "regr.rpart", "XGBoost" = "regr.xgboost"),
   "classif" = c("Auto" = "auto", "None" = "none", "Featureless" = "classif.featureless", "Rpart" = "classif.rpart", "XGBoost" = "classif.xgboost")
 )
@@ -44,4 +44,6 @@ pre_feature_import_filter <- list(
 )
 
 
+# app settings ------------------------------------------------------------
 
+available_fonts <- c("serif", "sans","mono", "Times")

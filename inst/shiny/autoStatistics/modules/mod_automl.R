@@ -8,7 +8,8 @@ auto_ml_ui <- function(id){
              actionButton(ns("start"), "Start"),
              uiOutput(ns("task_na")), hr(),
              uiOutput(ns("task_learner")),
-             uiOutput(ns("task_ensemble")), hr(),
+             uiOutput(ns("task_ensemble")),
+             uiOutput(ns("task_featureless")),hr(),
              uiOutput(ns("task_resampling")),
              fluidRow(column(4, conditionalPanel(condition = "input.task_resampling != 'auto'", tagList(uiOutput(ns("task_resampling_one_param"))), ns = ns), style = "margin-left:15px;"),
                       column(4, conditionalPanel(condition = "input.task_resampling == 'repeated_cv' || input.task_resampling == 'bootstrap'", tagList(uiOutput(ns("task_resampling_param_two"))), ns = ns))
@@ -21,7 +22,9 @@ auto_ml_ui <- function(id){
                tagList(
                  uiOutput(ns("task_term_runtime")),
                  uiOutput(ns("task_term_evals")),
-                 uiOutput(ns("task_tuning_method"))),
+                 uiOutput(ns("task_tuning_method")),
+                 uiOutput(ns("task_resample_inner")),
+                 uiOutput(ns("task_resample_inner_param"))),
                ns = ns
              )
       ),
@@ -44,17 +47,17 @@ auto_ml_server <- function(id, user_data){
       autoStatistics::debug_console(sprintf("NA imputation changed. New Value: %s", user_task$na))
     })
 
-    # FS----
+    # feature_filter----
     output$task_feature <- renderUI({
       if(is.null(user_task$type)){
-        selectInput(ns("task_feature"), "Select Feature Selection", choices = c("Auto"), selected = "Auto")
+        selectInput(ns("task_feature"), "Feature Selection", choices = c("Auto"), selected = "Auto")
       }else{
-        selectInput(ns("task_feature"), "Select Feature Selection", choices = available_fs[[user_task$type]], selected = "auto", multiple = TRUE)
+        selectInput(ns("task_feature"), "Feature Selection", choices = available_feature_filter[[user_task$type]], selected = "auto", multiple = TRUE)
       }
     })
     observeEvent(input$task_feature, {
       user_task$fs <- input$task_feature
-      autoStatistics::debug_console(paste(c("FS updated. New FS are: ", user_task$fs), collapse = ","))
+      autoStatistics::debug_console(paste(c("feature_filter updated. New feature_filter are: ", user_task$feature_filter), collapse = ","))
     })
 
     # learner----
@@ -80,14 +83,27 @@ auto_ml_server <- function(id, user_data){
       user_task$ensemble <- input$task_ensemble
       autoStatistics::debug_console(sprintf("ensemble learner changed. New Value: %s", user_task$ensemble))
     })
+    # featureless ----
+    output$task_featureless <- renderUI({
+      checkboxInput(ns("task_featureless"), "use featureless learner", value = FALSE)
+    })
+    observeEvent(input$task_featureless, {
+      user_task$incl_featureless <- input$task_featureless
+      autoStatistics::debug_console(sprintf("task_featureless learner changed. New Value: %s", user_task$incl_featureless))
+    })
 
     # tuning----
     output$task_tuning <- renderUI({
-      checkboxInput(ns("task_tuning"), label = HTML(paste0("<b>Perform Hyperparameter Tuning</b>")), value = TRUE)
+      checkboxInput(ns("task_tuning"), label = HTML(paste0("<b>Perform Hyperparameter Tuning</b>")), value = FALSE)
     })
     observeEvent(input$task_tuning, {
       user_task$tuning <- input$task_tuning
       autoStatistics::debug_console(sprintf("tuning changed. New Value: %s", user_task$tuning))
+      if(!user_task$tuning){
+        user_task$i.resampling = NULL
+        user_task$terminator = NULL
+        user_task$tuning_method = NULL
+      }
     })
 
 
@@ -100,8 +116,9 @@ auto_ml_server <- function(id, user_data){
       user_task$tuning_method <- input$task_tuning_method
     })
     # resampling ####
+    ## OUTER
     output$task_resampling <- renderUI({
-      selectInput(ns("task_resampling"),"Resampling", choices = c("Auto" = "auto", "Holdout" = "holdout", "CV" = "cv", "Repeated-CV" = "repeated_cv", "Bootstrap" = "bootstrap"),selected = "auto")
+      selectInput(ns("task_resampling"),"outer resampling", choices = c("Auto" = "auto", "Holdout" = "holdout", "CV" = "cv", "Repeated-CV" = "repeated_cv", "Bootstrap" = "bootstrap"),selected = "auto")
     })
    output$task_resampling_one_param <- renderUI({
      fluidRow(
@@ -127,9 +144,30 @@ auto_ml_server <- function(id, user_data){
    })
    # update reactive values
    observeEvent(c(input$task_resampling_first_param, input$task_resampling_second_param),{
-     user_task$resampling <- list("method" = input$task_resampling,
+     user_task$o.resampling <- list("method" = input$task_resampling,
                                   "params" = c(input$task_resampling_first_param, input$task_resampling_second_param))
    })
+   ## INNER
+   output$task_resample_inner <- renderUI({
+     selectInput(ns("task_resample_inner"), "inner resampling", choices = c("Holdout" = "holdout", "CV" = "cv"))
+   })
+   output$task_resample_inner_param <- renderUI({
+     numericInput(ns("task_resample_inner_param"), "first param", 3, 1, 100, 1)
+   })
+   # update inputs
+   observeEvent(input$task_resample_inner, {
+     if(input$task_resample_inner == "holdout"){
+       updateNumericInput(session, "task_resample_inner_param", "Ratio", 0.8, 0.1, 1, 0.01)
+     }
+     else if(input$task_resample_inner == "cv"){
+       updateNumericInput(session, "task_resample_inner_param", "Folds", 3, 1, 100, 1)
+     }
+   })
+   # update reactive Values
+   observeEvent(c(input$task_resample_inner, input$task_resample_inner_param), {
+     user_task$i.resampling <- list("method" = input$task_resample_inner, "params" = c(input$task_resample_inner_param))
+   })
+
 
     # measure ####
    output$task_measure <- renderUI({
@@ -162,8 +200,6 @@ auto_ml_server <- function(id, user_data){
      user_task$terminator <- list_term
    }
 
-
-
    )
 
     # start----
@@ -172,16 +208,18 @@ auto_ml_server <- function(id, user_data){
       param_list <- list(
         "learners" = user_task$learners,
         "ensemle" = user_task$ensemble,
-        "resampling" = user_task$resampling,
+        "o.resampling" = user_task$o.resampling,
+        "i.resampling" = user_task$i.resampling,
         "measure" = user_task$measure,
-        "fs" = user_task$fs,
+        "feature_filter" = user_task$feature_filter,
         "na_imp" = user_task$na,
         "tuning" = user_task$tuning,
         "tuning_method" = user_task$tuning_method,
-        "terminator" = user_task$terminator
+        "terminator" = user_task$terminator,
+        "incl_featureless" = user_task$incl_featureless
       )
-      print(reactiveValuesToList(user_task))
-      t1 <- reactiveValuesToList(user_task)
+      #print(reactiveValuesToList(user_task))
+      print(param_list)
     })
   })
 }

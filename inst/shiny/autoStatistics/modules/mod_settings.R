@@ -3,26 +3,31 @@
 settings_ui <- function(id){
   ns <- NS(id)
   tagList(
-    fluidRow(style = "margin-left: 30px;", #Plot
-      h3("Plot"), hr(), h4("Colors")),
-    fluidRow(style = "margin-left: 30px;", #Plot colors
-      column(2, uiOutput(ns("color_set"))),
-      column(2, uiOutput(ns("color_custom_missing_check")), style = "margin-top:20px; margin-right:0px;"),
-      column(6, conditionalPanel(condition = "input.color_custom_missing_check == true",
-                                 uiOutput(ns("color_custom_missing")), ns = ns), style= "margin-left: 0px;")
+    fluidRow(style = "margin-left: 15px;",
+      column(4,
+             h3("Colors"),
+             uiOutput(ns("color_set")),
+             uiOutput(ns("color_custom_missing_check")),
+             conditionalPanel(condition = "input.color_custom_missing_check == true",
+                              uiOutput(ns("color_custom_missing")), ns = ns)
+             ),
+      column(4,
+             h3("Download"),
+             fluidRow(
+               column(2, uiOutput(ns("plot_download_width"))),
+               column(2, uiOutput(ns("plot_download_height"))),
+               column(2, uiOutput(ns("plot_download_dpi"))),
+               column(2, uiOutput(ns("plot_download_format")))
+
+               ),
+             fluidRow(
+               column(2, uiOutput(ns("plot_download_text_size"))),
+               column(2, uiOutput(ns("plot_download_text_font")))
+               )
+             )
     ),
-    fluidRow(h4("Download"),style = "margin-left: 30px;",
-      column(1, uiOutput(ns("plot_download_width"))),
-      column(1, uiOutput(ns("plot_download_height"))),
-      column(1, uiOutput(ns("plot_download_dpi"))),
-      column(1, uiOutput(ns("plot_download_format"))),
-      column(1, uiOutput(ns("plot_download_text_size")))
-
-
-
-      ),
-    fluidRow(style = "margin-left: 30px;", #Plot Apply Button
-      actionButton(ns("plot_btn"), label = "Apply"))
+    fluidRow(style = "margin-left: 30px; margin-top: 50px;", #Plot Apply Button
+      actionButton(ns("plot_btn"), label = "Apply", style="color: #fff; background-color: #337ab7; border-color: #2e6da4"))
   )
 }
 
@@ -48,6 +53,7 @@ setting_server <- function(id){
     output$plot_download_dpi <- renderUI({numericInput(ns("plot_download_dpi"), "dpi", min = 0, max = 1000, value = app_settings$plot_download_dpi)})
     output$plot_download_format <- renderUI({selectInput(ns("plot_download_format"), "format", c("PDF" = "pdf", "PNG" = "png", "JPEG" = "jpeg", "SVG" = "svg"), "pdf")})
     output$plot_download_text_size <- renderUI({numericInput(ns("plot_download_text_size"), "text size", 4, 1, 50, 1)})
+    output$plot_download_text_font <- renderUI({selectInput(ns("plot_download_text_font"), "text font", choices = available_fonts)})
 
     observeEvent(input$plot_btn, {
       app_settings$plot_color_set <- input$color_set
@@ -56,21 +62,14 @@ setting_server <- function(id){
       }else{
         app_settings$plot_color_miss_custom <- NULL
       }
-
       app_settings$plot_download_width <- input$plot_download_width
       app_settings$plot_download_height <- input$plot_download_height
       app_settings$plot_download_dpi <- input$plot_download_dpi
       app_settings$plot_download_format <- input$plot_download_format
       app_settings$plot_download_text_size <- input$plot_download_text_size
-
-
+      app_settings$plot_download_text_font <- input$plot_download_text_font
 
       print(reactiveValuesToList(app_settings))
       })
-
-
-
-
-
   })
 }
