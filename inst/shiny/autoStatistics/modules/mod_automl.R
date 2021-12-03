@@ -206,6 +206,8 @@ auto_ml_server <- function(id, user_data){
     observeEvent(input$start ,{
       req(user_task$task)
       param_list <- list(
+        "task" = user_task$task,
+        "type" = user_task$type,
         "learners" = user_task$learners,
         "ensemle" = user_task$ensemble,
         "o.resampling" = user_task$o.resampling,
@@ -220,6 +222,7 @@ auto_ml_server <- function(id, user_data){
       )
       #print(reactiveValuesToList(user_task))
       print(param_list)
+      #save("param_list", file = "test_ohne_ho.Rdata")
     })
   })
 }
