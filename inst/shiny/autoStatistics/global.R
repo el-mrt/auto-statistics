@@ -60,6 +60,7 @@ user_task <-  reactiveValues(
   type = NULL,
   task = NULL,
   learners = NULL,
+  base_learners = NULL,
   i.resampling = NULL,
   o.resamping = NULL,
   measure = NULL,

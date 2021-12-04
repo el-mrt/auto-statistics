@@ -20,6 +20,7 @@ auto_ml_ui <- function(id){
              uiOutput(ns("task_tuning")),
              conditionalPanel(condition = "input.task_tuning == true",
                tagList(
+                 uiOutput(ns("task_base_lrn_add")),
                  uiOutput(ns("task_term_runtime")),
                  uiOutput(ns("task_term_evals")),
                  uiOutput(ns("task_tuning_method")),
@@ -75,6 +76,26 @@ auto_ml_server <- function(id, user_data){
       user_task$learners <- input$task_learner
       autoStatistics::debug_console(paste(c("learners updated. New Learners are: ", user_task$learners), collapse = ", "))
     })
+    output$task_base_lrn_add <- renderUI({
+      selectInput(ns("task_base_lrn_add"), "base learner", multiple = TRUE, choices =
+                    available_learners[[user_task$task$task_type]][!available_learners[[user_task$task$task_type]] %in% c("auto")], selected = "rf")
+    })
+    # base learners
+    observeEvent(input$task_featureless, {
+      if(input$task_featureless){
+        user_task$base_learners <- c(user_task$base_learners, "featureless")
+      }else{
+        user_task$base_learners <- user_task$base_learners[!user_task$base_learners %in% "featureless"]
+      }
+    })
+    observeEvent(input$task_base_lrn_add, {
+      if(input$task_featureless){
+        user_task$base_learners <- c("featureless", input$task_base_lrn_add)
+      }else{
+        user_task$base_learners <- input$task_base_lrn_add
+      }
+    })
+
     # ensemble----
     output$task_ensemble <- renderUI({
       checkboxInput(ns("task_ensemble"), label = "use ensemble learner", value = FALSE)
@@ -183,11 +204,11 @@ auto_ml_server <- function(id, user_data){
     # terminator####
    output$task_term_runtime <- renderUI({
      fluidRow(column(1, checkboxInput(ns("task_term_runtime"), "", value = FALSE), style = "margin-top: 20px;"),
-              column(8, numericInput(ns("task_term_runtime_param"), "runtime", min = 1, max = 1000000, value = 120)))
+              column(8, numericInput(ns("task_term_runtime_param"), "terminator - runtime", min = 1, max = 1000000, value = 120)))
    })
    output$task_term_evals <- renderUI({
      fluidRow(column(1, checkboxInput(ns("task_term_eval"), "", value = FALSE), style = "margin-top: 20px;"),
-              column(8, numericInput(ns("task_term_eval_param"), "evals", min = 1, max = 100000, value = 10)))
+              column(8, numericInput(ns("task_term_eval_param"), "terminator - evals", min = 1, max = 100000, value = 10)))
      })
    observeEvent(c(input$task_term_runtime, input$task_term_runtime_param, input$task_term_eval, input$task_term_eval_param), {
      list_term <- vector(mode = "list")
@@ -215,6 +236,7 @@ auto_ml_server <- function(id, user_data){
         "task" = user_task$task,
         "type" = user_task$type,
         "learners" = user_task$learners,
+        "base_learners" = user_task$base_learners,
         "ensemle" = user_task$ensemble,
         "o.resampling" = user_task$o.resampling,
         "i.resampling" = user_task$i.resampling,
