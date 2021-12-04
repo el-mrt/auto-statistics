@@ -13,6 +13,7 @@ library("dplyr")
 # load all files from modules folder --------------------------------------------------------------------------------------------------
 
 
+
 modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
 #modules_path <- "./modules"
 

@@ -58,8 +58,6 @@ data_upload_server <- function(id){
       paste0("session id:  ", session$token)
     })
 
-
-
     # upload data----
     observeEvent(input$file, {
       target_column(NULL)
@@ -122,8 +120,17 @@ data_upload_server <- function(id){
     })
     # render DT----
     output$table <- renderDT({
-      validate(need(user_data(), message = "upload your data"))
-      user_data()
+      tryCatch(
+        {
+          validate(need(user_data(), message = "upload your data"))
+          user_data()
+        }, error=function(cond){
+          message(paste0("ERROR while render DT:  ", cond))
+        }, warning=function(cond){
+          message(paste0("WARN while render DT:  ", cond))
+        }
+      )
+
       })
 
     # select target column and create task----
