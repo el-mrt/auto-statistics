@@ -8,7 +8,9 @@ data_upload_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidRow(
-      verbatimTextOutput(ns("session_id"))
+      actionButton(ns("btn_reset_data"), "Reset Data", style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; margin-left:15px;"),
+      actionButton(ns("btn_reset_session"), "Reset Session", style =  "color: #fff; background-color: #d41313; border-color: #d41313; margin-left:15px;")
+      #verbatimTextOutput(ns("session_id"))
     ),
     fluidRow(
       uiOutput(ns("error_message_upload"))
@@ -73,7 +75,7 @@ data_upload_server <- function(id){
 
     })
     # read data into dataframe----
-    observeEvent(c(input$file,input$sep,input$header,input$NA_string,input$dec_symbol, input$encoding), {
+    observeEvent(c(input$file,input$sep,input$header,input$NA_string,input$dec_symbol, input$encoding, input$btn_reset_data), {
       req(user_file())
       tryCatch(
         {
@@ -248,6 +250,12 @@ data_upload_server <- function(id){
     })
     observeEvent(input$btn_warn_fct_discard,{
       fct_col_warn$text <- ""
+    })
+    # reset session ----
+    observeEvent(input$btn_reset_session,{
+      session$reload()
+      user_file(NULL)
+      user_data(NULL)
     })
 })
 }
