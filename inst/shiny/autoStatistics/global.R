@@ -45,7 +45,6 @@ UserWarning <- R6::R6Class(
     text = "",
     additional_params = vector(mode = "list"),
     initialize = function(id, is_active = FALSE, text = "", additional_params = vector(mode = "list")){
-
     }
     )
 )
@@ -71,7 +70,8 @@ user_task <-  reactiveValues(
   tuning = NULL,
   tuning_method = NULL,
   terminator = NULL,
-  incl_featureless = FALSE
+  incl_featureless = FALSE,
+  hpo_base_learner = NULL
 )
 # plots shown to the user
 user_plot <- reactiveValues(
@@ -93,7 +93,10 @@ app_settings <- reactiveValues(
   plot_download_text_size = 4,
   plot_download_text_font = "serif"
 )
-
+# results of tuning
+results <- reactiveValues(
+  bmr_result = NULL
+)
 
 
 
