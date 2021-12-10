@@ -81,10 +81,7 @@ user_plot <- reactiveValues(
   na_comb = NULL,
   na_dist = NULL
 )
-# plots to be added to the custom report
-custom_report <- reactiveValues(
 
-)
 app_settings <- reactiveValues(
   plot_color_set = "Set2",
   plot_color_miss_custom = c("#377EB8", "#BD3631"),
@@ -99,6 +96,14 @@ app_settings <- reactiveValues(
 results <- reactiveValues(
   bmr_result = NULL
 )
+
+# plots for report
+
+report_plots <- reactiveValues(
+  custom_report = list("plot" = vector(mode = "list", length = 0L), "plot_name" = vector(mode = "list", length = 0L))
+
+)
+print(report_plots)
 
 
 
