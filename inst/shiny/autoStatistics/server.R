@@ -11,4 +11,5 @@ server <- function(input, output, session){
   report_server("report")
   setting_server("settings")
   descriptive_server("descriptive")
+  data_insight_server("data_insights", user_data = user_data())
 }

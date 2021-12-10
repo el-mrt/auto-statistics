@@ -33,8 +33,6 @@ feature_importance_server <- function(id, user_task, user_filters){
 
       tryCatch({
         importance_table <- autoStatistics::feature_importance(task = user_task, filters = user_filters, ranks = TRUE)
-      }, warning = function(cond){
-        message(paste0(cond))
       }, error = function(cond){
         message(paste0(cond))
       })

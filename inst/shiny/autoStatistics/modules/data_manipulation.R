@@ -14,9 +14,6 @@ data_man_ui <- function(id){
              uiOutput(ns("select_col_na")),
              fluidRow(column(2, uiOutput(ns("btn_naomit"))), column(2,uiOutput(ns("btn_naomit_all"))), column(8))
              )
-    ),
-    fluidRow(
-      feature_importance_ui(ns("feature_imp"))
     )
 
   )
@@ -142,6 +139,5 @@ data_man_server <- function(id, user_data){
         }
       )
     })
-    feature_importance_server("feature_imp", user_task = user_task$task, user_filters = pre_feature_import_filter)
   })
 }

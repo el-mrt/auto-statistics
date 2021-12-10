@@ -9,6 +9,8 @@ ui <- navbarPage(
   tabPanel("Descriptive",
            descriptive_ui("descriptive")
            ),
+  tabPanel("Data Insights",
+           data_insight_ui("data_insights")),
   tabPanel("Missing Data",
            missings_ui("missing_data")),
   tabPanel("Edit Data",
