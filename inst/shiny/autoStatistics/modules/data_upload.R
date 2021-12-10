@@ -32,6 +32,7 @@ data_upload_ui <- function(id){
     fluidRow(
       column(width = 2,
              h4("Factors"),
+             uiOutput(ns("fct_threshold")),
              uiOutput(ns("fct_cols"))
              ),
       column(width = 10,
@@ -101,7 +102,7 @@ data_upload_server <- function(id){
       tryCatch(
         {
           col_types <- lapply(names(user_data()), function(col_name){
-            autoStatistics::identify_CR(user_data(), col_name, 10)
+            autoStatistics::identify_CR(user_data(), col_name, 6)
           })
           col_types <- as.vector(unlist(col_types))
           factor_col_index <- which(col_types == "classif")
@@ -173,6 +174,10 @@ data_upload_server <- function(id){
       req(user_data())
       selectInput(ns("fct_cols"), "select factor columns", choices = names(user_data()), multiple = TRUE, selected = factor_columns())
     })
+    output$fct_threshold <- renderUI({
+      numericInput(ns("fct_threshold"), "threshold [WIP]", 6, 2, 100, 1)
+    })
+
     observeEvent(input$fct_cols, {
         if(length(setdiff(factor_columns(), input$fct_cols)) > 0 ||
            length(setdiff(input$fct_cols, factor_columns())) > 0){
