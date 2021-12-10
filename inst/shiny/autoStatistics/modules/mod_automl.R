@@ -254,7 +254,9 @@ auto_ml_server <- function(id, user_data){
     })
 
     # Results ----------------------------------------------------------------
-    output$bmr_result <- renderPlot({ggplot2::autoplot(results$bmr_result) +
+    output$bmr_result <- renderPlot({
+      req(results$bmr_result)
+      ggplot2::autoplot(results$bmr_result) +
         theme_minimal() +
         ylab("add correct measure")
     })
