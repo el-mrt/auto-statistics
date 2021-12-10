@@ -6,6 +6,9 @@ ui <- navbarPage(
            landing_ui("landing_page")),
   tabPanel("Upload Data",
            data_upload_ui("data")),
+  tabPanel("Descriptive",
+           descriptive_ui("descriptive")
+           ),
   tabPanel("Missing Data",
            missings_ui("missing_data")),
   tabPanel("Edit Data",

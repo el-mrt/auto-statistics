@@ -75,6 +75,8 @@ user_task <-  reactiveValues(
 )
 # plots shown to the user
 user_plot <- reactiveValues(
+  descr_hist = NULL,
+  descr_scatter = NULL,
   na_per_col = NULL,
   na_comb = NULL,
   na_dist = NULL
