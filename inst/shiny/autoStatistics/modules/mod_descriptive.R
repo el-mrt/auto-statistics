@@ -95,7 +95,9 @@ descriptive_server <- function(id){
       summary(user_data()[[input$selected_feature]])
       })
     # save btns####
-    save_plot_server("save_descr_hist", plot_save = reactive({user_plot$descr_hist}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi)
-    save_plot_server("save_descr_scatter", plot_save = reactive({user_plot$descr_scatter}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi)
+    save_plot_server("save_descr_hist", report = "custom",
+                     plot_save = reactive({user_plot$descr_hist}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi)
+    save_plot_server("save_descr_scatter", report = "custom",
+                     plot_save = reactive({user_plot$descr_scatter}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi)
   })
 }
