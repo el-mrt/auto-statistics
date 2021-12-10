@@ -154,6 +154,7 @@ missings_server <- function(id, user_data, target_col){
 
     # plot
     output$na_hist_plot <- renderPlot({
+      req(user_data(), )
       col_name1 <- {{input$na_hist_col1}}
       col_name2 <- {{input$na_hist_col2}}
       na_hist_data <- user_data()
