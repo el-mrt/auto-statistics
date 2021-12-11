@@ -19,7 +19,9 @@ create_graph_learners <- function(task, learners){
                  task = task,
                  learner = learner) %>>%
       learner
-    return(graph)
+
+    gl <- GraphLearner$new(graph)
+    return(gl)
   }
 
   g_learner <- lapply(learners, create_graph, task = task)
