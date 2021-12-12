@@ -109,7 +109,7 @@ perform_auto_ml <- function(param_list){
       learners <- c(learners, hpo_gl_base)
     }
   } else { # without HPO
-    learners <- create_graph_learners(task, l_base)
+    learners <- create_robust_learners(task, l_base)
   }
 
   if (include_featureless_input) {
