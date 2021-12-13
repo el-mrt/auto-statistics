@@ -105,7 +105,7 @@ perform_auto_ml <- function(param_list){
     # should base learners be included in HPO benchmark
     if (hpo_bl_input) {
       hpo_l_base <- create_learners(task, learners_input)
-      hpo_gl_base <- create_graph_learners(task, hpo_l_base)
+      hpo_gl_base <- create_robust_learners(task, hpo_l_base)
       learners <- c(learners, hpo_gl_base)
     }
   } else { # without HPO
