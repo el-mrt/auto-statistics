@@ -18,56 +18,12 @@
 # param_list$hpo_base_learner <- TRUE
 # param_list$feature_filter <- "information_gain"
 # param_list$incl_featureless <- TRUE
-# param_list$tuning_method <- "cmaes"
+# param_list$tuning_method <- "random_search"
+# param_list$ensemble <- TRUE
 #
 # t1 <- perform_auto_ml(param_list)
 #
-# bmr$score() %>% as.data.table  %>% arrange(regr.mse) %>% View("bmr")
+# # save(t1, file = "C:/Users/lukas/Desktop/Master/2021-2022 WiSe/Applications in Data Analytics/RData_files/pam_001.RData")
 #
-# score <- bmr$score() %>% as.data.table %>% arrange(regr.mse)
-#
-# View(score, "score")
-#
-# score$learner[[1]]$archive %>% as.data.table %>% arrange(regr.rmse) %>% View("l1_archive")
-# score$learner[[2]]$archive %>% as.data.table %>% arrange(regr.rmse) %>% View("l2_archive")
-# score$learner[[1]]$archive
-#
-# score$learner[[1]]$learner$param_set$values
-# score$learner[[2]]$learner$param_set$values
-# score$learner[[3]]$param_set$values
-#
-# l1 <- score$learner[[1]]$base_learner(recursive = 0)
-# l2 <- score$learner[[2]]$base_learner(recursive = 0)
-# l3 <- score$learner[[3]]$base_learner(recursive = 0)
-#
-# l1$id <- "l1"
-# l2$id <- "l2"
-# l3$id <- "l3"
-#
-# ensemble <- GraphLearner$new(gunion(list(l1,l2,l3)) %>>% po("regravg", innum = 3))
-#
-# e_lrns <- list(
-#   l1,l2,l3,ensemble, lrn("regr.featureless")
-# )
-#
-#
-# bmr_ensemble <- benchmark_grid(task, resamplings = rsmp("cv", folds = 20), learners = e_lrns) %>% benchmark()
-#
-# bmr_ensemble %>% autoplot(measure= measure)
-# bmr$score(measures = measure)
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+# t1$bmr %>% autoplot(measure = t1$measure)
+# t1$bmr_best %>% autoplot(measure = t1$measure)

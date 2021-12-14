@@ -2,6 +2,7 @@
 
 export(auto_to_null)
 export(create_auto_tuner)
+export(create_best_benchmark)
 export(create_feature_filter)
 export(create_learners)
 export(create_measure)

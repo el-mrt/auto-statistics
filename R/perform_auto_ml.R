@@ -120,18 +120,24 @@ perform_auto_ml <- function(param_list){
 
   learners <- shorten_id(learners, task_type_input)
 
-  design <- benchmark_grid(
-    task = task,
-    resamplings = outer_resampling,
-    learners = learners
-  )
+  design <- benchmark_grid(task = task,
+                           resamplings = outer_resampling,
+                           learners = learners)
 
   bmr <- benchmark(design, store_models = TRUE)
+
+  bmr_best <- create_best_benchmark(task = task,
+                                    bmr = bmr,
+                                    measure = measure,
+                                    n_best = 5,
+                                    ensemble = is_ensemble_input)
 
   #initialize output list
   output_list <- list(bmr = NULL, bmr_best = NULL, measure = NULL)
 
   output_list$measure <- measure
+
+  output_list$bmr_best <- bmr_best
 
   output_list$bmr <- bmr
 
