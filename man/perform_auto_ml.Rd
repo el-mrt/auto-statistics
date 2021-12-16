@@ -7,7 +7,7 @@
 perform_auto_ml(param_list)
 }
 \arguments{
-\item{param_list}{}
+\item{param_list}{param_list}
 }
 \value{
 
