@@ -65,13 +65,14 @@ user_task <-  reactiveValues(
   o.resamping = NULL,
   measure = NULL,
   ensemble = NULL,
+  ensemble_n_best = 5,
   feature_filter = NULL,
   na = NULL,
   tuning = NULL,
   tuning_method = NULL,
   terminator = NULL,
   incl_featureless = FALSE,
-  hpo_base_learner = NULL
+  hpo_base_learner = FALSE
 )
 # plots shown to the user
 user_plot <- reactiveValues(

@@ -10,6 +10,7 @@ auto_ml_ui <- function(id){
              uiOutput(ns("task_na")), hr(),
              uiOutput(ns("task_learner")),
              uiOutput(ns("task_ensemble")),
+             uiOutput(ns("ensemble_n_best")),
              uiOutput(ns("task_featureless")),hr(),
              uiOutput(ns("task_resampling")),
              fluidRow(column(4, conditionalPanel(condition = "input.task_resampling != 'auto'", tagList(uiOutput(ns("task_resampling_one_param"))), ns = ns), style = "margin-left:15px;"),
@@ -57,13 +58,13 @@ auto_ml_server <- function(id, user_data){
     # feature_filter----
     output$task_feature <- renderUI({
       if(is.null(user_task$type)){
-        selectInput(ns("task_feature"), "Feature Selection", choices = c("Auto"), selected = "Auto")
+        selectInput(ns("task_feature"), "Feature Selection", choices = c("None"), selected = "None")
       }else{
-        selectInput(ns("task_feature"), "Feature Selection", choices = available_feature_filter[[user_task$type]], selected = "auto", multiple = TRUE)
+        selectInput(ns("task_feature"), "Feature Selection", choices = available_feature_filter[[user_task$type]], selected = "no", multiple = TRUE)
       }
     })
     observeEvent(input$task_feature, {
-      user_task$fs <- input$task_feature
+      user_task$feature_filter <- input$task_feature
       autoStatistics::debug_console(paste(c("feature_filter updated. New feature_filter are: ", user_task$feature_filter), collapse = ","))
     })
 
@@ -83,8 +84,7 @@ auto_ml_server <- function(id, user_data){
       autoStatistics::debug_console(paste(c("learners updated. New Learners are: ", user_task$learners), collapse = ", "))
     })
     output$hpo_base_learner <- renderUI({
-      selectInput(ns("hpo_base_learner"), "additional base learner",
-                  choices = c("None" = "none", available_learners[["regr"]][!available_learners[["regr"]] %in% c("auto")]))
+      checkboxInput(ns("hpo_base_learner"), "additional base learners", value = FALSE)
     })
     observeEvent(input$hpo_base_learner, {
       user_task$hpo_base_learner <- input$hpo_base_learner
@@ -96,6 +96,13 @@ auto_ml_server <- function(id, user_data){
     observeEvent(input$task_ensemble, {
       user_task$ensemble <- input$task_ensemble
       autoStatistics::debug_console(sprintf("ensemble learner changed. New Value: %s", user_task$ensemble))
+    })
+    output$ensemble_n_best <- renderUI({
+      numericInput("ensemble_n_best", "n best learners", 5, 1, 100, 1)
+    })
+    observeEvent(input$ensemble_n_best, {
+      user_task$ensemble_n_best <- input$ensemble_n_best
+      autoStatistics::debug_console(sprintf("n_ensemble  changed. New Value: %s", user_task$ensemble_n_best))
     })
     # featureless ----
     output$task_featureless <- renderUI({
@@ -227,6 +234,7 @@ auto_ml_server <- function(id, user_data){
         "type" = user_task$type,
         "learners" = user_task$learners,
         "ensemle" = user_task$ensemble,
+        "n_best" = user_task$ensemble_n_best,
         "o.resampling" = user_task$o.resampling,
         "i.resampling" = user_task$i.resampling,
         "measure" = user_task$measure,

@@ -12,6 +12,11 @@ available_feature_filter <- list(
   "regr" = c("Auto" = "auto", "None" = "none", "Featureless" = "regr.featureless", "Rpart" = "regr.rpart", "XGBoost" = "regr.xgboost"),
   "classif" = c("Auto" = "auto", "None" = "none", "Featureless" = "classif.featureless", "Rpart" = "classif.rpart", "XGBoost" = "classif.xgboost")
 )
+
+available_feature_filter <- list(
+  "regr" = c("None" = "no", "Importance" = "importance", "Information Gain" = "information_gain"),
+  "classif" = c("None" = "no", "Importance" = "importance", "Information Gain" = "information_gain", "mrmr" = "mrmr")
+)
 cat("available_fs loaded\n")
 
 # NA imp ------------------------------------------------------------------
