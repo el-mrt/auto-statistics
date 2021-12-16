@@ -148,3 +148,30 @@ feature_importance <- function(task, filters, ranks = TRUE){
   return(importance_df)
 }
 
+#' appendList
+#'
+#' @description Function to append an element to a list
+#'
+#' @param l list
+#' @param x element
+#' @param name name in list
+#'
+#' @return list
+#'
+#' @export
+#'
+#' @examples
+#' appendList(l = list, x = element, name = "TUD")
+
+
+
+appendList <- function(l, x, name=NULL){
+  index <- length(l) + 1
+  l[[index]] <- x
+  if(!is.null(name)){
+    names(l)[index] <- name
+  }
+  return(l)
+}
+
+

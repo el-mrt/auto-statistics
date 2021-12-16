@@ -8,7 +8,9 @@ data_upload_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidRow(
-      verbatimTextOutput(ns("session_id"))
+      actionButton(ns("btn_reset_data"), "Reset Data", style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; margin-left:15px;"),
+      actionButton(ns("btn_reset_session"), "Reset Session", style =  "color: #fff; background-color: #d41313; border-color: #d41313; margin-left:15px;")
+      #verbatimTextOutput(ns("session_id"))
     ),
     fluidRow(
       uiOutput(ns("error_message_upload"))
@@ -30,6 +32,7 @@ data_upload_ui <- function(id){
     fluidRow(
       column(width = 2,
              h4("Factors"),
+             uiOutput(ns("fct_threshold")),
              uiOutput(ns("fct_cols"))
              ),
       column(width = 10,
@@ -56,8 +59,6 @@ data_upload_server <- function(id){
       paste0("session id:  ", session$token)
     })
 
-
-
     # upload data----
     observeEvent(input$file, {
       target_column(NULL)
@@ -73,7 +74,7 @@ data_upload_server <- function(id){
 
     })
     # read data into dataframe----
-    observeEvent(c(input$file,input$sep,input$header,input$NA_string,input$dec_symbol, input$encoding), {
+    observeEvent(c(input$file,input$sep,input$header,input$NA_string,input$dec_symbol, input$encoding, input$btn_reset_data), {
       req(user_file())
       tryCatch(
         {
@@ -101,7 +102,7 @@ data_upload_server <- function(id){
       tryCatch(
         {
           col_types <- lapply(names(user_data()), function(col_name){
-            autoStatistics::identify_CR(user_data(), col_name, 10)
+            autoStatistics::identify_CR(user_data(), col_name, 6)
           })
           col_types <- as.vector(unlist(col_types))
           factor_col_index <- which(col_types == "classif")
@@ -120,8 +121,17 @@ data_upload_server <- function(id){
     })
     # render DT----
     output$table <- renderDT({
-      validate(need(user_data(), message = "upload your data"))
-      user_data()
+      tryCatch(
+        {
+          validate(need(user_data(), message = "upload your data"))
+          user_data()
+        }, error=function(cond){
+          message(paste0("ERROR while render DT:  ", cond))
+        }, warning=function(cond){
+          message(paste0("WARN while render DT:  ", cond))
+        }
+      )
+
       })
 
     # select target column and create task----
@@ -164,6 +174,10 @@ data_upload_server <- function(id){
       req(user_data())
       selectInput(ns("fct_cols"), "select factor columns", choices = names(user_data()), multiple = TRUE, selected = factor_columns())
     })
+    output$fct_threshold <- renderUI({
+      numericInput(ns("fct_threshold"), "threshold [WIP]", 6, 2, 100, 1)
+    })
+
     observeEvent(input$fct_cols, {
         if(length(setdiff(factor_columns(), input$fct_cols)) > 0 ||
            length(setdiff(input$fct_cols, factor_columns())) > 0){
@@ -248,6 +262,12 @@ data_upload_server <- function(id){
     })
     observeEvent(input$btn_warn_fct_discard,{
       fct_col_warn$text <- ""
+    })
+    # reset session ----
+    observeEvent(input$btn_reset_session,{
+      session$reload()
+      user_file(NULL)
+      user_data(NULL)
     })
 })
 }

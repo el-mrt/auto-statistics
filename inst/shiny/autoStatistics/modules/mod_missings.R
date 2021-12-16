@@ -8,7 +8,7 @@ missings_ui <- function(id){
     h3(HTML("<u><i>Missing values per column</i></u>")),
     fluidRow(
       column(2,
-             p(HTML("<i>description.....</i>")),
+             p(HTML(paste0("<i>",app_descriptions[["plot_mis_per_col"]],"</i>"))),
              uiOutput(ns("na_per_col_line_break")),
              uiOutput(ns("na_per_col_flip_coord"))
              ),
@@ -22,7 +22,7 @@ missings_ui <- function(id){
     fluidRow(
       column(2,
              actionButton(ns("start_na_comb"), "Start"),
-             p(HTML("<i>description.....</i>")),
+             p(HTML(paste0("<i>",app_descriptions[["plot_mis_na_comb"]],"</i>"))),
              uiOutput(ns("na_comb_topn")),
              uiOutput(ns("na_comb_line_break")),
              uiOutput(ns("na_comb_use_names"))
@@ -86,9 +86,10 @@ missings_server <- function(id, user_data, target_col){
         geom_bar(stat="identity", fill = plot_color, na.rm = TRUE) +
         {if(input$na_per_col_flip_coord) {coord_flip()}} +
         labs(x = "column", y = "number of missing values") +
-        theme_minimal()+
-        theme(axis.text=element_text(size=12),
-               axis.title=element_text(size=14,face="bold"))
+        theme_minimal()
+        #+
+        # theme(axis.text=element_text(size=12),
+        #        axis.title=element_text(size=14,face="bold"))
 
       user_plot$na_per_col <- cur_plot
       return(cur_plot)
@@ -153,6 +154,7 @@ missings_server <- function(id, user_data, target_col){
 
     # plot
     output$na_hist_plot <- renderPlot({
+      req(user_data(), )
       col_name1 <- {{input$na_hist_col1}}
       col_name2 <- {{input$na_hist_col2}}
       na_hist_data <- user_data()

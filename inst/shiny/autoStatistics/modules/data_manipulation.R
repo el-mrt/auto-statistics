@@ -14,9 +14,6 @@ data_man_ui <- function(id){
              uiOutput(ns("select_col_na")),
              fluidRow(column(2, uiOutput(ns("btn_naomit"))), column(2,uiOutput(ns("btn_naomit_all"))), column(8))
              )
-    ),
-    fluidRow(
-      feature_importance_ui(ns("feature_imp"))
     )
 
   )
@@ -36,12 +33,25 @@ data_man_server <- function(id, user_data){
       actionButton(ns("btn_remove"), "Remove")
       })
     observeEvent(input$btn_remove, {
-      temp_data <- user_data()
-      temp_data <- temp_data[, -which(names(temp_data) %in% c(input$select_col_remove))]
-      user_data(temp_data)
-      if(input$select_col_remove == target_column()){
-        target_column(names(user_data())[1])
-      }
+      tryCatch(
+        {
+          print(input$select_col_remove)
+          temp_data <- user_data()
+          temp_data <- temp_data[, -which(names(temp_data) %in% c(input$select_col_remove))]
+          user_data(temp_data)
+          if(input$select_col_remove == target_column()){
+            target_column(names(user_data())[1])
+          }
+          temp_fct <- factor_columns()
+          temp_fct <- temp_fct[!temp_fct %in% c(input$select_col_remove)]
+          factor_columns(temp_fct)
+
+          },error=function(cond){
+          message(paste("error while deleting row: ", cond))
+        },warning=function(cond){
+          message(paste("warn while deleting row: ", cond))
+        }
+      )
 
       # get task type
       tryCatch({
@@ -97,7 +107,6 @@ data_man_server <- function(id, user_data){
 
           user_task$task <- autoStatistics::create_task(temp_data, target_column(), user_task$type)
           autoStatistics::debug_console(sprintf("new task created with type: %s", user_task$type))
-          print(user_task$task)
         },
         error=function(cond){
           message(paste("Error while creating  when removing NAs from a certain column: ", cond))
@@ -105,6 +114,7 @@ data_man_server <- function(id, user_data){
       )
 
     })
+    # omit all####
     observeEvent(input$btn_naomit_all, {
       temp_data <- user_data()
       user_data(na.omit(temp_data))
@@ -123,13 +133,11 @@ data_man_server <- function(id, user_data){
 
           user_task$task <- autoStatistics::create_task(temp_data, target_column(), user_task$type)
           autoStatistics::debug_console(sprintf("new task created with type: %s", user_task$type))
-          print(user_task$task)
         },
         error=function(cond){
           message(paste("Error while creating  when removing NAs from all columns: ", cond))
         }
       )
     })
-    feature_importance_server("feature_imp", user_task = user_task$task, user_filters = pre_feature_import_filter)
   })
 }
