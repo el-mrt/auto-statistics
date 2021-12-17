@@ -10,5 +10,6 @@ server <- function(input, output, session){
   auto_ml_server("autoML", user_data = user_data())
   report_server("report")
   setting_server("settings")
-
+  descriptive_server("descriptive")
+  data_insight_server("data_insights", user_data = user_data())
 }

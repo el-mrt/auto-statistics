@@ -13,6 +13,7 @@ library("dplyr")
 # load all files from modules folder --------------------------------------------------------------------------------------------------
 
 
+
 modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
 #modules_path <- "./modules"
 
@@ -44,7 +45,6 @@ UserWarning <- R6::R6Class(
     text = "",
     additional_params = vector(mode = "list"),
     initialize = function(id, is_active = FALSE, text = "", additional_params = vector(mode = "list")){
-
     }
     )
 )
@@ -60,27 +60,29 @@ user_task <-  reactiveValues(
   type = NULL,
   task = NULL,
   learners = NULL,
+  base_learners = NULL,
   i.resampling = NULL,
   o.resamping = NULL,
   measure = NULL,
   ensemble = NULL,
+  ensemble_n_best = 5,
   feature_filter = NULL,
   na = NULL,
   tuning = NULL,
   tuning_method = NULL,
   terminator = NULL,
-  incl_featureless = FALSE
+  incl_featureless = FALSE,
+  hpo_base_learner = FALSE
 )
 # plots shown to the user
 user_plot <- reactiveValues(
+  descr_hist = NULL,
+  descr_scatter = NULL,
   na_per_col = NULL,
   na_comb = NULL,
   na_dist = NULL
 )
-# plots to be added to the custom report
-custom_report <- reactiveValues(
 
-)
 app_settings <- reactiveValues(
   plot_color_set = "Set2",
   plot_color_miss_custom = c("#377EB8", "#BD3631"),
@@ -91,7 +93,18 @@ app_settings <- reactiveValues(
   plot_download_text_size = 4,
   plot_download_text_font = "serif"
 )
+# results of tuning
+results <- reactiveValues(
+  bmr_result = NULL
+)
 
+# plots for report
+
+report_plots <- reactiveValues(
+  custom_report = list("plot" = vector(mode = "list", length = 0L), "plot_name" = vector(mode = "list", length = 0L))
+
+)
+print(report_plots)
 
 
 
