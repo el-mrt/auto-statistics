@@ -4,7 +4,7 @@
 #'
 #' @examples
 #'
-#' @return
+#' @return benchmark results and measure
 #'
 #' @export
 #'
@@ -24,7 +24,7 @@ perform_auto_ml <- function(param_list){
   # if na_input is "omit" the task is overwriten with the same task but no NA's
   task <- na_omit_task(task, na_input)
 
-  is_ensemble_input <- param_list$ensemble
+  ensemble_input <- param_list$ensemble
   terminator_input <- param_list$terminator
   measure_input <- param_list$measure
 
@@ -102,6 +102,35 @@ perform_auto_ml <- function(param_list){
                                     tuner)
     }
 
+    # should ensemble models be created, if so, which?
+    if (!("no" %in% ensemble_input)) {
+
+      ensemble_learners <- NULL
+
+      if ("stacking" %in% ensemble_input) {
+
+        stacking_ensemble <- create_stacking_ensemble(task = task,
+                                                      type = task_type_input,
+                                                      learners = learners,
+                                                      feature_filter = feature_filter_input,
+                                                      inner_resampling = inner_resampling,
+                                                      measure = measure,
+                                                      terminator = terminator,
+                                                      tuner = tuner)
+
+        ensemble_learners <- c(ensemble_learners, list(stacking_ensemble))
+      }
+
+      if ("bagging" %in% ensemble_input) {
+        bagging_ensemble <- create_bagging_ensemble(learners = learners,
+                                                    task_type = task_type_input)
+
+        ensemble_learners <- c(ensemble_learners, list(bagging_ensemble))
+      }
+
+      learners <- c(learners, ensemble_learners)
+    }
+
     # should base learners be included in HPO benchmark
     if (hpo_bl_input) {
       hpo_l_base <- create_learners(task, learners_input)
@@ -126,18 +155,21 @@ perform_auto_ml <- function(param_list){
 
   bmr <- benchmark(design, store_models = TRUE)
 
-  bmr_best <- create_best_benchmark(task = task,
-                                    bmr = bmr,
-                                    measure = measure,
-                                    n_best = 5,
-                                    ensemble = is_ensemble_input)
+
+  # have to rewrite this function, as ensemble is outsourced
+  # bmr_best <- create_best_benchmark(task = task,
+  #                                   bmr = bmr,
+  #                                   measure = measure,
+  #                                   n_best = 5,
+  #                                   ensemble = is_ensemble_input)
 
   #initialize output list
   output_list <- list(bmr = NULL, bmr_best = NULL, measure = NULL)
 
   output_list$measure <- measure
 
-  output_list$bmr_best <- bmr_best
+  # see create_best_benchmark
+  # output_list$bmr_best <- bmr_best
 
   output_list$bmr <- bmr
 
