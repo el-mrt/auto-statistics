@@ -2,16 +2,12 @@
 #'
 #' @param param_list param_list
 #'
-#' @examples
-#'
 #' @return benchmark results and measure
 #'
 #' @export
 #'
 #' @import mlr3verse R6
-#'
-#'
-#'
+
 
 perform_auto_ml <- function(param_list){
 
@@ -155,21 +151,18 @@ perform_auto_ml <- function(param_list){
 
   bmr <- benchmark(design, store_models = TRUE)
 
-
-  # have to rewrite this function, as ensemble is outsourced
-  # bmr_best <- create_best_benchmark(task = task,
-  #                                   bmr = bmr,
-  #                                   measure = measure,
-  #                                   n_best = 5,
-  #                                   ensemble = is_ensemble_input)
+  # could include n_best as input from shiny app, for now fixed at 5
+  bmr_best <- create_best_benchmark(task = task,
+                                    bmr = bmr,
+                                    measure = measure,
+                                    n_best = 5)
 
   #initialize output list
   output_list <- list(bmr = NULL, bmr_best = NULL, measure = NULL)
 
   output_list$measure <- measure
 
-  # see create_best_benchmark
-  # output_list$bmr_best <- bmr_best
+  output_list$bmr_best <- bmr_best
 
   output_list$bmr <- bmr
 

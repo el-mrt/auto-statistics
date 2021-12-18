@@ -28,7 +28,8 @@ create_search_space <- function(task, learners){
       l$param_set$values$kernel <- "radial" # kernel has to be set in order to tune gamma
       l$param_set$values$gamma <- to_tune(1e-10, 10, logscale = TRUE)
     } else if (id == "ranger") {
-      l$param_set$values$mtry <- to_tune(1, 1e4)
+      # mtry has issues with feature filter-- filter might return small subset, which would be OOB for param search
+      # l$param_set$values$mtry <- to_tune(1, round(task$ncol/2))
       l$param_set$values$num.trees <- to_tune(1,1e4)
       l$param_set$values$min.node.size <- to_tune(1, 5)
     } else if (id == "xgboost") {

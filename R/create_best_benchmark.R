@@ -1,9 +1,8 @@
-#' Function that given a benchmark result, measure, task_type, task number of learners and resampling strategy outputs a new benchmark, containing the best learners, as well an ensemble of those
+#' Function that given a benchmark result, measure, task_type, task number of learners and resampling strategy outputs a new benchmark, containing the best learners
 #'
 #' @param task task
 #' @param bmr benchmark results
 #' @param measure measure
-#' @param task_type task type
 #' @param n_best number of choosen learners
 #' @param resampling resampling strategy - needs to be mlr3 object for now
 #'
@@ -14,7 +13,7 @@
 #' @import mlr3verse
 #'
 
-create_best_benchmark <- function(task, bmr, measure, n_best, ensemble, resampling = NULL){
+create_best_benchmark <- function(task, bmr, measure, n_best, resampling = NULL){
   task_type <- task$task_type
 
   if (is.null(resampling)) {
@@ -34,21 +33,7 @@ create_best_benchmark <- function(task, bmr, measure, n_best, ensemble, resampli
 
   # change to unique id`s
   for (i in 1:length(lrns)) {
-    lrns[[i]]$id <- paste0("l", i)
-  }
-
-  if (ensemble) {
-    # detect keyword for pipeoperator
-    average <- switch (task_type,
-                       regr = "regravg",
-                       classif = "classifavg")
-
-    gl_ensemble <- GraphLearner$new(
-      gunion(lrns) %>>% po(average, innum = n_best)
-    )
-    gl_ensemble$id <- "ensemble"
-
-    lrns <- c(lrns, gl_ensemble)
+    lrns[[i]]$id <- paste0("l", i) # might want to think about keeping original name or at least type of learner
   }
 
   design <- benchmark_grid(task, lrns, resampling)
