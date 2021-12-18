@@ -6,8 +6,6 @@
 #' @param terminator termination criterion
 #' @param tuner tuning procedure#'
 #'
-#' @examples
-#'
 #' @return an mlr3 graph learner
 #'
 #' @export

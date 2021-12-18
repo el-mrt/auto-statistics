@@ -7,8 +7,6 @@
 #' @param n_best number of choosen learners
 #' @param resampling resampling strategy - needs to be mlr3 object for now
 #'
-#' @examples
-#'
 #' @return returns a benchmarking result
 #'
 #' @export

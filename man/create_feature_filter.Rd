@@ -21,6 +21,3 @@ an mlr3 graph learner
 \description{
 Function that adds a feature filter to the learner
 }
-\examples{
-
-}

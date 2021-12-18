@@ -15,6 +15,3 @@ param_list
 \description{
 Function that given a param_list iterates tróugh the list and sets every entry to NULL if "auto" was specified
 }
-\examples{
-
-}

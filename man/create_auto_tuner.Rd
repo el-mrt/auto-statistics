@@ -23,6 +23,3 @@ an mlr3 graph learner
 \description{
 Function that given a list of graph learners, an inner resampling, a measure, a terminator and a tuner creates a list of auto tuner learners
 }
-\examples{
-
-}

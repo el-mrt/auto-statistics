@@ -9,8 +9,6 @@
 #' @param terminator terminator
 #' @param tuner tuner
 #'
-#' @example
-#'
 #' @return stacking_ensemble
 #'
 #' @export

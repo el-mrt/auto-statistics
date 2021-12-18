@@ -3,8 +3,6 @@
 #' @param task tesk
 #' @param learners learners
 #'
-#' @example
-#'
 #' @return bagging_ensemble
 #'
 #' @export

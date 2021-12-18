@@ -3,8 +3,6 @@
 #' @param task task
 #' @param learners list of learners
 #'
-#' @examples
-#'
 #' @return an mlr3 graph learner
 #'
 #' @export

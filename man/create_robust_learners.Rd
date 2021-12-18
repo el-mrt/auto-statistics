@@ -17,6 +17,3 @@ an mlr3 graph learner
 \description{
 Function that given a list of learners and a task creates a robust graphlearners
 }
-\examples{
-
-}

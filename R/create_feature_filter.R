@@ -5,8 +5,6 @@
 #' @param learners list of learners
 #' @param filter filter
 #'
-#' @examples
-#'
 #' @return an mlr3 graph learner
 #'
 #' @export

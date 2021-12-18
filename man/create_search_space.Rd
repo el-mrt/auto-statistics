@@ -17,6 +17,3 @@ list of mlr3 learners with parameter search_space
 \description{
 Function that given a list of learners, defines suitable search_space for HPO
 }
-\examples{
-
-}

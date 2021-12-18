@@ -2,8 +2,6 @@
 #'
 #' @param learners learners
 #'
-#' @example
-#'
 #' @return list of cloned learners
 #'
 #' @export

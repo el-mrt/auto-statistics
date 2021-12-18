@@ -10,7 +10,7 @@ perform_auto_ml(param_list)
 \item{param_list}{param_list}
 }
 \value{
-
+benchmark results and measure
 }
 \description{
 Function that applies Auto ML Pipeline given a list of parameter

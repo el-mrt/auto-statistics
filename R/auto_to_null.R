@@ -2,8 +2,6 @@
 #'
 #' @param param_list param_list
 #'
-#' @examples
-#'
 #' @return param_list
 #'
 #' @export
