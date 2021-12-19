@@ -130,8 +130,6 @@ feature_importance <- function(task, filters, ranks = TRUE){
       importance_df <- dplyr::left_join(importance_df, flt_result, by = "feature")
       names(importance_df)[i+1] <- used_filters[[i]]$id
     }
-  }, warning = function(cond){
-    warning(paste0(cond))
   }, error = function(cond){
     stop(paste0(cond))
   })

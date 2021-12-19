@@ -47,8 +47,8 @@ report_server <- function(id, user_data){
       report_settings$append_custom <- input$report_append_custom
     })
     output$preview_report <- renderUI({
-      #req(cur_report$path)
-      #includeHTML(cur_report$path)
+      req(cur_report$path)
+      includeHTML(cur_report$path)
 
     })
 
