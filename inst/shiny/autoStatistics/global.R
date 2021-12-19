@@ -15,7 +15,7 @@ library("dplyr")
 
 
 modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
-#modules_path <- "./modules"
+modules_path <- "./modules"
 
 files <- list.files(modules_path, full.names = TRUE)
 lapply(files, source)
@@ -101,9 +101,20 @@ results <- reactiveValues(
 # plots for report
 
 report_plots <- reactiveValues(
-  custom_report = list("plot" = vector(mode = "list", length = 0L), "plot_name" = vector(mode = "list", length = 0L))
+  custom_report = list("plot" = vector(mode = "list", length = 0L),
+                       "plot_name" = vector(mode = "list", length = 0L))
 
 )
+
+report_settings <- reactiveValues(
+  type = NULL,
+  append_custom = FALSE
+)
+cur_report <- reactiveValues(
+  type = NULL,
+  path = NULL
+)
+
 print(report_plots)
 
 
