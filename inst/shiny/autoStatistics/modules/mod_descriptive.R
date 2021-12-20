@@ -57,16 +57,18 @@ descriptive_server <- function(id){
       plot_color <- RColorBrewer::brewer.pal(n = 3, name = app_settings$plot_color_set)[1]
       if(is.factor(user_data()[[{{ input$selected_feature }}]])){
         cur_plot <- ggplot(user_data(), aes(x = get(input$selected_feature), fill = TRUE)) +
-          geom_bar(na.rm = TRUE) +
+          geom_bar(na.rm = TRUE, width = input$bin_width) +
           scale_fill_manual(values = plot_color) +
           labs(x = input$selected_feature) +
-          theme_minimal()
+          theme_minimal() +
+          theme(legend.position = "none")
       }else{
         cur_plot <- ggplot(user_data(), aes(x = get(input$selected_feature), fill = TRUE)) +
           geom_histogram(binwidth = input$bin_width) +
           scale_fill_manual(values = plot_color) +
           labs(x = input$selected_feature) +
-          theme_minimal()
+          theme_minimal() +
+          theme(legend.position = "none")
       }
 
       user_plot$descr_hist <- cur_plot
@@ -83,6 +85,7 @@ descriptive_server <- function(id){
       plot_color <- RColorBrewer::brewer.pal(n = 3, name = app_settings$plot_color_set)[1]
       cur_plot <- ggplot(user_data(),aes(x = get(target_column()),y = get(input$selected_feature)))+
         geom_point(color = plot_color, size = input$point_size) +
+        labs(x = target_column(), y = input$selected_feature) +
         theme_minimal()
 
       user_plot$descr_scatter <- cur_plot
