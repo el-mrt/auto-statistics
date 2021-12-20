@@ -25,10 +25,12 @@ missings_ui <- function(id){
              p(HTML(paste0("<i>",app_descriptions[["plot_mis_na_comb"]],"</i>"))),
              uiOutput(ns("na_comb_topn")),
              uiOutput(ns("na_comb_line_break")),
-             uiOutput(ns("na_comb_use_names"))
+             uiOutput(ns("na_comb_use_names")),
+             uiOutput(ns("na_comb_use_group"))
       ),
       column(10,
-             plotOutput(ns("na_comb_plot"))
+             plotOutput(ns("na_comb_plot")),
+             verbatimTextOutput(ns("na_comb_groups"))
       )
     ),
     fluidRow(save_plot_ui(ns("save_na_comb"))), # download button
@@ -109,31 +111,81 @@ missings_server <- function(id, user_data, target_col){
     # use names
     output$na_comb_use_names <- renderUI({
       req(user_data()) # req()
-      checkboxInput(ns("na_comb_use_names"), "use names?", value = FALSE)
+      checkboxInput(ns("na_comb_use_names"), "use names", value = FALSE)
     })
-    # plot
+    # group features
+    output$na_comb_use_group <- renderUI({
+      req(user_data())
+      checkboxInput(ns("na_comb_use_group"), "group it", value = FALSE)
+    })
     observeEvent(input$start_na_comb, {
-      req(user_data()) # req()
-      output$na_comb_plot <- renderPlot({
-        missing_obj <- autoStatistics::missing_combinations(isolate(user_data()), names_col = TRUE)
-        na_comb_label <- if (input$na_comb_use_names) "name" else "index"
-        # get color from setting
-        plot_color <- ifelse(is.null(app_settings$plot_color_miss_custom),
-                             RColorBrewer::brewer.pal(n = 3, name = app_settings$plot_color_set)[2],
-                             app_settings$plot_color_miss_custom[2])
+      req(user_data())
+      missing_comb$combinations <- autoStatistics::missing_combinations(isolate(user_data()), names_col = TRUE)
+    })
+    output$na_comb_plot <- renderPlot({
+      req(missing_comb$combinations)
+      # plot color
+      plot_color <- ifelse(is.null(app_settings$plot_color_miss_custom),
+                           RColorBrewer::brewer.pal(n = 3, name = app_settings$plot_color_set)[2],
+                           app_settings$plot_color_miss_custom[2])
+      # names
+      label_type <- if (input$na_comb_use_names) "name" else "index"
+      label_length <- input$na_comb_line_break
+      labels <-
+        stringr::str_replace_all(missing_comb$combinations[["na_combinations"]][[{{ label_type }}]], paste0("(.{",label_length,"})"), "\\1\n")[1:input$na_comb_topn]
+      # top n
+      topn <- input$na_comb_topn
+      temp_data <- dplyr::top_n(missing_comb$combinations[["na_combinations"]], n = topn, wt = freq)
 
-        cur_plot <- plot(missing_obj, labels = na_comb_label, label_length = input$na_comb_line_break, show_numbers = FALSE,
-                         top_n = input$na_comb_topn, bar_color = plot_color, plot_title = "NA combinations",
-                         x_lab = "combination", y_lab = "n")
-        user_plot$na_comb <- cur_plot
-        return(cur_plot)
-      })
+      cur_plot <- ggplot(data = temp_data, aes(x = reorder(labels, freq), freq)) +
+        geom_bar(stat = "identity", fill = plot_color) +
+        #{if(show_numbers) geom_text(aes(label=freq, y = freq + text_offset), position = position_identity())} +
+        labs(title = "NA combinations", x = "combination", y = "n") +
+        coord_flip() +
+        theme_minimal()
+
+      # replace labels with groups
+      if(input$na_comb_use_group){
+        n_groups <- min(input$na_comb_topn, nrow(missing_comb$combinations[["na_combinations"]]))
+        group_label = NULL
+        for(i in seq(n_groups)){
+          group_label <- c(group_label, paste0("Group ", i))
+        }
+        print(group_label)
+        cur_plot <- cur_plot +
+          scale_x_discrete(labels = rev(group_label))
+      }
+      user_plot$na_comb <- cur_plot
+      return(cur_plot)
+    })
+    output$na_comb_groups <- renderText({
+      req(missing_comb$combinations)
+      n_groups <- min(input$na_comb_topn, nrow(missing_comb$combinations[["na_combinations"]]))
+      group_text <- NULL
+      label_type <- if (input$na_comb_use_names) "name" else "index"
+      # check if group is enabled
+      if(!input$na_comb_use_group){
+        return(group_text)
+      }
+      # create text
+      for(i in seq(n_groups)){
+        if(i == 1){
+          group_text <- paste0("Group ", i, ": ", missing_comb$combinations[["na_combinations"]][[{{ label_type }}]][[i]])
+        }
+        group_text <- paste(group_text, paste0("Group ", i, ": ", missing_comb$combinations[["na_combinations"]][[{{ label_type }}]][[i]]), sep = "\n")
+      }
+      return(group_text)
+
+
+
+
+
+
+
     })
 
 
-
-
-    # server na_distribution ---------------------------------------------------------------------------------------------------------------------
+# server na_distribution ---------------------------------------------------------------------------------------------------------------------
     # col1
     output$na_hist_col1 <- renderUI({
       req(user_data()) # req()

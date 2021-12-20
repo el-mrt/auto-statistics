@@ -35,6 +35,13 @@ factor_columns <- reactiveVal(NULL, "factor_cols")
 task_type <- reactiveVal(NULL, "task_type")
 user_task_old <- reactiveVal(NULL, "user_task")
 fct_col_warn_text <- reactiveVal(NULL)
+missing_comb <- reactiveValues(
+  combinations = NULL,
+  use = NULL,
+  names = NULL,
+  text = NULL
+)
+
 
 # warning transform numeric to factor
 UserWarning <- R6::R6Class(
