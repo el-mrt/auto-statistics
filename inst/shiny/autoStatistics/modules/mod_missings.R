@@ -226,13 +226,15 @@ missings_server <- function(id, user_data, target_col){
             geom_bar(na.rm = TRUE) +
             scale_fill_manual(values = plot_color) +
             labs(x = target_col()) +
-            theme_minimal()
+            theme_minimal() +
+            theme(legend.position = "none")
         }else{
           cur_plot <- ggplot(na_hist_data, aes(x = get(target_col()), fill = isna)) +
             geom_histogram(binwidth = input$na_hist_bins) +
             scale_fill_manual(values = plot_color) +
             labs(x = target_col()) +
-            theme_minimal()
+            theme_minimal() +
+            theme(legend.position = "none")
         }
 
       }else{
@@ -240,7 +242,8 @@ missings_server <- function(id, user_data, target_col){
           geom_jitter() +
           scale_color_manual(values = plot_color) +
           labs(x = target_col(), y = col_name2) +
-          theme_minimal()
+          theme_minimal()+
+          theme(legend.position = "none")
       }
       user_plot$na_dist <- cur_plot
       cur_plot
@@ -250,7 +253,5 @@ missings_server <- function(id, user_data, target_col){
     save_plot_server("save_na_per_col", plot_save = reactive({user_plot$na_per_col}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi)
     save_plot_server("save_na_comb", plot_save = reactive({user_plot$na_comb}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi)
     save_plot_server("save_na_dist", plot_save = reactive({user_plot$na_dist}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi)
-
-
     })
 }
