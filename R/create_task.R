@@ -30,15 +30,15 @@ create_task <- function(df, target_var, type = NULL, rm_na_target = TRUE){
   }
 
   if (type == "regr") {
-    task <- as_task_regr(df, target = target_var)
+    task <- mlr3::as_task_regr(df, target = target_var)
   } else if (type == "classif") {
     #check two class vs multi class classification
     if (length(unique(target_var)) == 2) {
       positive <- levels(df[[{{ target_var }}]])[1]
 
-      task <- as_task_classif(df, target = target_var, positive = positive)
+      task <- mlr3::as_task_classif(df, target = target_var, positive = positive)
     } else{
-      task <- as_task_classif(df, target = target_var)
+      task <- mlr3::as_task_classif(df, target = target_var)
     }
   } else stop("variable type not supported")
 

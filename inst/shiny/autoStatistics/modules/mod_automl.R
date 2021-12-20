@@ -91,10 +91,14 @@ auto_ml_server <- function(id, user_data){
     })
     # ensemble----
     output$task_ensemble <- renderUI({
-      checkboxInput(ns("task_ensemble"), label = "use ensemble learner", value = FALSE)
+      selectInput(ns("task_ensemble"), label = "ensemble", choices = available_ensemble, selected = "no")
     })
     observeEvent(input$task_ensemble, {
-      user_task$ensemble <- input$task_ensemble
+      if(input$task_ensemble == "combined"){
+        user_task$ensemble <- c("stacking", "bagging")
+      }else{
+        user_task$ensemble <- input$task_ensemble
+      }
       autoStatistics::debug_console(sprintf("ensemble learner changed. New Value: %s", user_task$ensemble))
     })
     output$ensemble_n_best <- renderUI({

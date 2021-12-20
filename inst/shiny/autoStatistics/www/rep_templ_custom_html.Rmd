@@ -1,0 +1,32 @@
+---
+title: "Custom Report"
+output:
+  html_document: default
+params:
+  custom_plot: "none"
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+library(tidyverse)
+```
+
+
+```{r echo=FALSE}
+purrr::walk(params$custom_plot$plot, function(plot){
+  print(plot)
+  cat("\n")
+})
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
