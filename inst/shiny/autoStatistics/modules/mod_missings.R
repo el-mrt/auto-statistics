@@ -38,7 +38,7 @@ missings_ui <- function(id){
     h3(HTML("<u><i>Missing values distribution</i></u>")),
     fluidRow(
       column(2,
-             p(HTML("<i>description.....</i>")),
+             p(HTML(paste0("<i>",app_descriptions[["plot_mis_hist"]],"</i>"))),
              uiOutput(ns("na_hist_col1")),
              uiOutput(ns("na_hist_bins")),
              uiOutput(ns("na_hist_col2"))
