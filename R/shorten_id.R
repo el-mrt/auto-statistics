@@ -15,8 +15,8 @@
 shorten_id <- function(learners, task_type){
 s_id <- function(learner, task_type){
   learner$id <- switch (task_type,
-                        regr = sub(".*regr.", "regr.", learner$id),
-                        classif = sub(".*classif.", "classif.", learner$id)
+                        regr = sub(".*regr.", "", learner$id),
+                        classif = sub(".*classif.", "", learner$id)
   )
   return(learner)
 }

@@ -20,13 +20,18 @@ create_best_benchmark <- function(task, bmr, measure, n_best, resampling = NULL)
     resampling <- rsmp("cv")
   }
 
-  bmr_scores <- arrange(as.data.table(bmr$score(measure)), !!sym(measure$id))
+  if (measure$minimize) { # checks, if measure minimizes, so that best results will be displayed in first observations
+    bmr_scores <- arrange(as.data.table(bmr$score(measure)), !!sym(measure$id))
+  } else {
+    bmr_scores <- arrange(as.data.table(bmr$score(measure)), -!!sym(measure$id))
+  }
 
   n_best <- min(c(n_best, nrow(bmr_scores))) # could think about taking only learners within a certain percentile
 
   lrns <- vector(mode = "list", length = n_best) # allocate memory for list of length n_best
 
   # save top n learners from first benchmarking
+  # TODO -- this might be cleaner code using with imap
   for (i in 1:n_best) {
     lrns[[i]] <- bmr_scores$learner[[i]]$base_learner(recursive = 0)
   }

@@ -49,6 +49,7 @@ perform_auto_ml <- function(param_list){
   feature_filter_input <- param_list$feature_filter
   include_featureless_input <- param_list$incl_featureless
   hpo_bl_input <- param_list$hpo_base_learner
+  incl_at_input <- param_list$incl_at
 
   measure <- create_measure(task, measure_input)
   outer_resampling <- create_resampling(
@@ -85,13 +86,13 @@ perform_auto_ml <- function(param_list){
                                      gl_robust,
                                      feature_filter_input)
 
-      learners <- create_auto_tuner(gl_ff,
+      learners_at <- create_auto_tuner(gl_ff,
                                     inner_resampling,
                                     measure,
                                     terminator,
                                     tuner)
     } else {
-      learners <- create_auto_tuner(gl_robust,
+      learners_at <- create_auto_tuner(gl_robust,
                                     inner_resampling,
                                     measure,
                                     terminator,
@@ -107,7 +108,7 @@ perform_auto_ml <- function(param_list){
 
         stacking_ensemble <- create_stacking_ensemble(task = task,
                                                       type = task_type_input,
-                                                      learners = learners,
+                                                      learners = learners_at,
                                                       feature_filter = feature_filter_input,
                                                       inner_resampling = inner_resampling,
                                                       measure = measure,
@@ -118,37 +119,53 @@ perform_auto_ml <- function(param_list){
       }
 
       if ("bagging" %in% ensemble_input) {
-        bagging_ensemble <- create_bagging_ensemble(learners = learners,
+        bagging_ensemble <- create_bagging_ensemble(learners = learners_at,
                                                     task_type = task_type_input)
 
         ensemble_learners <- c(ensemble_learners, list(bagging_ensemble))
       }
-
-      learners <- c(learners, ensemble_learners)
     }
 
     # should base learners be included in HPO benchmark
     if (hpo_bl_input) {
       hpo_l_base <- create_learners(task, learners_input)
       hpo_gl_base <- create_robust_learners(task, hpo_l_base)
+    }
+
+    # determine which learners will be included
+    learners <- NULL
+
+    # TODO maybe here we get a list from shiny for all possible types
+    if (incl_at_input) {
+      learners <- c(learners, learners_at)
+    }
+    if (hpo_bl_input) {
       learners <- c(learners, hpo_gl_base)
     }
+    if (!("no" %in% ensemble_input)) {
+      learners <- c(learners, ensemble_learners)
+    }
+
+    if(is.null(learners)) stop("learners have to be selected")
+
+
   } else { # without HPO
     learners <- create_robust_learners(task, l_base)
   }
 
-  if (include_featureless_input) {
+  if (include_featureless_input) { # appends featureless learner if desired
     featureless <- paste0(task_type_input, ".", "featureless")
 
     learners <- c(learners, lrn(featureless))
   }
 
+  # removes all preprocessing steps from the name and just returns regr.xxx(.tuned) /classif.xxx(.tuned)
   learners <- shorten_id(learners, task_type_input)
 
   design <- benchmark_grid(task = task,
                            resamplings = outer_resampling,
                            learners = learners)
-
+  # store_models needs to be true, so that best configurations can be extracted
   bmr <- benchmark(design, store_models = TRUE)
 
   # could include n_best as input from shiny app, for now fixed at 5

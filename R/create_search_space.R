@@ -30,7 +30,7 @@ create_search_space <- function(task, learners){
     } else if (id == "ranger") {
       # mtry has issues with feature filter-- filter might return small subset, which would be OOB for param search
       # l$param_set$values$mtry <- to_tune(1, round(task$ncol/2))
-      l$param_set$values$num.trees <- to_tune(1,1e4)
+      l$param_set$values$num.trees <- to_tune(50, 500)
       l$param_set$values$min.node.size <- to_tune(1, 5)
     } else if (id == "xgboost") {
       l$param_set$values$eta <- to_tune(0, 1)

@@ -2,9 +2,9 @@
 % Please edit documentation in R/create_best_benchmark.R
 \name{create_best_benchmark}
 \alias{create_best_benchmark}
-\title{Function that given a benchmark result, measure, task_type, task number of learners and resampling strategy outputs a new benchmark, containing the best learners, as well an ensemble of those}
+\title{Function that given a benchmark result, measure, task_type, task number of learners and resampling strategy outputs a new benchmark, containing the best learners}
 \usage{
-create_best_benchmark(task, bmr, measure, n_best, ensemble, resampling = NULL)
+create_best_benchmark(task, bmr, measure, n_best, resampling = NULL)
 }
 \arguments{
 \item{task}{task}
@@ -16,12 +16,10 @@ create_best_benchmark(task, bmr, measure, n_best, ensemble, resampling = NULL)
 \item{n_best}{number of choosen learners}
 
 \item{resampling}{resampling strategy - needs to be mlr3 object for now}
-
-\item{task_type}{task type}
 }
 \value{
 returns a benchmarking result
 }
 \description{
-Function that given a benchmark result, measure, task_type, task number of learners and resampling strategy outputs a new benchmark, containing the best learners, as well an ensemble of those
+Function that given a benchmark result, measure, task_type, task number of learners and resampling strategy outputs a new benchmark, containing the best learners
 }

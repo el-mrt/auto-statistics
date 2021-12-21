@@ -15,6 +15,3 @@ benchmark results and measure
 \description{
 Function that applies Auto ML Pipeline given a list of parameter
 }
-\examples{
-
-}
