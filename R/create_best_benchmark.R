@@ -43,7 +43,7 @@ create_best_benchmark <- function(task, bmr, measure, n_best, resampling = NULL)
 
   design <- benchmark_grid(task, lrns, resampling)
 
-  bmr_ensemble <- benchmark(design, store_models = TRUE)
+  bmr_best <- benchmark(design, store_models = TRUE)
 
-  return(bmr_ensemble)
+  return(bmr_best)
 }

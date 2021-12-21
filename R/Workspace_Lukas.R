@@ -20,6 +20,7 @@
 # param_list$tuning_method <- "random_search"
 # param_list$ensemble <- c("stacking")
 # param_list$incl_at <- FALSE
+# param_list$n_best <- 5
 #
 # t1 <- perform_auto_ml(param_list)
 #
