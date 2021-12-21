@@ -19,6 +19,11 @@ available_feature_filter <- list(
 )
 cat("available_fs loaded\n")
 
+# ensemble ----------------------------------------------------------------------
+available_ensemble <- c("None" = "no", "Bagging" = "bagging", "Stacking" = "stacking", "Combined" = "combined")
+
+
+cat("available_ensemble loaded\n")
 # NA imp ------------------------------------------------------------------
 
 available_na_imp <- c("Auto" = "auto", "Omit" = "omit")

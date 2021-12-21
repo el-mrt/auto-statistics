@@ -15,7 +15,7 @@ library("dplyr")
 
 
 modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
-#modules_path <- "./modules"
+modules_path <- "./modules"
 
 files <- list.files(modules_path, full.names = TRUE)
 lapply(files, source)
@@ -35,6 +35,13 @@ factor_columns <- reactiveVal(NULL, "factor_cols")
 task_type <- reactiveVal(NULL, "task_type")
 user_task_old <- reactiveVal(NULL, "user_task")
 fct_col_warn_text <- reactiveVal(NULL)
+missing_comb <- reactiveValues(
+  combinations = NULL,
+  use = NULL,
+  names = NULL,
+  text = NULL
+)
+
 
 # warning transform numeric to factor
 UserWarning <- R6::R6Class(
@@ -101,9 +108,20 @@ results <- reactiveValues(
 # plots for report
 
 report_plots <- reactiveValues(
-  custom_report = list("plot" = vector(mode = "list", length = 0L), "plot_name" = vector(mode = "list", length = 0L))
+  custom_report = list("plot" = vector(mode = "list", length = 0L),
+                       "plot_name" = vector(mode = "list", length = 0L))
 
 )
+
+report_settings <- reactiveValues(
+  type = NULL,
+  append_custom = FALSE
+)
+cur_report <- reactiveValues(
+  type = NULL,
+  path = NULL
+)
+
 print(report_plots)
 
 

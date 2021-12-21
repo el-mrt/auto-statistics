@@ -40,9 +40,10 @@ save_plot_server <- function(id, plot_save, plot_width = 1920, plot_height = 108
         report_plots[[cur_report]][["plot_name"]] <- autoStatistics::appendList(report_plots[[cur_report]][["plot_name"]]," ")
         report_plots[[cur_report]][["plot"]] <- autoStatistics::appendList(
           report_plots[[cur_report]][["plot"]],
-          plot_save() +
-            theme(axis.text=element_text(size=app_settings$plot_download_text_size, family = app_settings$plot_download_text_font),
-                  axis.title=element_text(size=app_settings$plot_download_text_size, family = app_settings$plot_download_text_font)))
+          plot_save() #+
+          #   theme(axis.text=element_text(size=app_settings$plot_download_text_size, family = app_settings$plot_download_text_font),
+          #         axis.title=element_text(size=app_settings$plot_download_text_size, family = app_settings$plot_download_text_font)))
+        )
       }else{
         # check if name is already in list
         if(input$filename %in% report_plots[[cur_report]][["plot_name"]]){
