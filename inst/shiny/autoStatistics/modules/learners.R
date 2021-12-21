@@ -20,7 +20,7 @@ available_feature_filter <- list(
 cat("available_fs loaded\n")
 
 # ensemble ----------------------------------------------------------------------
-available_ensemble <- c("None" = "no", "Bagging" = "bagging", "Stacking" = "stacking", "Combined" = "combined")
+available_ensemble <- c("None" = "no", "Bagging" = "bagging", "Stacking" = "stacking", "Both" = "both")
 
 
 cat("available_ensemble loaded\n")
@@ -34,7 +34,7 @@ available_measure <- list(
   "classif" = c("Auto" = "auto", "Accurity" = "classif.acc", "Balanced Accuracy" = "classif.bacc")
 )
 
-available_tuning_methods <- c("Auto" = "auto", "grid search" = "grid_search", "cmaes" = "cmaes", "random search" = "random_search")
+available_tuning_methods <- c("Auto" = "auto", "grid search" = "grid_search", "random search" = "random_search")
 
 # pre var importance ------------------------------------------------------------------------------------------------------------------
 

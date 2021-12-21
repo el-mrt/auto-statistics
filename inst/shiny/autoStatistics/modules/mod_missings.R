@@ -135,7 +135,8 @@ missings_server <- function(id, user_data, target_col){
         stringr::str_replace_all(missing_comb$combinations[["na_combinations"]][[{{ label_type }}]], paste0("(.{",label_length,"})"), "\\1\n")[1:input$na_comb_topn]
       # top n
       topn <- input$na_comb_topn
-      temp_data <- dplyr::top_n(missing_comb$combinations[["na_combinations"]], n = topn, wt = freq)
+      temp_data <- missing_comb$combinations[["na_combinations"]][c(1:input$na_comb_topn), ]
+
 
       cur_plot <- ggplot(data = temp_data, aes(x = reorder(labels, freq), freq)) +
         geom_bar(stat = "identity", fill = plot_color) +
@@ -151,7 +152,6 @@ missings_server <- function(id, user_data, target_col){
         for(i in seq(n_groups)){
           group_label <- c(group_label, paste0("Group ", i))
         }
-        print(group_label)
         cur_plot <- cur_plot +
           scale_x_discrete(labels = rev(group_label))
       }
