@@ -50,6 +50,7 @@ perform_auto_ml <- function(param_list){
   include_featureless_input <- param_list$incl_featureless
   hpo_bl_input <- param_list$hpo_base_learner
   incl_at_input <- param_list$incl_at
+  n_best_input <- param_list$n_best
 
   measure <- create_measure(task, measure_input)
   outer_resampling <- create_resampling(
@@ -172,7 +173,7 @@ perform_auto_ml <- function(param_list){
   bmr_best <- create_best_benchmark(task = task,
                                     bmr = bmr,
                                     measure = measure,
-                                    n_best = 5)
+                                    n_best = n_best_input)
 
   #initialize output list
   output_list <- list(bmr = NULL, bmr_best = NULL, measure = NULL)
