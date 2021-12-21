@@ -1,4 +1,5 @@
-
+# incl_at
+# incl_at, hpo_baselearner, ensemble
 auto_ml_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -9,7 +10,6 @@ auto_ml_ui <- function(id){
              actionButton(ns("save_param"), "save params"),
              uiOutput(ns("task_na")), hr(),
              uiOutput(ns("task_learner")),
-             uiOutput(ns("task_ensemble")),
              uiOutput(ns("ensemble_n_best")),
              uiOutput(ns("task_featureless")),hr(),
              uiOutput(ns("task_resampling")),
@@ -22,6 +22,8 @@ auto_ml_ui <- function(id){
              uiOutput(ns("task_tuning")),
              conditionalPanel(condition = "input.task_tuning == true",
                               tagList(
+                                uiOutput(ns("task_ensemble")),
+                                uiOutput(ns("task_include_at")),
                                 uiOutput(ns("hpo_base_learner")),
                                 uiOutput(ns("task_term_runtime")),
                                 uiOutput(ns("task_term_evals")),
@@ -94,7 +96,7 @@ auto_ml_server <- function(id, user_data){
       selectInput(ns("task_ensemble"), label = "ensemble", choices = available_ensemble, selected = "no")
     })
     observeEvent(input$task_ensemble, {
-      if(input$task_ensemble == "combined"){
+      if(input$task_ensemble == "both"){
         user_task$ensemble <- c("stacking", "bagging")
       }else{
         user_task$ensemble <- input$task_ensemble
@@ -102,7 +104,7 @@ auto_ml_server <- function(id, user_data){
       autoStatistics::debug_console(sprintf("ensemble learner changed. New Value: %s", user_task$ensemble))
     })
     output$ensemble_n_best <- renderUI({
-      numericInput("ensemble_n_best", "n best learners", 5, 1, 100, 1)
+      numericInput("ensemble_n_best", "benchmark n best learners", 5, 1, 100, 1)
     })
     observeEvent(input$ensemble_n_best, {
       user_task$ensemble_n_best <- input$ensemble_n_best
@@ -115,6 +117,13 @@ auto_ml_server <- function(id, user_data){
     observeEvent(input$task_featureless, {
       user_task$incl_featureless <- input$task_featureless
       autoStatistics::debug_console(sprintf("task_featureless learner changed. New Value: %s", user_task$incl_featureless))
+    })
+    # include_at -----
+    output$task_include_at <- renderUI({
+      checkboxInput(ns("task_include_at"), "include Autotuner", TRUE)
+    })
+    observeEvent(input$task_include_at, {
+      user_task$include_at <- input$task_include_at
     })
 
     # tuning----
@@ -248,7 +257,8 @@ auto_ml_server <- function(id, user_data){
         "tuning_method" = user_task$tuning_method,
         "terminator" = user_task$terminator,
         "incl_featureless" = user_task$incl_featureless,
-        "hpo_base_learner" = user_task$hpo_base_learner
+        "hpo_base_learner" = user_task$hpo_base_learner,
+        "include_at" = user_task$include_at
       )
       #print(reactiveValuesToList(user_task))
       print(param_list)

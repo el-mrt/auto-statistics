@@ -159,7 +159,7 @@ feature_importance <- function(task, filters, ranks = TRUE){
 #' @export
 #'
 #' @examples
-#' appendList(l = list, x = element, name = "TUD")
+#' appendList(l = your_list, x = element, name = "TUD")
 
 
 
@@ -173,14 +173,7 @@ appendList <- function(l, x, name=NULL){
 }
 
 
-#' generate_report
-#'
-#' @description Function to generate a report
-#'
-#' @param type type of the report. possible values are "custom", "descriptive", "ml"
-#' @param params parameters which are visible to the render process
-#' @param output_type type of output. possible values are "pdf", "html"
-#'
+
 
 
 

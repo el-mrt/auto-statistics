@@ -79,7 +79,8 @@ user_task <-  reactiveValues(
   tuning_method = NULL,
   terminator = NULL,
   incl_featureless = FALSE,
-  hpo_base_learner = FALSE
+  hpo_base_learner = FALSE,
+  include_at = TRUE
 )
 # plots shown to the user
 user_plot <- reactiveValues(
