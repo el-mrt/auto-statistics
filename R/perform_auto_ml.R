@@ -14,17 +14,14 @@ perform_auto_ml <- function(param_list){
   # if "auto" is specified in param_list it is changed to NULL
   param_list <- auto_to_null(param_list)
 
+  # load task and na_input to apply NA strategy
   na_input <- param_list$na
   task <- param_list$task
 
   # if na_input is "omit" the task is overwriten with the same task but no NA's
   task <- na_omit_task(task, na_input)
 
-  ensemble_input <- param_list$ensemble
-  terminator_input <- param_list$terminator
-  measure_input <- param_list$measure
-
-  # inner and outer resamplings are specified in sub lists
+  # outer resamplings are specified in sub lists
   if (is.null(param_list$o.resampling)) {
     o.resampling_strat_input <- NULL
     o.resampling_params_input <- NULL
@@ -33,6 +30,7 @@ perform_auto_ml <- function(param_list){
     o.resampling_params_input <- param_list$o.resampling[[2]]
   }
 
+  # inner resamplings are specified in sub lists
   if (is.null(param_list$i.resampling)) {
     i.resampling_strat_input <- NULL
     i.resampling_params_input <- NULL
@@ -41,7 +39,7 @@ perform_auto_ml <- function(param_list){
     i.resampling_params_input <- param_list$i.resampling[[2]]
   }
 
-
+  # read in other objects from param list
   tuner_input <- param_list$tuning_method
   is_hpo_input <- param_list$tuning
   task_type_input <- param_list$type
@@ -51,7 +49,11 @@ perform_auto_ml <- function(param_list){
   hpo_bl_input <- param_list$hpo_base_learner
   incl_at_input <- param_list$incl_at
   n_best_input <- param_list$n_best
+  ensemble_input <- param_list$ensemble
+  terminator_input <- param_list$terminator
+  measure_input <- param_list$measure
 
+  # create measure and outer resampling
   measure <- create_measure(task, measure_input)
   outer_resampling <- create_resampling(
     task,
@@ -59,6 +61,7 @@ perform_auto_ml <- function(param_list){
     params = o.resampling_params_input
   )
 
+  # create base learners - will be transformed eather with or without HPO
   l_base <- create_learners(
     task,
     vec_learners = learners_input
@@ -67,32 +70,39 @@ perform_auto_ml <- function(param_list){
   if (is_hpo_input) { # with HPO
     if (is.null(i.resampling_strat_input)) { # check if an inner resampling method is specified
       inner_resampling <- rsmp("holdout")
-    } else {
+    } else { # choose inner resampling method only if applicabe
       inner_resampling <- create_resampling(
         task,
         strat = i.resampling_strat_input,
         params = i.resampling_params_input)
     }
 
+    # create terminator and tuner for all resamplings of autotuners later on
     terminator <- create_terminator(vec_terminators = terminator_input)
     tuner <- create_tuner(tuner_input)
 
+    # add search space into learners
     l_w_sp <- create_search_space(task, l_base)
 
+    # adds robustify pipeline
     gl_robust <- create_robust_learners(task, l_w_sp)
 
-    if (feature_filter_input != "no") { # choose if feature filtering is applied
+    # choose if feature filtering is applied - output of if statement is always object names learners_at
+    if (feature_filter_input != "no") {
+      # add feature filter with tunable parameter nfeat
       gl_ff <- create_feature_filter(task,
                                      task_type_input,
                                      gl_robust,
                                      feature_filter_input)
 
+      # transform graphlearner into auto tuner
       learners_at <- create_auto_tuner(gl_ff,
                                     inner_resampling,
                                     measure,
                                     terminator,
                                     tuner)
     } else {
+      # transform graphlearner into auto tuner
       learners_at <- create_auto_tuner(gl_robust,
                                     inner_resampling,
                                     measure,
@@ -103,9 +113,10 @@ perform_auto_ml <- function(param_list){
     # should ensemble models be created, if so, which?
     if (!("no" %in% ensemble_input)) {
 
+      # initialize empty list
       ensemble_learners <- NULL
 
-      if ("stacking" %in% ensemble_input) {
+      if ("stacking" %in% ensemble_input) { # create stacking ensemble
 
         stacking_ensemble <- create_stacking_ensemble(task = task,
                                                       type = task_type_input,
@@ -119,7 +130,7 @@ perform_auto_ml <- function(param_list){
         ensemble_learners <- c(ensemble_learners, list(stacking_ensemble))
       }
 
-      if ("bagging" %in% ensemble_input) {
+      if ("bagging" %in% ensemble_input) { # create bagging ensemble
         bagging_ensemble <- create_bagging_ensemble(learners = learners_at,
                                                     task_type = task_type_input)
 
@@ -133,10 +144,12 @@ perform_auto_ml <- function(param_list){
       hpo_gl_base <- create_robust_learners(task, hpo_l_base)
     }
 
-    # determine which learners will be included
+    # determine which learners will be included; initialize emply list
     learners <- NULL
 
     # TODO maybe here we get a list from shiny for all possible types
+    # for now all are stored individually
+    # appends applicable learner into the overall list "learners"
     if (incl_at_input) {
       learners <- c(learners, learners_at)
     }
@@ -147,10 +160,12 @@ perform_auto_ml <- function(param_list){
       learners <- c(learners, ensemble_learners)
     }
 
-    if(is.null(learners)) stop("learners have to be selected")
+    # if no elements are selected - throw error
+    if(is.null(learners)) stop("no learners selected")
 
 
   } else { # without HPO
+    # add robustify pipeline to learner
     learners <- create_robust_learners(task, l_base)
   }
 
@@ -160,9 +175,10 @@ perform_auto_ml <- function(param_list){
     learners <- c(learners, lrn(featureless))
   }
 
-  # removes all preprocessing steps from the name and just returns regr.xxx(.tuned) /classif.xxx(.tuned)
+  # removes all preprocessing steps from the learner$id and just returns regr.xxx(.tuned) /classif.xxx(.tuned)
   learners <- shorten_id(learners, task_type_input)
 
+  # creates design for benchmark
   design <- benchmark_grid(task = task,
                            resamplings = outer_resampling,
                            learners = learners)
