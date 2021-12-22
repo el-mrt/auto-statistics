@@ -10,6 +10,7 @@
 
 
 perform_auto_ml <- function(param_list){
+  print(param_list)
 
   # if "auto" is specified in param_list it is changed to NULL
   param_list <- auto_to_null(param_list)
@@ -29,6 +30,7 @@ perform_auto_ml <- function(param_list){
     o.resampling_strat_input <- param_list$o.resampling[[1]]
     o.resampling_params_input <- param_list$o.resampling[[2]]
   }
+  message("outer resampling extracted")
 
   # inner resamplings are specified in sub lists
   if (is.null(param_list$i.resampling)) {
@@ -38,6 +40,7 @@ perform_auto_ml <- function(param_list){
     i.resampling_strat_input <- param_list$i.resampling[[1]]
     i.resampling_params_input <- param_list$i.resampling[[2]]
   }
+  message("inner resampling extracted")
 
   # read in other objects from param list
   tuner_input <- param_list$tuning_method
@@ -52,6 +55,7 @@ perform_auto_ml <- function(param_list){
   ensemble_input <- param_list$ensemble
   terminator_input <- param_list$terminator
   measure_input <- param_list$measure
+  message("other params extracted")
 
   # create measure and outer resampling
   measure <- create_measure(task, measure_input)
@@ -60,12 +64,14 @@ perform_auto_ml <- function(param_list){
     strat = o.resampling_strat_input,
     params = o.resampling_params_input
   )
+  message("measure created")
 
   # create base learners - will be transformed eather with or without HPO
   l_base <- create_learners(
     task,
     vec_learners = learners_input
   )
+  message("base learners created")
 
   if (is_hpo_input) { # with HPO
     if (is.null(i.resampling_strat_input)) { # check if an inner resampling method is specified
@@ -109,7 +115,7 @@ perform_auto_ml <- function(param_list){
                                     terminator,
                                     tuner)
     }
-
+    message("test1")
     # should ensemble models be created, if so, which?
     if (!("no" %in% ensemble_input)) {
 
@@ -137,13 +143,14 @@ perform_auto_ml <- function(param_list){
         ensemble_learners <- c(ensemble_learners, list(bagging_ensemble))
       }
     }
+    message("test2")
 
     # should base learners be included in HPO benchmark
     if (hpo_bl_input) {
       hpo_l_base <- create_learners(task, learners_input)
       hpo_gl_base <- create_robust_learners(task, hpo_l_base)
     }
-
+    message("test3")
     # determine which learners will be included; initialize emply list
     learners <- NULL
 
@@ -153,12 +160,16 @@ perform_auto_ml <- function(param_list){
     if (incl_at_input) {
       learners <- c(learners, learners_at)
     }
+    message("test4.1")
     if (hpo_bl_input) {
       learners <- c(learners, hpo_gl_base)
     }
+    message("test4.2")
     if (!("no" %in% ensemble_input)) {
       learners <- c(learners, ensemble_learners)
     }
+    message("test4.3")
+
 
     # if no elements are selected - throw error
     if(is.null(learners)) stop("no learners selected")
@@ -168,29 +179,34 @@ perform_auto_ml <- function(param_list){
     # add robustify pipeline to learner
     learners <- create_robust_learners(task, l_base)
   }
+  message("test5")
 
   if (include_featureless_input) { # appends featureless learner if desired
     featureless <- paste0(task_type_input, ".", "featureless")
 
     learners <- c(learners, lrn(featureless))
   }
+  message("test6")
 
   # removes all preprocessing steps from the learner$id and just returns regr.xxx(.tuned) /classif.xxx(.tuned)
   learners <- shorten_id(learners, task_type_input)
+  message("test7")
 
   # creates design for benchmark
   design <- benchmark_grid(task = task,
                            resamplings = outer_resampling,
                            learners = learners)
+  message("test8")
   # store_models needs to be true, so that best configurations can be extracted
   bmr <- benchmark(design, store_models = TRUE)
+  message("test9")
 
   # could include n_best as input from shiny app, for now fixed at 5
   bmr_best <- create_best_benchmark(task = task,
                                     bmr = bmr,
                                     measure = measure,
                                     n_best = n_best_input)
-
+  message("test10")
   #initialize output list
   output_list <- list(bmr = NULL, bmr_best = NULL, measure = NULL)
 
@@ -199,6 +215,7 @@ perform_auto_ml <- function(param_list){
   output_list$bmr_best <- bmr_best
 
   output_list$bmr <- bmr
+  message("test11")
 
   return(output_list)
 }

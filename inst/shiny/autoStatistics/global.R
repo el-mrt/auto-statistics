@@ -126,5 +126,11 @@ cur_report <- reactiveValues(
 print(report_plots)
 
 
+# log level ---------------------------------------------------------------
+
+requireNamespace("lgr")
+
+logger = lgr::get_logger("mlr3")
+logger$set_threshold("info")
 
 cat("global.R called\n")
