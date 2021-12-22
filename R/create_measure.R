@@ -29,12 +29,12 @@ create_measure <- function(task, measure = NULL){
     }
 
     meas <- switch (type,
-                   regr = msr("regr.rmse"),
-                   twoclass = msr("classif.bacc"),
-                   multiclass = msr("classif.bacc")
+                   regr = mlr3::msr("regr.rmse"),
+                   twoclass = mlr3::msr("classif.bacc"),
+                   multiclass = mlr3::msr("classif.bacc")
     )
   } else {
-    meas <- msr(measure)
+    meas <- mlr3::msr(measure)
 
     if (task$task_type != meas$task_type) {
       stop("measure not supported")
