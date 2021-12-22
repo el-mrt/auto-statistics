@@ -20,5 +20,5 @@ list
 Function to append an element to a list
 }
 \examples{
-appendList(l = list, x = element, name = "TUD")
+appendList(l = your_list, x = element, name = "TUD")
 }
