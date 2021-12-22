@@ -1,7 +1,7 @@
 # learners ----------------------------------------------------------------
 available_learners <- list(
-  "regr" = c("Auto" = "auto","KNN" = "knn", "Random Forest" = "rf", "SVM" = "svm", "XGBoost" = "xgb"),
-  "classif" = c("Auto" = "auto", "KNN" = "knn", "Random Forest" = "rf", "SVM" = "svm", "XGBoost" = "xgb")
+  "regr" = c("Automatic" = "auto","KNN" = "knn", "Random Forest" = "rf", "SVM" = "svm", "XGBoost" = "xgb"),
+  "classif" = c("Automatic" = "auto", "KNN" = "knn", "Random Forest" = "rf", "SVM" = "svm", "XGBoost" = "xgb")
 )
 cat("available_learners loaded\n")
 
@@ -9,8 +9,8 @@ cat("available_learners loaded\n")
 # fs ----------------------------------------------------------------------
 
 available_feature_filter <- list(
-  "regr" = c("Auto" = "auto", "None" = "none", "Featureless" = "regr.featureless", "Rpart" = "regr.rpart", "XGBoost" = "regr.xgboost"),
-  "classif" = c("Auto" = "auto", "None" = "none", "Featureless" = "classif.featureless", "Rpart" = "classif.rpart", "XGBoost" = "classif.xgboost")
+  "regr" = c("Automatic" = "auto", "None" = "none", "Featureless" = "regr.featureless", "Rpart" = "regr.rpart", "XGBoost" = "regr.xgboost"),
+  "classif" = c("Automatic" = "auto", "None" = "none", "Featureless" = "classif.featureless", "Rpart" = "classif.rpart", "XGBoost" = "classif.xgboost")
 )
 
 available_feature_filter <- list(
@@ -26,15 +26,15 @@ available_ensemble <- c("None" = "no", "Bagging" = "bagging", "Stacking" = "stac
 cat("available_ensemble loaded\n")
 # NA imp ------------------------------------------------------------------
 
-available_na_imp <- c("Auto" = "auto", "Omit" = "omit")
+available_na_imp <- c("Automatic" = "auto", "Omit" = "omit")
 cat("available_na_imp loaded\n")
 
 available_measure <- list(
-  "regr" = c("Auto" = "auto", "rmse" = "regr.rmse", "mse" = "regr.mse", "mae" = "regr.mae"),
-  "classif" = c("Auto" = "auto", "Accurity" = "classif.acc", "Balanced Accuracy" = "classif.bacc")
+  "regr" = c("Automatic" = "auto", "rmse" = "regr.rmse", "mse" = "regr.mse", "mae" = "regr.mae"),
+  "classif" = c("Automatic" = "auto", "Accurity" = "classif.acc", "Balanced Accuracy" = "classif.bacc")
 )
 
-available_tuning_methods <- c("Auto" = "auto", "grid search" = "grid_search", "random search" = "random_search")
+available_tuning_methods <- c("Automatic" = "auto", "grid search" = "grid_search", "random search" = "random_search")
 
 # pre var importance ------------------------------------------------------------------------------------------------------------------
 

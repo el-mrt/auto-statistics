@@ -4,6 +4,7 @@ auto_ml_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidRow(
+      shinybusy::add_busy_spinner(spin = "fading-circle"),
       column(2,
              h3("Settings"),
              actionButton(ns("start"), "Start"),
@@ -39,6 +40,10 @@ auto_ml_ui <- function(id){
                column(12,
                       plotOutput(ns("bmr_result"))
                )
+             ),
+             fluidRow(
+               column(12,
+                      plotOutput(ns("bmr_result_ensemble")))
              )
       )
     )
@@ -75,13 +80,21 @@ auto_ml_server <- function(id, user_data){
       print(paste0("=======:", user_task$type))
       if(is.null(user_task$type)){
         selectInput(ns("task_learner"), "Learners",
-                    choices = c("Auto"), selected = "Auto")
+                    choices = c("auto"), selected = "auto")
       }else{
         selectInput(ns("task_learner"), "Learners", multiple = TRUE,
                     choices = available_learners[[user_task$type]], selected = "auto")
       }
     })
     observeEvent(input$task_learner, {
+      # update learner if auto selected
+      if((c("auto") %in% input$task_learner) && !(c("auto") %in% user_task$learners)){
+        updateSelectInput(session, "task_learner", "Learners", choices = available_learners[[user_task$type]], selected = "auto")
+      }else if(length(input$task_learner) > 1){
+        updateSelectInput(session, "task_learner", "Learners", choices = available_learners[[user_task$type]],
+                          selected = input$task_learner[!input$task_learner %in% c("auto")])
+      }
+
       user_task$learners <- input$task_learner
       autoStatistics::debug_console(paste(c("learners updated. New Learners are: ", user_task$learners), collapse = ", "))
     })
@@ -242,6 +255,7 @@ auto_ml_server <- function(id, user_data){
     # start----
     observeEvent(input$start, {
       req(user_task$task)
+      shinybusy::show_spinner() # show the spinner
       param_list <- list(
         "task" = user_task$task,
         "type" = user_task$type,
@@ -258,29 +272,40 @@ auto_ml_server <- function(id, user_data){
         "terminator" = user_task$terminator,
         "incl_featureless" = user_task$incl_featureless,
         "hpo_base_learner" = user_task$hpo_base_learner,
-        "include_at" = user_task$include_at
+        "incl_at" = user_task$include_at
       )
       #print(reactiveValuesToList(user_task))
       print(param_list)
-      save("param_list", file = "test_ohne_ho.Rdata")
-      shinybusy::show_spinner()
-      bmr_result <- autoStatistics::perform_auto_ml(param_list)
-      results$bmr_result <- bmr_result
-      shinybusy::hide_spinner()
+      #save("param_list", file = "test_ohne_ho.Rdata")
+
+      tryCatch({
+        results$bmr_result <- autoStatistics::perform_auto_ml(param_list)
+      }, error=function(cond){
+        message(paste("ERROR BENCHMARK:", cond))
+      })
+
+      shinybusy::hide_spinner() # hide spinner
       print(results$bmr_result )
-      save("bmr_result", file = "bmr_result.Rdata")
+      #save("bmr_result", file = "bmr_result.Rdata")
+      shinybusy::hide_spinner()
     })
     observeEvent(input$save_param, {
       req(param_list)
-      save("param_list", file = "param_list.Rdata")
+      #save("param_list", file = "param_list.Rdata")
     })
 
     # Results ----------------------------------------------------------------
     output$bmr_result <- renderPlot({
       req(results$bmr_result)
-      ggplot2::autoplot(results$bmr_result) +
-        theme_minimal() +
-        ylab("add correct measure")
+      cur_plot <- ggplot2::autoplot(results$bmr_result$bmr, measure = results$bmr_result$measure) +
+        theme(axis.text=element_text(size=12))
+      return(cur_plot)
     })
+    output$bmr_result_ensemble <- renderPlot({
+      req(results$bmr_result)
+      cur_plot <- ggplot2::autoplot(results$bmr_result$bmr_best, measure = results$bmr_result$measure) +
+        theme(plot.title = element_blank(), axis.text=element_text(size=14))
+      return(cur_plot)
+      })
   })
 }
