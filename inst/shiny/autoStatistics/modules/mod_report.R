@@ -64,44 +64,43 @@ report_server <- function(id, user_data){
       # For PDF output, change this to "report.pdf"
       filename = "report.html",
       content = function(file) {
-        # Copy the report file to a temporary directory before processing it, in
-        # case we don't have write permissions to the current working dir (which
-        # can happen when deployed).
+
         path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
         print(path_template)
         tempReport <- file.path(tempdir(), "report.Rmd")
         file.copy(path_template, tempReport, overwrite = TRUE)
 
-        # Set up parameters to pass to Rmd document
-        params <- list(n = input$slider)
 
-        # Knit the document, passing in the `params` list, and eval it in a
-        # child of the global environment (this isolates the code in the document
-        # from the code in this app).
         rmarkdown::render(tempReport, output_file = file,
                           params = list(custom_plot = report_plots$custom_report),
                           envir = new.env(parent = globalenv()))
     })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     observeEvent(input$report_generate, {
-
       cur_report$type <- NULL
       cur_report$path <- NULL
       if(input$report_type == "custom"){
+        filename = "report.html"
+
+        path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
+        print(path_template)
+        tempReport <- file.path(tempdir(), "report.Rmd")
+        file.copy(path_template, tempReport, overwrite = TRUE)
+
+        temp_report <-
+          rmarkdown::render(tempReport, output_file = file,params = list(custom_plot = report_plots$custom_report),envir = new.env(parent = globalenv()))
+        cur_report$type <- "html"
+        cur_report$path <- temp_report
+        print(cur_report$path)
+
+
+
+
+
+
+
+
+
 
         message(paste0(getwd()))
         message(paste0(file.path(tempdir(), "temp_report.Rmd")))
