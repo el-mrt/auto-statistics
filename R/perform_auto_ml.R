@@ -58,8 +58,8 @@ perform_auto_ml <- function(param_list){
   message("other params extracted")
 
   # create measure and outer resampling
-  measure <- create_measure(task, measure_input)
-  outer_resampling <- create_resampling(
+  measure <- autoStatistics::create_measure(task, measure_input)
+  outer_resampling <- autoStatistics::create_resampling(
     task,
     strat = o.resampling_strat_input,
     params = o.resampling_params_input
@@ -67,7 +67,7 @@ perform_auto_ml <- function(param_list){
   message("measure created")
 
   # create base learners - will be transformed eather with or without HPO
-  l_base <- create_learners(
+  l_base <- autoStatistics::create_learners(
     task,
     vec_learners = learners_input
   )
@@ -77,39 +77,39 @@ perform_auto_ml <- function(param_list){
     if (is.null(i.resampling_strat_input)) { # check if an inner resampling method is specified
       inner_resampling <- rsmp("holdout")
     } else { # choose inner resampling method only if applicabe
-      inner_resampling <- create_resampling(
+      inner_resampling <- autoStatistics::create_resampling(
         task,
         strat = i.resampling_strat_input,
         params = i.resampling_params_input)
     }
 
     # create terminator and tuner for all resamplings of autotuners later on
-    terminator <- create_terminator(vec_terminators = terminator_input)
-    tuner <- create_tuner(tuner_input)
+    terminator <- autoStatistics::create_terminator(vec_terminators = terminator_input)
+    tuner <- autoStatistics::create_tuner(tuner_input)
 
     # add search space into learners
-    l_w_sp <- create_search_space(task, l_base)
+    l_w_sp <- autoStatistics::create_search_space(task, l_base)
 
     # adds robustify pipeline
-    gl_robust <- create_robust_learners(task, l_w_sp)
+    gl_robust <- autoStatistics::create_robust_learners(task, l_w_sp)
 
     # choose if feature filtering is applied - output of if statement is always object names learners_at
     if (feature_filter_input != "no") {
       # add feature filter with tunable parameter nfeat
-      gl_ff <- create_feature_filter(task,
+      gl_ff <- autoStatistics::create_feature_filter(task,
                                      task_type_input,
                                      gl_robust,
                                      feature_filter_input)
 
       # transform graphlearner into auto tuner
-      learners_at <- create_auto_tuner(gl_ff,
+      learners_at <- autoStatistics::create_auto_tuner(gl_ff,
                                     inner_resampling,
                                     measure,
                                     terminator,
                                     tuner)
     } else {
       # transform graphlearner into auto tuner
-      learners_at <- create_auto_tuner(gl_robust,
+      learners_at <- autoStatistics::create_auto_tuner(gl_robust,
                                     inner_resampling,
                                     measure,
                                     terminator,
@@ -124,7 +124,7 @@ perform_auto_ml <- function(param_list){
 
       if ("stacking" %in% ensemble_input) { # create stacking ensemble
 
-        stacking_ensemble <- create_stacking_ensemble(task = task,
+        stacking_ensemble <- autoStatistics::create_stacking_ensemble(task = task,
                                                       type = task_type_input,
                                                       learners = learners_at,
                                                       feature_filter = feature_filter_input,
@@ -137,7 +137,7 @@ perform_auto_ml <- function(param_list){
       }
 
       if ("bagging" %in% ensemble_input) { # create bagging ensemble
-        bagging_ensemble <- create_bagging_ensemble(learners = learners_at,
+        bagging_ensemble <- autoStatistics::create_bagging_ensemble(learners = learners_at,
                                                     task_type = task_type_input)
 
         ensemble_learners <- c(ensemble_learners, list(bagging_ensemble))
@@ -147,8 +147,8 @@ perform_auto_ml <- function(param_list){
 
     # should base learners be included in HPO benchmark
     if (hpo_bl_input) {
-      hpo_l_base <- create_learners(task, learners_input)
-      hpo_gl_base <- create_robust_learners(task, hpo_l_base)
+      hpo_l_base <- autoStatistics::create_learners(task, learners_input)
+      hpo_gl_base <- autoStatistics::create_robust_learners(task, hpo_l_base)
     }
     message("test3")
     # determine which learners will be included; initialize emply list
@@ -177,7 +177,7 @@ perform_auto_ml <- function(param_list){
 
   } else { # without HPO
     # add robustify pipeline to learner
-    learners <- create_robust_learners(task, l_base)
+    learners <- autoStatistics::create_robust_learners(task, l_base)
   }
   message("test5")
 
@@ -202,7 +202,7 @@ perform_auto_ml <- function(param_list){
   message("test9")
 
   # could include n_best as input from shiny app, for now fixed at 5
-  bmr_best <- create_best_benchmark(task = task,
+  bmr_best <- autoStatistics::create_best_benchmark(task = task,
                                     bmr = bmr,
                                     measure = measure,
                                     n_best = n_best_input)
