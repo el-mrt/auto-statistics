@@ -77,7 +77,7 @@ auto_ml_server <- function(id, user_data){
 
     # learner----
     output$task_learner <- renderUI({
-      print(paste0("=======:", user_task$type))
+
       if(is.null(user_task$type)){
         selectInput(ns("task_learner"), "Learners",
                     choices = c("auto"), selected = "auto")
@@ -86,6 +86,7 @@ auto_ml_server <- function(id, user_data){
                     choices = available_learners[[user_task$type]], selected = "auto")
       }
     })
+
     observeEvent(input$task_learner, {
       # update learner if auto selected
       if((c("auto") %in% input$task_learner) && !(c("auto") %in% user_task$learners)){
@@ -93,6 +94,8 @@ auto_ml_server <- function(id, user_data){
       }else if(length(input$task_learner) > 1){
         updateSelectInput(session, "task_learner", "Learners", choices = available_learners[[user_task$type]],
                           selected = input$task_learner[!input$task_learner %in% c("auto")])
+      }else if(is.null(user_task$type)){
+        updateSelectInput(session, "task_learner", "Learners", choices = c("Auto" = "auto"), selected = "auto")
       }
 
       user_task$learners <- input$task_learner
