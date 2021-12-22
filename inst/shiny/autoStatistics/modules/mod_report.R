@@ -16,11 +16,12 @@ report_ui <- function(id){
                               tagList(
                                 uiOutput(ns("report_append_custom"))
                               ), ns = ns),
-             actionButton(ns("report_generate"), "Generate")
+             actionButton(ns("report_generate"), "Generate"),
+             downloadButton(ns("download_report"), "Download")
              ),
       column(10,
              h3("Preview Report"),
-             htmlOutput(ns("preview_report"))
+             htmlOutput(ns("preview_report")),
              )
     )
   )
@@ -59,6 +60,43 @@ report_server <- function(id, user_data){
     })
 
     # generate report ---------------------------------------------------------
+    output$download_report <- downloadHandler(
+      # For PDF output, change this to "report.pdf"
+      filename = "report.html",
+      content = function(file) {
+        # Copy the report file to a temporary directory before processing it, in
+        # case we don't have write permissions to the current working dir (which
+        # can happen when deployed).
+        path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
+        print(path_template)
+        tempReport <- file.path(tempdir(), "report.Rmd")
+        file.copy(path_template, tempReport, overwrite = TRUE)
+
+        # Set up parameters to pass to Rmd document
+        params <- list(n = input$slider)
+
+        # Knit the document, passing in the `params` list, and eval it in a
+        # child of the global environment (this isolates the code in the document
+        # from the code in this app).
+        rmarkdown::render(tempReport, output_file = file,
+                          params = list(custom_plot = report_plots$custom_report),
+                          envir = new.env(parent = globalenv()))
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     observeEvent(input$report_generate, {
 
       cur_report$type <- NULL
@@ -78,8 +116,6 @@ report_server <- function(id, user_data){
       #     cur_report$path,
       #     "html" = temp_report)
       }
-
-
       })
 
   })
