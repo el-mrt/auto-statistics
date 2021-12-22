@@ -65,8 +65,8 @@ report_server <- function(id, user_data){
       cur_report$path <- NULL
       if(input$report_type == "custom"){
 
-        print(getwd())
-        print(file.path(tempdir(), "temp_report.Rmd"))
+        message(paste0(getwd()))
+        message(paste0(file.path(tempdir(), "temp_report.Rmd")))
       #   # get template and set up temp file path
       #   path_template <- system.file("inst", "shiny", "autoStatistics","www", "rep_templ_custom_html.Rmd", package="autoStatistics")
       #   temp_report <- file.path(tempdir(), "temp_report.Rmd")
