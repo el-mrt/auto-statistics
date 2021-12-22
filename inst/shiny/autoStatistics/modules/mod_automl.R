@@ -80,7 +80,7 @@ auto_ml_server <- function(id, user_data){
 
       if(is.null(user_task$type)){
         selectInput(ns("task_learner"), "Learners",
-                    choices = c("auto"), selected = "auto")
+                    choices = c("Auto"), selected = "auto")
       }else{
         selectInput(ns("task_learner"), "Learners", multiple = TRUE,
                     choices = available_learners[[user_task$type]], selected = "auto")
@@ -89,13 +89,13 @@ auto_ml_server <- function(id, user_data){
 
     observeEvent(input$task_learner, {
       # update learner if auto selected
-      if((c("auto") %in% input$task_learner) && !(c("auto") %in% user_task$learners)){
+      if(is.null(user_task$type)){
+        updateSelectInput(session, "task_learner", "Learners", choices = c("Auto" = "auto"), selected = "auto")
+      }else if((c("auto") %in% input$task_learner) && !(c("auto") %in% user_task$learners)){
         updateSelectInput(session, "task_learner", "Learners", choices = available_learners[[user_task$type]], selected = "auto")
       }else if(length(input$task_learner) > 1){
         updateSelectInput(session, "task_learner", "Learners", choices = available_learners[[user_task$type]],
                           selected = input$task_learner[!input$task_learner %in% c("auto")])
-      }else if(is.null(user_task$type)){
-        updateSelectInput(session, "task_learner", "Learners", choices = c("Auto" = "auto"), selected = "auto")
       }
 
       user_task$learners <- input$task_learner
@@ -168,7 +168,7 @@ auto_ml_server <- function(id, user_data){
     # resampling ####
     ## OUTER
     output$task_resampling <- renderUI({
-      selectInput(ns("task_resampling"),"outer resampling", choices = c("Auto" = "auto", "Holdout" = "holdout", "CV" = "cv", "Repeated-CV" = "repeated_cv", "Bootstrap" = "bootstrap"),selected = "auto")
+      selectInput(ns("task_resampling"),"outer resampling", choices = c("Automatic" = "auto", "Holdout" = "holdout", "CV" = "cv", "Repeated-CV" = "repeated_cv", "Bootstrap" = "bootstrap"),selected = "auto")
     })
     output$task_resampling_one_param <- renderUI({
       fluidRow(
@@ -222,7 +222,7 @@ auto_ml_server <- function(id, user_data){
     # measure ####
     output$task_measure <- renderUI({
       if(is.null(user_task$type)){
-        selectInput(ns("task_measure"), "Measure", choices = c("Auto"), selected = "Auto")
+        selectInput(ns("task_measure"), "Measure", choices = c("Automatic"), selected = "Auto")
       }else{
         selectInput(ns("task_measure"), "Measure", choices = available_measure[[user_task$task$task_type]])
       }
