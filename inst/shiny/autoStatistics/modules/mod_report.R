@@ -33,7 +33,7 @@ report_server <- function(id, user_data){
     ns <- session$ns
     # general -----------------------------------------------------------
     output$report_type <- renderUI({
-      selectInput(ns("report_type"), label = "report type", multiple = FALSE, selected = "ml",
+      selectInput(ns("report_type"), label = "report type", multiple = FALSE, selected = "custom",
                   choices = c("Custom" = "custom", "Machine Learning" = "ml", "Descriptive" = "descriptive"))
     })
     observeEvent(input$report_type, {
@@ -82,13 +82,17 @@ report_server <- function(id, user_data){
       if(input$report_type == "custom"){
         filename = "report.html"
 
+        message("1")
         path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
         print(path_template)
+        message("2")
         tempReport <- file.path(tempdir(), "report.Rmd")
+        message("3")
         file.copy(path_template, tempReport, overwrite = TRUE)
+        message("4")
 
         temp_report <-
-          rmarkdown::render(tempReport, output_file = file,params = list(custom_plot = report_plots$custom_report),envir = new.env(parent = globalenv()))
+          rmarkdown::render(tempReport,params = list(custom_plot = report_plots$custom_report),envir = new.env(parent = globalenv()))
         cur_report$type <- "html"
         cur_report$path <- temp_report
         print(cur_report$path)
