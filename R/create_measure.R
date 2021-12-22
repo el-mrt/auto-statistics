@@ -13,6 +13,7 @@
 #' @export
 #'
 #' @import mlr3verse
+#' @import mlr3
 #'
 
 create_measure <- function(task, measure = NULL){
