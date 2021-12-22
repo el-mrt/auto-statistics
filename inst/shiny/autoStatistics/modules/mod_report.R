@@ -64,7 +64,9 @@ report_server <- function(id, user_data){
       cur_report$path <- NULL
       if(input$report_type == "custom"){
 
-        temp_path <- rmarkdown::render(input = "./www/rep_templ_custom_html.Rmd", envir = new.env(parent = globalenv()), params = list(custom_plot = report_plots$custom_report))
+        path_template <- system.file("inst", "shiny", "autoStatistics","www", "rep_templ_custom_html.Rmd", package="autoStatistics")
+
+        temp_path <- rmarkdown::render(input = path_template, envir = new.env(parent = globalenv()), params = list(custom_plot = report_plots$custom_report))
         cur_report$path <- c(
           cur_report$path,
           "html" = temp_path
