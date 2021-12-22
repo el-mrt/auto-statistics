@@ -60,16 +60,21 @@ report_server <- function(id, user_data){
 
     # generate report ---------------------------------------------------------
     observeEvent(input$report_generate, {
+
       cur_report$type <- NULL
       cur_report$path <- NULL
       if(input$report_type == "custom"){
 
+        # get template and set up temp file path
         path_template <- system.file("inst", "shiny", "autoStatistics","www", "rep_templ_custom_html.Rmd", package="autoStatistics")
+        temp_report <- file.path(tempdir(), "temp_report.Rmd")
+        # copy file
+        file.copy(path_template, temp_report, overwrite = TRUE)
 
-        temp_path <- rmarkdown::render(input = path_template, envir = new.env(parent = globalenv()), params = list(custom_plot = report_plots$custom_report))
+        temp_report <- rmarkdown::render(input = path_template, envir = new.env(parent = globalenv()), params = list(custom_plot = report_plots$custom_report))
         cur_report$path <- c(
           cur_report$path,
-          "html" = temp_path
+          "html" = temp_report
         )
       }
 
