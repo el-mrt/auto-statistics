@@ -10,7 +10,7 @@ report_ui <- function(id){
              uiOutput(ns("report_type")),
              conditionalPanel("input.report_type == 'descriptive'",
                               tagList(
-                                uiOutput(ns("custom_report_features"))
+                                uiOutput(ns("descr_report_features"))
                               ), ns = ns),
              conditionalPanel("input.report_type.includes('descriptive') || input.report_type.includes('ml')",
                               tagList(
@@ -54,9 +54,9 @@ report_server <- function(id, user_data){
     })
 
     # custom report -----------------------------------------------------------
-    output$custom_report_features <- renderUI({
+    output$descr_report_features <- renderUI({
       req(user_data())
-      selectInput(ns("custom_report_features"), "Select Featues", choices = c("Top5", names(user_data())), multiple = TRUE, selected = "Top5")
+      selectInput(ns("descr_report_features"), "Select Featues", choices = c("Top5" = "top", names(user_data())), multiple = TRUE, selected = "top")
     })
 
     # generate report ---------------------------------------------------------
@@ -65,8 +65,11 @@ report_server <- function(id, user_data){
       filename = "report.html",
       content = function(file) {
 
-        path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
+        #path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
+        #dev path
+        path_template <- ("./www/rep_templ_custom_html.Rmd")
         print(path_template)
+
         tempReport <- file.path(tempdir(), "report.Rmd")
         file.copy(path_template, tempReport, overwrite = TRUE)
 
@@ -77,19 +80,19 @@ report_server <- function(id, user_data){
     })
 
     observeEvent(input$report_generate, {
+
       cur_report$type <- NULL
       cur_report$path <- NULL
       if(input$report_type == "custom"){
         filename = "report.html"
 
-        message("1")
-        path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
-        print(path_template)
-        message("2")
+        #path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
+        #dev path
+        path_template <- ("./www/rep_templ_custom_html.Rmd")
+
+
         tempReport <- file.path(tempdir(), "report.Rmd")
-        message("3")
         file.copy(path_template, tempReport, overwrite = TRUE)
-        message("4")
 
         temp_report <-
           rmarkdown::render(tempReport,params = list(custom_plot = report_plots$custom_report),envir = new.env(parent = globalenv()))
@@ -97,28 +100,48 @@ report_server <- function(id, user_data){
         cur_report$path <- temp_report
         print(cur_report$path)
 
-
-
-
-
-
-
-
-
-
-        message(paste0(getwd()))
-        message(paste0(file.path(tempdir(), "temp_report.Rmd")))
-      #   # get template and set up temp file path
-      #   path_template <- system.file("inst", "shiny", "autoStatistics","www", "rep_templ_custom_html.Rmd", package="autoStatistics")
-      #   temp_report <- file.path(tempdir(), "temp_report.Rmd")
-      #   # copy file
-      #   file.copy(path_template, temp_report, overwrite = TRUE)
-      #
-      #   temp_report <- rmarkdown::render(input = path_template, output_dir = file.path(tempdir(), "temp_report_html.Rmd"), envir = new.env(parent = globalenv()), params = list(custom_plot = report_plots$custom_report))
-      #   cur_report$path <- c(
-      #     cur_report$path,
-      #     "html" = temp_report)
       }
+      else if(input$report_type == "descriptive"){
+        # check if feature imp already calculated if top n is in descr_report_features
+        selected_features <- input$descr_report_features
+
+        if(c("top") %in% selected_features){
+          if(is.null(user_tables$feature_imp)){
+            tryCatch({
+              importance_table <- autoStatistics::feature_importance(task = user_task$task, filters = pre_feature_import_filter)
+            }, error = function(cond){
+              message(paste0(cond))
+            })
+            # get NAs per column
+            df_na_per_col <- sapply(isolate(user_data()), function(x) sum(is.na(x)))
+            # transform to df
+            df_na_per_col <- data.frame("feature" = names(df_na_per_col), "NAs" = unname(df_na_per_col))
+            # merge into one dataframe
+            importance_table <- importance_table %>%
+              dplyr::left_join(df_na_per_col, by = "feature") %>%
+              dplyr::arrange(mean)
+
+            user_tables$feature_imp <- importance_table
+          }
+          # add top5 to selected features
+          if(nrow(user_tables$feature_imp) < 5){
+            selected_features <- c(selected_features, user_tables$feature_imp[["feature"]])
+          }else{
+            selected_features <- c(selected_features, user_tables$feature_imp[["feature"]][c(1:5)])
+          }
+          selected_features <- selected_features[!selected_features %in% c("top")]
+          selected_features <- unique(selected_features)
+          print(selected_features)
+        }
+        req(user_tables$feature_imp)
+      }
+      else if(input$report_type == "ml"){
+        print("ML REPORT HERE")
+      }
+
+
+
+
       })
 
   })
