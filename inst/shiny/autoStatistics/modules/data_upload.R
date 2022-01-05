@@ -102,7 +102,7 @@ data_upload_server <- function(id){
       tryCatch(
         {
           col_types <- lapply(names(user_data()), function(col_name){
-            autoStatistics::identify_CR(user_data(), col_name, 6)
+            autoStatistics::identify_CR(user_data(), col_name, 10)
           })
           col_types <- as.vector(unlist(col_types))
           factor_col_index <- which(col_types == "classif")

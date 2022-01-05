@@ -15,7 +15,7 @@ library("dplyr")
 
 
 modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
-modules_path <- "./modules"
+#modules_path <- "./modules"
 
 files <- list.files(modules_path, full.names = TRUE)
 lapply(files, source)
@@ -88,8 +88,14 @@ user_plot <- reactiveValues(
   descr_scatter = NULL,
   na_per_col = NULL,
   na_comb = NULL,
-  na_dist = NULL
+  na_dist = NULL,
+  cor_plot = NULL
 )
+user_tables <- reactiveValues(
+  feature_imp = NULL,
+  stat_summary = NULL
+)
+
 
 app_settings <- reactiveValues(
   plot_color_set = "Set2",
@@ -106,12 +112,21 @@ results <- reactiveValues(
   bmr_result = NULL
 )
 
-# plots for report
+# report stuff ---------------------------------------------------------------
 
 report_plots <- reactiveValues(
   custom_report = list("plot" = vector(mode = "list", length = 0L),
                        "plot_name" = vector(mode = "list", length = 0L))
-
+)
+report_tables <- reactiveValues(
+  custom_report = vector(mode = "list", length = 0L),
+  descriptive = vector(mode = "list", length = 0L),
+  ml = vector(mode = "list", length = 0L)
+)
+report_text <- reactiveValues(
+  custom_report = vector(mode = "list", length = 0L),
+  descriptive = vector(mode = "list", length = 0L),
+  ml = vector(mode = "list", length = 0L)
 )
 
 report_settings <- reactiveValues(
