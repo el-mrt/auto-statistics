@@ -87,8 +87,10 @@ missings_server <- function(id, user_data, target_col){
       cur_plot <- ggplot(missings_per_col, aes(x = col_name, y = number_na)) +
         geom_bar(stat="identity", fill = plot_color, na.rm = TRUE) +
         {if(input$na_per_col_flip_coord) {coord_flip()}} +
-        labs(x = "column", y = "number of missing values") +
-        theme_minimal()
+        labs(x = "column", y = "count") +
+        ggtitle("Number of missing values") +
+        theme_minimal() +
+        theme(plot.title = element_text(hjust = 0.5))
         #+
         # theme(axis.text=element_text(size=12),
         #        axis.title=element_text(size=14,face="bold"))
@@ -141,9 +143,11 @@ missings_server <- function(id, user_data, target_col){
       cur_plot <- ggplot(data = temp_data, aes(x = reorder(labels, freq), freq)) +
         geom_bar(stat = "identity", fill = plot_color) +
         #{if(show_numbers) geom_text(aes(label=freq, y = freq + text_offset), position = position_identity())} +
-        labs(title = "NA combinations", x = "combination", y = "n") +
+        labs(title = "NA combinations", x = "combination", y = "count") +
         coord_flip() +
-        theme_minimal()
+        ggtitle("NA combinations") +
+        theme_minimal() +
+        theme(plot.title = element_text(hjust = 0.5))
 
       # replace labels with groups
       if(input$na_comb_use_group){
@@ -226,15 +230,17 @@ missings_server <- function(id, user_data, target_col){
             geom_bar(na.rm = TRUE) +
             scale_fill_manual(values = plot_color) +
             labs(x = target_col()) +
+            ggtitle(paste0("Distribution missing data within ", target_column())) +
             theme_minimal() +
-            theme(legend.position = "none")
+            theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
         }else{
           cur_plot <- ggplot(na_hist_data, aes(x = get(target_col()), fill = isna)) +
             geom_histogram(binwidth = input$na_hist_bins) +
             scale_fill_manual(values = plot_color) +
             labs(x = target_col()) +
+            ggtitle(paste0("Distribution missing data within ", target_column())) +
             theme_minimal() +
-            theme(legend.position = "none")
+            theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
         }
 
       }else{
@@ -242,8 +248,9 @@ missings_server <- function(id, user_data, target_col){
           geom_jitter() +
           scale_color_manual(values = plot_color) +
           labs(x = target_col(), y = col_name2) +
+          ggtitle(paste0("Distribution missing data within ", target_column())) +
           theme_minimal()+
-          theme(legend.position = "none")
+          theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
       }
       user_plot$na_dist <- cur_plot
       cur_plot

@@ -10,7 +10,7 @@ data_insight_ui <- function(id){
                     uiOutput(ns("cor_method")),
                     uiOutput(ns("cor_type"))
                     ),
-             column(8, style = "height:1000px;", offset = 2,
+             column(8, style = "height:1100px;", offset = 2,
                     plotOutput(ns("cor_plot"))
              )),
     fluidRow(column(2)),
@@ -35,29 +35,16 @@ data_insight_server <- function(id, user_data){
 # cor plot ----------------------------------------------------------------
     output$cor_plot <- renderPlot({
       req(user_data())
-      # only numeric data
-      #numeric_cols <- unname(sapply(user_data(), is.numeric))
-      numeric_cols <- sapply(user_data(), function(x){
-        if(is.numeric(x) & (!is.factor(x))){
-          return(TRUE)
-        }else{
-          return(FALSE)
-        }
-      })
 
-      cor_data <- user_data()[,numeric_cols]
-      cor_matrix <- cor(cor_data, use = "pairwise.complete.obs")
-      #print(cor_matrix)
-      cur_plot <- corrplot::corrplot(cor_matrix, method = input$cor_method, type = input$cor_type)
-
-      cur_plot
-    },height = 1000, width = 1000
+      user_plot$cor_plot <- plot_cor_server("cor_plot", data = user_data(), method = input$cor_method, type = input$cor_type)
+      return(user_plot$cor_plot)
+    },
+    height = 1100, width = 1100
     )
 
 # feature imp -------------------------------------------------------------
 
     feature_importance_server("feature_imp", user_task = user_task$task, user_filters = pre_feature_import_filter)
-
   })
 }
 
