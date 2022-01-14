@@ -1,0 +1,123 @@
+---
+title: "test"
+author: "Lukas"
+date: "14 1 2022"
+output: html_document
+
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, include = FALSE}
+
+library(tidyverse)
+library(mlr3verse)
+
+# is called "param_list"
+load("C:/Users/lukas/Desktop/Master/2021-2022 WiSe/Applications in Data Analytics/RData_files/pam_004.RData")
+
+# is called "t1"
+load("C:/Users/lukas/Desktop/Master/2021-2022 WiSe/Applications in Data Analytics/RData_files/param_list.RData")
+
+
+# apply some data transformation and initialize some helper functions to make the AutoML chapters code more readable.
+
+
+bmr <- t1$bmr
+bmr_best <- t1$bmr_best
+measure <- t1$measure
+measure_name <- sub(paste0(param_list$type, "."), "", measure$id)
+
+# if auto is selected all learners will be used
+if(any(param_list$learners == "auto")) {param_list$learners <- c("rf", "svm", "xgb", "knn")}
+
+# get pretty names in text 
+used_learners <- lapply(param_list$learners, function(x){ x <- switch (x,
+  rf = "random forest",
+  svm = "support vector machine",
+  xgb = "extreme gradient boosting",
+  knn = "k nearest neighbors"
+)})
+
+# get pretty name in text
+cr <- switch (param_list$type,
+  regr = "regession",
+  classif = "classification"
+)
+
+# function to return outer resampling strategy
+rsmp_method <- function(method, nrow){
+  if (method == "auto") {
+    if (nrow < 100) {
+      "leave one out cross validation"
+    } else if (nrow < 500) {
+      "repeated cross validation"
+    } else {
+      "cross validation"
+    } 
+  } else {
+    method
+  }
+}
+
+#function to define inner resampling strategy
+rsmp_method_inner <- function(method){
+  if (method == "auto") {
+    "holdout"
+  } else method
+}
+
+#functiont to print the sentence for the ensemble
+ens_print <- function(ensemble){
+  if (!("no" %in% ensemble)) {
+    if (length(ensemble) == 1) {
+      if ("stacking" %in% ensemble) {
+        return("A stacking ensemble is included. ")
+      }
+      if ("bagging" %in% ensemble) {
+        return("A bagging ensemble is included. ")
+      }
+    } else {"Both a bagging and a stacking ensemble are included. "}
+   
+  }
+}
+
+if (measure$minimize) { # checks, if measure minimizes, so that best results will be displayed in first observations
+  bmr_scores <- arrange(as.data.table(bmr$score(measure)), !!sym(measure$id))
+} else {
+  bmr_scores <- arrange(as.data.table(bmr$score(measure)), -!!sym(measure$id))
+}
+
+if (measure$minimize) { # checks, if measure minimizes, so that best results will be displayed in first observations
+  bmr_best_scores <- arrange(as.data.table(bmr_best$score(measure)), !!sym(measure$id))
+} else {
+  bmr_best_scores <- arrange(as.data.table(bmr_best$score(measure)), -!!sym(measure$id))
+}
+```
+
+## AutoML Pipeline
+
+In this section the applied AutoML pipeline will be described. The task is a `r cr` task, with the dependent variable being `r param_list$task$target_names`. The learners that are considered to solving the task are `r used_learners`. `r if (param_list$incl_at) {"The learners are tuned. "}``r if(!param_list$hpo_base_learner) {"The base version of the learners are not considered in the benchmark. "}``r ens_print(param_list$ensemble)``r if (param_list$incl_featureless) {"Furthermore a featureless learner is included. "}` `r ifelse(param_list$na_imp == "omit", "Variables containing missing values are omitted and the robustify pipeline handles all other data types that the learners can not deal with per default.", "The robustify pipeline handles all data types - including missing values - that learners can not deal with per default.")` `r ifelse(param_list$feature_filter != "auto", paste0("Feature filtering is applied using the ", param_list$feature_filter, " method. ") , "")` The performance measure used is `r measure_name` which the learners try to `r ifelse(measure$minimize, "minimize", "maximize")`. This learners are benchmarked using a `r rsmp_method(param_list$o.resampling$method, param_list$task$nrow)` resampling strategy. After the initial benchmarking the best `r param_list$n_best` configurations are benchmarked again using a cross validation resampling strategy. 
+
+## Results
+
+In the following section the benchmark results will be discussed. First the results of the initial benchmark, then the results of the final benchmark, containing the best learner configurations. 
+
+The best performing configuration in the first benchmark is a `r bmr_scores$learner_id[[1]]` with a performance of `r paste0(round(bmr_scores$regr.rmse[[1]], 3), " ", measure_name)`. The learners that are among the best `r param_list$n_best` performing instances are: `r na.omit(unique(bmr_scores$learner_id[1:param_list$n_best]))`. The boxplot of the initial benchmark is displayed below. 
+
+```{r echo = FALSE}
+autoplot(bmr, measure = measure)
+```
+
+The best performing configuration in the first benchmark is a `r bmr_best_scores$learner_id[[1]]` with a performance of `r paste0(round(bmr_best_scores$regr.rmse[[1]], 3), " ", measure_name)`. The learners that are among the best `r param_list$n_best` performing instances are: `r na.omit(unique(bmr_best_scores$learner_id[1:param_list$n_best]))`. The boxplot of the second benchmark is displayed below. 
+
+```{r echo = FALSE}
+autoplot(bmr_best, measure = measure)
+```
+
+Please note, that for this benchmark no additional resampling loop was applied and thus one can expect slight overfitting, as the models have seen some of the data in training, that they are now evaluated on.
+

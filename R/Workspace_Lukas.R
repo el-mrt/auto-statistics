@@ -1,3 +1,7 @@
+# TODO
+# given param_list and the bmr, bmr_best - write a markdown document that encapsulates the important information
+# in best_benchmark -> change names form l1, ..., ln to original learner name- if name occurs multiple times: append 1, ..., m
+#
 # library(tidyverse)
 # library(mlr3verse)
 # library(autoStatistics)
@@ -22,6 +26,8 @@
 # param_list$incl_at <- FALSE
 # param_list$n_best <- 5
 #
+# save(param_list, file = "C:/Users/lukas/Desktop/Master/2021-2022 WiSe/Applications in Data Analytics/RData_files/param_list.RData")
+#
 # t1 <- perform_auto_ml(param_list)
 #
 # # save(t1, file = "C:/Users/lukas/Desktop/Master/2021-2022 WiSe/Applications in Data Analytics/RData_files/pam_004.RData")
@@ -34,9 +40,4 @@
 # score <- t1$bmr_best$score(t1$measure) %>% as.data.table %>% arrange(!!sym(t1$measure$id))
 #
 # score$learner[[1]]$predict(param_list$task)
-#
-#
-#
-#
-#
 #
