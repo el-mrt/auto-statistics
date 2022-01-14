@@ -1,14 +1,45 @@
 ---
-title: "Custom Report"
+title: "Descriptive Report"
 output:
   html_document: default
 params:
+  content: "none"
   custom_plot: "none"
   append_custom: true
 ---
 
 ```{r setup, include=FALSE, echo=FALSE}
 library(tidyverse)
+corrplot_setup <- list(
+  data = params$content$cor_matrix
+)
+```
+
+```{r echo=FALSE, results = 'asis'}
+features <- names(params$content)
+features <- features[!features %in% "cor_matrix"]
+for(feature in features){
+  cat('\n##', feature, '\n')
+  feature_content <- params$content[[feature]]
+  for(content in feature_content){
+    cat("<br>")
+    if(is.character(content)){cat(content, "\n")}
+    else if(is.data.frame(content)){
+      print(knitr::kable(content, "pipe"))
+      cat("\n")
+      }
+    else{
+      print(content)}
+      cat("\n")
+    }
+  # purrr::walk(feature_content, function(content){
+  #   cat("<br>")
+  #   print(unlist(content))
+  # })
+}
+
+
+
 ```
 
 
@@ -23,10 +54,6 @@ purrr::walk(params$custom_plot$plot, function(plot){
 if(params$append_custom)
 print(params$append_custom)
 ```
-
-
-
-
 
 
 

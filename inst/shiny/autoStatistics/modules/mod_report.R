@@ -53,7 +53,7 @@ report_server <- function(id, user_data){
 
     })
 
-    # custom report -----------------------------------------------------------
+# custom report -----------------------------------------------------------
     output$descr_report_features <- renderUI({
       req(user_data())
       selectInput(ns("descr_report_features"), "Select Featues", choices = c("Top5" = "top", names(user_data())), multiple = TRUE, selected = "top")
@@ -101,6 +101,8 @@ report_server <- function(id, user_data){
         print(cur_report$path)
 
       }
+
+# descriptive report ------------------------------------------------------
       else if(input$report_type == "descriptive"){
         # check if feature imp already calculated if top n is in descr_report_features
         selected_features <- input$descr_report_features
@@ -134,10 +136,94 @@ report_server <- function(id, user_data){
           print(selected_features)
         }
         req(user_tables$feature_imp)
+
+        # generate plots for all the selected features
+        report_content <- vector(mode = "list", length = 0L)
+        plot_color_one <- RColorBrewer::brewer.pal(n = 3, name = app_settings$plot_color_set)[1]
+
+        #cor matrix ####
+        temp_numeric_cols <- sapply(user_data(), function(x){
+          if(is.numeric(x) & (!is.factor(x))){
+            return(TRUE)
+          }else{
+            return(FALSE)
+          }
+        })
+        temp_cor_data <- user_data()[, temp_numeric_cols]
+        temp_cor_matrix <- cor(temp_cor_data, use = "pairwise.complete.obs")
+        report_content <- autoStatistics::appendList(report_content,temp_cor_matrix, "cor_matrix")
+
+
+        for(feature in selected_features){
+          print(paste0("creating descriptive report for feature: ", feature))
+          feature_content <- vector("list", length = 0L)
+          # hist####
+          temp_hist <- plot_hist_server("plot_hist", data = user_data(), feature = feature, user_color = plot_color_one, user_binwidth = start_bin_width,
+                                        check_bin_width=FALSE)
+
+
+          feature_content <- autoStatistics::appendList(
+            feature_content,
+            temp_hist,
+            "hist"
+          )
+          # scatter target####
+          feature_content <- autoStatistics::appendList(
+            feature_content,
+            plot_scatter_server("plot_scatter", data = user_data(), target_feature = target_column(),
+                                selected_feature = feature, user_color = plot_color_one, point_size = 3),
+            "scatter_target"
+          )
+          # text NA and feature imp####
+          feature_content <- autoStatistics::appendList(
+            feature_content,
+            autoStatistics::generate_descr_report_text_na(feature = feature, imp_tbl = user_tables$feature_imp, task_obj = user_task$task),
+            "na_text"
+          )
+          # df with stat summary ####
+          feature_content <- autoStatistics::appendList(
+            feature_content,
+            autoStatistics::generate_descr_report_tbl_stat(data = user_data(), feature = feature),
+            "tbl_stat"
+          )
+
+          # cor matrix and text ####
+          feature_content <- autoStatistics::appendList(
+            feature_content,
+            autoStatistics::generate_descr_report_cor(temp_cor_matrix, feature),
+            "cor_text"
+          )
+          # append to report content ####
+          report_content <- autoStatistics::appendList(report_content,feature_content, feature)
+        }
+        #print(report_content)
+        View(report_content)
+        rm(temp_numeric_cols,temp_cor_data,temp_cor_matrix)
+
+
+
+        filename = "report.html"
+        #path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
+        #dev path
+        path_template <- ("./www/rep_templ_descriptive_html.Rmd")
+
+
+        tempReport <- file.path(tempdir(), "report.Rmd")
+        file.copy(path_template, tempReport, overwrite = TRUE)
+
+        temp_report <-
+          rmarkdown::render(tempReport,params = list(custom_plot = report_plots$custom_report, content = report_content),envir = new.env(parent = globalenv()))
+        cur_report$type <- "html"
+        cur_report$path <- temp_report
+        print(cur_report$path)
+
+
+
       }
       else if(input$report_type == "ml"){
         print("ML REPORT HERE")
       }
+
 
 
 

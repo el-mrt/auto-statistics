@@ -4,23 +4,52 @@ plot_hist_ui <- function(id){
 
 }
 
-plot_hist_server <- function(id, data = NULL, feature = NULL, user_color = NULL, user_binwidth =0.5){
+plot_hist_server <- function(id, data = NULL, feature = NULL, user_color = NULL, user_binwidth =0.5, check_bin_width=FALSE){
   moduleServer(id, function(input, output, session){
     req(data, feature, user_color)
+    temp_data_hist <- data[!is.na(data[[{{ feature }}]]), ]
 
-    cur_plot <- ggplot(data) +
-      {
-      if(is.factor(data[[{{ feature }}]]))
-          geom_histogram(aes_string(x = feature, fill = TRUE), stat = "count")
-      else
-        geom_histogram(aes_string(x = feature, fill = TRUE), binwidth = user_binwidth)
-      }+
-      scale_fill_manual(values = user_color) +
-      labs(x = feature) +
-      ggtitle(paste0("distribution ", feature)) +
-      theme_minimal() +
-      theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
-
+    if(check_bin_width){
+      bin_width_invalid <- TRUE
+      start_bin_width <- 0.5
+      while(bin_width_invalid){
+        tryCatch({
+          print(start_bin_width)
+          print(ggplot(temp_data_hist) +
+            {
+              if(is.factor(temp_data_hist[[{{ feature }}]]))
+                geom_histogram(aes_string(x = feature, fill = TRUE), stat = "count")
+              else
+                geom_histogram(aes_string(x = feature, fill = TRUE), binwidth = start_bin_width)
+            }+
+            scale_fill_manual(values = user_color) +
+            labs(x = feature) +
+            ggtitle(paste0("distribution ", feature)) +
+            theme_minimal() +
+            theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+          start_bin_width <<- FALSE
+        },warning =function(cond){
+          print("hey, warning")
+          message(paste0(cond, start_bin_width))
+          start_bin_width <<- start_bin_width + 1
+          print(start_bin_width)
+          bin_width_invalid <<- TRUE
+        })
+        }
+    }else{
+      cur_plot <- ggplot(temp_data_hist) +
+        {
+          if(is.factor(temp_data_hist[[{{ feature }}]]))
+            geom_histogram(aes_string(x = feature, fill = TRUE), stat = "count")
+          else
+            geom_histogram(aes_string(x = feature, fill = TRUE), binwidth = user_binwidth)
+        }+
+        scale_fill_manual(values = user_color) +
+        labs(x = feature) +
+        ggtitle(paste0("distribution ", feature)) +
+        theme_minimal() +
+        theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
+    }
     return(cur_plot)
   })
 }

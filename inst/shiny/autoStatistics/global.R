@@ -15,7 +15,8 @@ library("dplyr")
 
 
 modules_path <- system.file("shiny", "autoStatistics", "modules", package = "autoStatistics")
-#modules_path <- "./modules"
+
+modules_path <- "./modules"
 
 files <- list.files(modules_path, full.names = TRUE)
 lapply(files, source)
@@ -105,7 +106,9 @@ app_settings <- reactiveValues(
   plot_download_height = 1080,
   plot_download_format = "pdf",
   plot_download_text_size = 4,
-  plot_download_text_font = "serif"
+  plot_download_text_font = "serif",
+  report_thresh_na = 0.03,
+  report_thres_import = 0.5
 )
 # results of tuning
 results <- reactiveValues(

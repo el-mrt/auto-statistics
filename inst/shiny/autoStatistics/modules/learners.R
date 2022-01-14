@@ -57,3 +57,19 @@ pre_feature_import_filter <- list(
 # app settings ------------------------------------------------------------
 
 available_fonts <- c("serif", "sans","mono", "Times")
+
+
+# report dicts ------------------------------------------------------------
+dict_desc_report <- list(
+  "NA_none" = "There is no missing data within the feature %s. Therefore this features should be kept. The importance rank of the feature is %s.",
+  "NA_imp" = "%s NA entries exist within the feature %s. However, due to the fact that this feature has an importance rank of %s and is therefore among the most important features. Therefore, this feature should be included within a machine learning model.",
+  "NA_nimp_few_missing" = "%s NA entries exist within the feature %s. Even though the importance-rank is low, this feature can be retained for building a machine learning model because the proportion of missing data is small.",
+  "NA_nimp_lot_missing" = "%s NA entries exist within the feature %s. Due to the fact that this feature has an importance rank of %s and thus probably does not have much use for a machine learning model, it should be considered to remove it from the dataset.",
+  "NA_other" = "%s NA entries exist within the feature %s. The feature importance rank is %s.",
+  "COR_MEDIUM" = "The feature %s has medium correlations with the following features: %s.",
+  "COR_LARGE" = "The features %s has strong correlations with the following features: %s.",
+  "NO_COR" = "The feature %s has no medium or strong correlation with other features."
+
+)
+
+
