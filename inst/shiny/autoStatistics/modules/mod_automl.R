@@ -277,9 +277,7 @@ auto_ml_server <- function(id, user_data){
         "hpo_base_learner" = user_task$hpo_base_learner,
         "incl_at" = user_task$include_at
       )
-      #print(reactiveValuesToList(user_task))
-      print(param_list)
-      #save("param_list", file = "test_ohne_ho.Rdata")
+      results$param_list <- param_list
 
       tryCatch({
         results$bmr_result <- autoStatistics::perform_auto_ml(param_list)
