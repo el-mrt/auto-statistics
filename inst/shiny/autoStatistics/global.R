@@ -112,6 +112,7 @@ app_settings <- reactiveValues(
 )
 # results of tuning
 results <- reactiveValues(
+  param_list = NULL,
   bmr_result = NULL
 )
 
@@ -139,6 +140,9 @@ report_settings <- reactiveValues(
 cur_report <- reactiveValues(
   type = NULL,
   path = NULL
+)
+custom_report_content <- reactiveValues(
+  content = NULL
 )
 
 
