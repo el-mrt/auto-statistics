@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, include = FALSE}
 
+
 library(tidyverse)
 library(mlr3verse)
 
@@ -71,9 +72,12 @@ rsmp_method_inner <- function(method){
   } else method
 }
 
+
+
 #functiont to print the sentence for the ensemble
 ens_print <- function(ensemble){
-  if (!("no" %in% ensemble)) {
+  if(isTRUE(param_list$tuning)){
+    if (!("no" %in% ensemble)) {
     if (length(ensemble) == 1) {
       if ("stacking" %in% ensemble) {
         return("A stacking ensemble is included. ")
@@ -82,7 +86,7 @@ ens_print <- function(ensemble){
         return("A bagging ensemble is included. ")
       }
     } else {"Both a bagging and a stacking ensemble are included. "}
-   
+  }
   }
 }
 
@@ -101,7 +105,8 @@ if (measure$minimize) { # checks, if measure minimizes, so that best results wil
 
 ## AutoML Pipeline
 
-In this section the applied AutoML pipeline will be described. The task is a `r cr` task, with the dependent variable being `r param_list$task$target_names`. The learners that are considered to solving the task are `r used_learners`. `r if (param_list$incl_at) {"The learners are tuned. "}``r if(!param_list$hpo_base_learner) {"The base version of the learners are not considered in the benchmark. "}``r ens_print(param_list$ensemble)``r if (param_list$incl_featureless) {"Furthermore a featureless learner is included. "}` `r ifelse(param_list$na_imp == "omit", "Variables containing missing values are omitted and the robustify pipeline handles all other data types that the learners can not deal with per default.", "The robustify pipeline handles all data types - including missing values - that learners can not deal with per default.")` `r ifelse(param_list$feature_filter != "auto", paste0("Feature filtering is applied using the ", param_list$feature_filter, " method. ") , "")` The performance measure used is `r measure_name` which the learners try to `r ifelse(measure$minimize, "minimize", "maximize")`. This learners are benchmarked using a `r rsmp_method(param_list$o.resampling$method, param_list$task$nrow)` resampling strategy. After the initial benchmarking the best `r param_list$n_best` configurations are benchmarked again using a cross validation resampling strategy. 
+In this section the applied AutoML pipeline will be described. The task is a `r cr` task, with the dependent variable being `r param_list$task$target_names`. `r ifelse(length(used_learners) == 1, "The learner that is considered to solving the task is ","The learners that are considered to solving the task are ")`
+`r used_learners`. `r if (param_list$incl_at) {"The learners are tuned. "}``r if(!param_list$hpo_base_learner) {"The base version of the learners are not considered in the benchmark. "}``r ens_print(param_list$ensemble)``r if (param_list$incl_featureless) {"Furthermore a featureless learner is included. "}` `r ifelse(param_list$na_imp == "omit", "Variables containing missing values are omitted and the robustify pipeline handles all other data types that the learners can not deal with per default.", "The robustify pipeline handles all data types - including missing values - that learners can not deal with per default.")` `r if(param_list$feature_filter != "no") {ifelse(param_list$feature_filter != "auto", paste0("Feature filtering is applied using the ", param_list$feature_filter, " method. ") , "")}` The performance measure used is `r measure_name` which the learners try to `r ifelse(measure$minimize, "minimize", "maximize")`. This learners are benchmarked using a `r rsmp_method(param_list$o.resampling$method, param_list$task$nrow)` resampling strategy. After the initial benchmarking the best `r param_list$n_best` configurations are benchmarked again using a cross validation resampling strategy. 
 
 ## Results
 
