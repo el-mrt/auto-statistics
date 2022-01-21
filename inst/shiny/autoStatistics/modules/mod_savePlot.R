@@ -12,7 +12,8 @@ save_plot_ui <- function(id){
   )
 }
 
-save_plot_server <- function(id, plot_save, plot_width = 1920, plot_height = 1080, plot_dpi = 300, text_size = app_settings$plot_download_text_size, report = NULL){
+save_plot_server <- function(id, plot_save, plot_width = 1920, plot_height = 1080, plot_dpi = 300, text_size = app_settings$plot_download_text_size, report = NULL,
+                             type = NULL){
   moduleServer(id, function(input, output, session){
 
     output$download <- downloadHandler(
@@ -34,6 +35,7 @@ save_plot_server <- function(id, plot_save, plot_width = 1920, plot_height = 108
       # add name
       # check if missing name
       if(input$filename == ""){
+
         report_plots[[cur_report]][["plot_name"]] <- autoStatistics::appendList(report_plots[[cur_report]][["plot_name"]]," ")
         report_plots[[cur_report]][["plot"]] <- autoStatistics::appendList(
           report_plots[[cur_report]][["plot"]],

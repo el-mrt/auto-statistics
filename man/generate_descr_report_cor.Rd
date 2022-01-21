@@ -4,15 +4,15 @@
 \alias{generate_descr_report_cor}
 \title{Function for creating correlation text part of descriptive report}
 \usage{
-generate_descr_report_cor(data, feature, cor_thresholds = c(0.3, 0.5))
+generate_descr_report_cor(cor_matrix, feature, cor_thresholds = c(0.3, 0.5))
 }
 \arguments{
-\item{data}{data}
+\item{cor_matrix}{correlation matrix}
 
 \item{feature}{feature name}
 }
 \value{
-returns list with cor matrix and cor text
+returns string
 }
 \description{
 Function for creating correlation text part of descriptive report
