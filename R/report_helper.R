@@ -4,7 +4,7 @@
 #' @importFrom dplyr top_n
 #' @importFrom stringr str_replace_all
 #' @import ggplot2
-#'
+#' @export
 ReportPlot <- R6::R6Class("ReportPlot", list(
   #' @field title dataframe with missing combinations
   #' @field descr_key dataframe with missing combinations
@@ -43,10 +43,13 @@ ReportPlot <- R6::R6Class("ReportPlot", list(
 #' @return returns string
 #' @export
 generate_descr_report_text_na <- function(feature, imp_tbl, task_obj, na_threshold = NULL, imp_threshold = NULL){
+  if(!feature %in% imp_tbl[["feature"]])
+    return("")
 
   tryCatch({
     if(is.null(na_threshold)){na_threshold <- app_settings$report_thresh_na}
     if(is.null(imp_threshold)){imp_threshold <- app_settings$report_thres_import}
+
 
     imp_tbl_feature <- imp_tbl[imp_tbl[["feature"]] == feature, ]
     n_na <- imp_tbl_feature[["NAs"]]
@@ -59,7 +62,6 @@ generate_descr_report_text_na <- function(feature, imp_tbl, task_obj, na_thresho
   error=function(cond){
     print(paste0("ERROR WHILE SETUP VARS FOR NA TEXT GENERATION: ", cond))
   })
-
 
 
   # case 1: no NAs
@@ -167,4 +169,51 @@ generate_descr_report_tbl_stat <- function(data, feature){
 generate_text <- function(base_text, text_args){
   return(do.call(sprintf, c(base_text, text_args)))
 }
+
+
+#' R6 Class for missing combinations
+#' The class has the field for the combinations and custom plot function
+#' @importFrom R6 R6Class
+#' @importFrom dplyr top_n
+#' @importFrom stringr str_replace_all
+#' @import ggplot2
+#' @importFrom knitr kable
+#' @export
+ReportContent <- R6::R6Class("ReportContent", list(
+  #' @field id id of object
+  #' @field type of content currently: text, ggplot, cor_matrix
+  #' @field content content
+  id = NULL,
+  type = NULL,
+  content = NULL,
+  #' @description
+  #' Creates a new ReportContent Object
+  #' @param id id of object
+  #' @param type type of content. currently: text, ggplot, cor_matrix, dataframe
+  #' @param content content
+  initialize = function(id = NULL, type = NULL, content = NULL){
+    self$id <- id
+    self$type <- type
+    self$content <- content
+  },
+  #' @description
+  #' prints the object for the different types
+  print_report = function(){
+    if(self$type == "text"){
+      return(cat(self$content))
+      }
+    else if(self$type == "ggplot"){
+      return(print(self$content))
+
+    }
+    else if(self$type == "cor_matrix"){
+      return(corrplot::corrplot(self$content))
+      #return(cat("cor_matrix not implemented yet \n"))
+    }
+    else if(self$type == "dataframe"){
+      return(print(knitr::kable(self$content, "pipe")))
+    }
+  }
+))
+
 
