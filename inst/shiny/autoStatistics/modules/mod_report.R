@@ -53,37 +53,31 @@ report_server <- function(id, user_data){
 
     })
 
-# custom report -----------------------------------------------------------
+
+# REPORT ------------------------------------------------------------------
     output$descr_report_features <- renderUI({
       req(user_data())
       selectInput(ns("descr_report_features"), "Select Featues", choices = c("Top5" = "top", names(user_data())), multiple = TRUE, selected = "top")
     })
 
-    # generate report ---------------------------------------------------------
+# generate report ---------------------------------------------------------
     output$download_report <- downloadHandler(
       # For PDF output, change this to "report.pdf"
-      filename = "report.html",
+      filename = function(){
+        paste0("report.html")
+        },
       content = function(file) {
-
-        #path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
-        #dev path
-        path_template <- ("./www/rep_templ_custom_html.Rmd")
-        print(path_template)
-
-        tempReport <- file.path(tempdir(), "report.Rmd")
-        file.copy(path_template, tempReport, overwrite = TRUE)
-
-
-        rmarkdown::render(tempReport, output_file = file,
-                          params = list(custom_plot = report_plots$custom_report),
-                          envir = new.env(parent = globalenv()))
+        file.copy(cur_report$path, file)
     })
 
     observeEvent(input$report_generate, {
 
       cur_report$type <- NULL
       cur_report$path <- NULL
+
+# custom report -----------------------------------------------------------
       if(input$report_type == "custom"){
+        req(custom_report_content)
         filename = "report.html"
 
         #path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
@@ -151,59 +145,70 @@ report_server <- function(id, user_data){
         })
         temp_cor_data <- user_data()[, temp_numeric_cols]
         temp_cor_matrix <- cor(temp_cor_data, use = "pairwise.complete.obs")
-        report_content <- autoStatistics::appendList(report_content,temp_cor_matrix, "cor_matrix")
+        cor_matrix_obj <- autoStatistics::ReportContent$new(id="cor_matrix", type = "cor_matrix", content = temp_cor_matrix)
+        report_content <- autoStatistics::appendList(report_content, cor_matrix_obj, "cor_matrix")
 
 
         for(feature in selected_features){
           print(paste0("creating descriptive report for feature: ", feature))
           feature_content <- vector("list", length = 0L)
           # hist####
-          temp_hist <- plot_hist_server("plot_hist", data = user_data(), feature = feature, user_color = plot_color_one, user_binwidth = start_bin_width,
-                                        check_bin_width=FALSE)
-
+          temp_hist <- plot_hist_server("plot_hist", data = user_data(), feature = feature, user_color = plot_color_one, user_binwidth = 0.5)
+          temp_hist_obj <- autoStatistics::ReportContent$new(id=paste0(feature, "_hist"), type = "ggplot", content = temp_hist)
 
           feature_content <- autoStatistics::appendList(
             feature_content,
-            temp_hist,
+            temp_hist_obj,
             "hist"
           )
+          cat("Histogram created \n")
           # scatter target####
+          temp_scatter <- plot_scatter_server("plot_scatter", data = user_data(), target_feature = target_column(),
+                                              selected_feature = feature, user_color = plot_color_one, point_size = 3)
+          temp_scatter_obj <- autoStatistics::ReportContent$new(id = paste0(feature,"_scatter"), type = "ggplot", content = temp_scatter)
+
+
           feature_content <- autoStatistics::appendList(
             feature_content,
-            plot_scatter_server("plot_scatter", data = user_data(), target_feature = target_column(),
-                                selected_feature = feature, user_color = plot_color_one, point_size = 3),
+            temp_scatter_obj,
             "scatter_target"
           )
+          cat("Scatter created \n")
           # text NA and feature imp####
+          print(user_tables$feature_imp)
+          temp_text_na <- autoStatistics::generate_descr_report_text_na(feature = feature, imp_tbl = user_tables$feature_imp, task_obj = user_task$task)
+          temp_text_na_obj <- autoStatistics::ReportContent$new(id = paste0(feature, "_textNA"), type = "text", content = temp_text_na)
+
           feature_content <- autoStatistics::appendList(
             feature_content,
-            autoStatistics::generate_descr_report_text_na(feature = feature, imp_tbl = user_tables$feature_imp, task_obj = user_task$task),
+            temp_text_na_obj,
             "na_text"
           )
+          cat("temp_text_na_obj created \n")
           # df with stat summary ####
-          feature_content <- autoStatistics::appendList(
-            feature_content,
-            autoStatistics::generate_descr_report_tbl_stat(data = user_data(), feature = feature),
-            "tbl_stat"
-          )
+          temp_stats <- autoStatistics::generate_descr_report_tbl_stat(data = user_data(), feature = feature)
+          temp_stats_obj <- autoStatistics::ReportContent$new(id = paste0(feature, "_stats"), type = "dataframe", content = temp_stats)
 
+          feature_content <- autoStatistics::appendList(feature_content, temp_stats_obj, "tbl_stat")
+          cat("temp_stats_obj created \n")
           # cor matrix and text ####
-          feature_content <- autoStatistics::appendList(
-            feature_content,
-            autoStatistics::generate_descr_report_cor(temp_cor_matrix, feature),
-            "cor_text"
-          )
+          temp_cor_text <- autoStatistics::generate_descr_report_cor(temp_cor_matrix, feature)
+          temp_cor_text_obj <- autoStatistics::ReportContent$new(id = paste0(feature,"_cor_text"), type = "text", content = temp_cor_text)
+
+          feature_content <- autoStatistics::appendList(feature_content, temp_cor_text_obj, "cor_text")
+          cat("temp_cor_text_obj created \n")
+
           # append to report content ####
           report_content <- autoStatistics::appendList(report_content,feature_content, feature)
         }
         #print(report_content)
-        View(report_content)
+        #View(report_content)
         rm(temp_numeric_cols,temp_cor_data,temp_cor_matrix)
 
 
 
         filename = "report.html"
-        #path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
+
         #dev path
         path_template <- ("./www/rep_templ_descriptive_html.Rmd")
 
@@ -212,7 +217,9 @@ report_server <- function(id, user_data){
         file.copy(path_template, tempReport, overwrite = TRUE)
 
         temp_report <-
-          rmarkdown::render(tempReport,params = list(custom_plot = report_plots$custom_report, content = report_content),envir = new.env(parent = globalenv()))
+          rmarkdown::render(tempReport,"html_document", params = list(
+            custom_plot = report_plots$custom_report, content = report_content, append_custom = input$report_append_custom),
+            envir = new.env(parent = globalenv()))
         cur_report$type <- "html"
         cur_report$path <- temp_report
         print(cur_report$path)
@@ -221,13 +228,22 @@ report_server <- function(id, user_data){
 
       }
       else if(input$report_type == "ml"){
-        print("ML REPORT HERE")
+        req(results$bmr_result)
+        filename = "report.html"
+
+        #dev path
+        path_template <- ("./www/rep_templ_ml_html.Rmd")
+
+
+        tempReport <- file.path(tempdir(), "report.Rmd")
+        file.copy(path_template, tempReport, overwrite = TRUE)
+
+        temp_report <-
+          rmarkdown::render(tempReport,"html_document", params = list(bmr_result = results$bmr_result, param_list = results$param_list),envir = new.env(parent = globalenv()))
+        cur_report$type <- "html"
+        cur_report$path <- temp_report
+        print(cur_report$path)
       }
-
-
-
-
-
       })
 
   })
