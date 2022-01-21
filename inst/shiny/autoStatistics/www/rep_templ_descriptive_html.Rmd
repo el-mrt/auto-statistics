@@ -1,11 +1,9 @@
 ---
 title: "Descriptive Report"
-output:
-  html_document: default
 params:
   content: "none"
   custom_plot: "none"
-  append_custom: true
+  append_custom: false
 ---
 
 ```{r setup, include=FALSE, echo=FALSE}
@@ -16,48 +14,40 @@ corrplot_setup <- list(
 ```
 
 ```{r echo=FALSE, results = 'asis'}
+defaultW <- getOption("warn")
+options(warn = -1)
+
+cat("\n")
+params$content[["cor_matrix"]]$print_report()
+cat("\n")
+
 features <- names(params$content)
 features <- features[!features %in% "cor_matrix"]
 for(feature in features){
-  cat('\n##', feature, '\n')
+  cat('\n###', feature, '\n')
   feature_content <- params$content[[feature]]
   for(content in feature_content){
-    cat("<br>")
-    if(is.character(content)){cat(content, "\n")}
-    else if(is.data.frame(content)){
-      print(knitr::kable(content, "pipe"))
-      cat("\n")
-      }
-    else{
-      print(content)}
-      cat("\n")
-    }
-  # purrr::walk(feature_content, function(content){
-  #   cat("<br>")
-  #   print(unlist(content))
-  # })
+    cat("\n")
+    content$print_report()
+    cat("\n")
+  }
+    cat('\n###', " ", '\n')
+
 }
 
-
-
-```
-
-
-```{r echo=FALSE}
-purrr::walk(params$custom_plot$plot, function(plot){
-  print(plot)
-  cat("\n")
-})
+options(warn = defaultW)
 
 ```
-```{r echo=FALSE}
-if(params$append_custom)
-print(params$append_custom)
+
+
+```{r echo=FALSE, results = 'asis'}
+if(params$append_custom){
+  cat('\n##', 'Custom Report', '\n')
+  purrr::walk(params$custom_plot$plot, function(plot){
+    print(plot)
+    cat("\n")
+  })  
+}
+
 ```
-
-
-
-
-
-
 

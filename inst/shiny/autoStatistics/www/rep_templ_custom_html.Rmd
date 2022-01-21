@@ -12,25 +12,10 @@ library(tidyverse)
 ```
 
 
-```{r echo=FALSE, message=FALSE}
+```{r echo=FALSE, results = 'asis'}
 purrr::walk(params$custom_plot$plot, function(plot){
   print(plot)
+  cat("\n")
 })
-
 ```
-
-```{r echo=FALSE}
-if(params$append_custom)
-print("testtest")
-```
-
-
-
-
-
-
-
-
-
-
 
