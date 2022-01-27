@@ -96,6 +96,7 @@ missings_server <- function(id, user_data, target_col){
         #        axis.title=element_text(size=14,face="bold"))
 
       user_plot$na_per_col <- cur_plot
+      print(user_plot$na_per_col)
       return(cur_plot)
     })
 
@@ -257,8 +258,8 @@ missings_server <- function(id, user_data, target_col){
       })
 
     # download buttons ------------------------------------------------------------------------------------------------------------------------
-    save_plot_server("save_na_per_col", plot_save = reactive({user_plot$na_per_col}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi)
-    save_plot_server("save_na_comb", plot_save = reactive({user_plot$na_comb}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi)
-    save_plot_server("save_na_dist", plot_save = reactive({user_plot$na_dist}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi)
+    save_plot_server("save_na_per_col", plot_save = reactive({user_plot$na_per_col}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi, report = "custom")
+    save_plot_server("save_na_comb", plot_save = reactive({user_plot$na_comb}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi, report = "custom")
+    save_plot_server("save_na_dist", plot_save = reactive({user_plot$na_dist}), plot_width = app_settings$plot_download_width, plot_height = app_settings$plot_download_height, plot_dpi = app_settings$plot_download_dpi, report = "custom")
     })
 }
