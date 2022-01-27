@@ -16,6 +16,8 @@ corrplot_setup <- list(
 ```
 
 ```{r echo=FALSE, results = 'asis'}
+defaultW <- getOption("warn")
+options(warn = -1)
 
 cat("\n")
 params$content[["cor_matrix"]]$print_report()
@@ -33,6 +35,7 @@ for(feature in features){
   })
 }
 
+options(warn = defaultW)
 
 ```
 
