@@ -78,9 +78,9 @@ report_server <- function(id, user_data){
         req(custom_report_content)
         filename = "report.html"
 
-        #path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
-        #dev path
-        path_template <- ("./www/rep_templ_custom_html.Rmd")
+        path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_custom_html.Rmd", package="autoStatistics")
+        # dev path
+        # path_template <- ("./www/rep_templ_custom_html.Rmd")
 
 
         tempReport <- file.path(tempdir(), "report.Rmd")
@@ -215,7 +215,9 @@ report_server <- function(id, user_data){
         filename = "report.html"
 
         #dev path
-        path_template <- ("./www/rep_templ_descriptive_html.Rmd")
+        # path_template <- ("./www/rep_templ_descriptive_html.Rmd")
+        path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_descriptive_html.Rmd", package="autoStatistics")
+
 
 
         tempReport <- file.path(tempdir(), "report.Rmd")
@@ -233,8 +235,9 @@ report_server <- function(id, user_data){
         req(results$bmr_result)
         filename = "report.html"
 
+        path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_ml_html.Rmd", package="autoStatistics")
         #dev path
-        path_template <- ("./www/rep_templ_ml_html.Rmd")
+        #path_template <- ("./www/rep_templ_ml_html.Rmd")
 
         tempReport <- file.path(tempdir(), "report.Rmd")
         file.copy(path_template, tempReport, overwrite = TRUE)
