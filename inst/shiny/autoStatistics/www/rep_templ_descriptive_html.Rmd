@@ -26,13 +26,11 @@ features <- features[!features %in% "cor_matrix"]
 for(feature in features){
   cat('\n###', feature, '\n')
   feature_content <- params$content[[feature]]
-  for(content in feature_content){
+  purrr::walk(feature_content, function(x){
     cat("\n")
-    content$print_report()
+    x$print_report()
     cat("\n")
-  }
-    cat('\n###', " ", '\n')
-
+  })
 }
 
 options(warn = defaultW)
