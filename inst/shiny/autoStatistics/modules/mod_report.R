@@ -203,11 +203,6 @@ report_server <- function(id, user_data){
         }
         #print(report_content)
         View(report_content)
-        print("=====================================================================")
-        print(report_content[["UpDownShift"]][["na_text"]][["content"]])
-        print(report_content[["UpDownShift"]])
-        print("=====================================================================")
-
 
 
         rm(temp_numeric_cols,temp_cor_data,temp_cor_matrix)
@@ -217,6 +212,7 @@ report_server <- function(id, user_data){
         #dev path
         # path_template <- ("./www/rep_templ_descriptive_html.Rmd")
         path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_descriptive_html.Rmd", package="autoStatistics")
+        warning("template found")
 
 
 
@@ -236,6 +232,7 @@ report_server <- function(id, user_data){
         filename = "report.html"
 
         path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_ml_html.Rmd", package="autoStatistics")
+
         #dev path
         #path_template <- ("./www/rep_templ_ml_html.Rmd")
 
