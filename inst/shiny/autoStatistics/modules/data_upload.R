@@ -74,7 +74,7 @@ data_upload_server <- function(id){
 
     })
     # read data into dataframe----
-    observeEvent(c(input$file,input$sep,input$header,input$NA_string,input$dec_symbol, input$encoding, input$btn_reset_data), {
+    observeEvent(c(input$file,input$sep,input$header,input$NA_string,input$dec_symbol, input$encoding, input$btn_reset_data, input$fct_threshold), {
       req(user_file())
       tryCatch(
         {
@@ -102,7 +102,7 @@ data_upload_server <- function(id){
       tryCatch(
         {
           col_types <- lapply(names(user_data()), function(col_name){
-            autoStatistics::identify_CR(user_data(), col_name, 10)
+            autoStatistics::identify_CR(user_data(), col_name, input$fct_threshold)
           })
           col_types <- as.vector(unlist(col_types))
           factor_col_index <- which(col_types == "classif")
@@ -175,7 +175,7 @@ data_upload_server <- function(id){
       selectInput(ns("fct_cols"), "select factor columns", choices = names(user_data()), multiple = TRUE, selected = factor_columns())
     })
     output$fct_threshold <- renderUI({
-      numericInput(ns("fct_threshold"), "threshold [WIP]", 6, 2, 100, 1)
+      numericInput(ns("fct_threshold"), "threshold", 6, 2, 100, 1)
     })
 
     observeEvent(input$fct_cols, {
