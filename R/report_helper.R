@@ -50,12 +50,11 @@ generate_descr_report_text_na <- function(feature, imp_tbl, task_obj, na_thresho
     if(is.null(na_threshold)){na_threshold <- app_settings$report_thresh_na}
     if(is.null(imp_threshold)){imp_threshold <- app_settings$report_thres_import}
 
-
     imp_tbl_feature <- imp_tbl[imp_tbl[["feature"]] == feature, ]
     n_na <- imp_tbl_feature[["NAs"]]
     imp_rank <- imp_tbl_feature[["mean"]]
 
-    na_text <- NULL
+    na_text <-
     na_prob <- n_na/task_obj[["nrow"]]
     imp_perc <- imp_rank/nrow(imp_tbl)
   },
@@ -126,7 +125,7 @@ generate_descr_report_cor <- function(cor_matrix, feature, cor_thresholds = c(0.
   }else if((length(medium_cor_index) > 0) & (length(strong_cor_index) > 0)){
     print("CASE 2")
     final_string <- paste(autoStatistics::generate_text(dict_desc_report[["COR_MEDIUM"]], list(feature, medium_cor_names)),
-                          autoStatistics::generate_text(dict_desc_report[["COR_LARGE"]], list(feature, strong_cor_names)), sep = " ")
+                          autoStatistics::generate_text(dict_desc_report[["COR_LARGE"]], list(feature, strong_cor_names)), sep = "\n")
   }
   else if(length(strong_cor_index) < 1){
     print("CASE 3")
@@ -200,7 +199,11 @@ ReportContent <- R6::R6Class("ReportContent", list(
   #' prints the object for the different types
   print_report = function(){
     if(self$type == "text"){
-      return(cat(self$content))
+      if(!is.list(self$content)){
+        return(cat(self$content))
+      }else{
+        return(cat(""))
+      }
       }
     else if(self$type == "ggplot"){
       return(print(self$content))
@@ -208,7 +211,6 @@ ReportContent <- R6::R6Class("ReportContent", list(
     }
     else if(self$type == "cor_matrix"){
       return(corrplot::corrplot(self$content))
-      #return(cat("cor_matrix not implemented yet \n"))
     }
     else if(self$type == "dataframe"){
       return(print(knitr::kable(self$content, "pipe")))
