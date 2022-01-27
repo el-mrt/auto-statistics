@@ -1,5 +1,4 @@
-# incl_at
-# incl_at, hpo_baselearner, ensemble
+
 auto_ml_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -8,7 +7,8 @@ auto_ml_ui <- function(id){
       column(2,
              h3("Settings"),
              actionButton(ns("start"), "Start"),
-             actionButton(ns("save_param"), "save params"),
+             downloadButton(ns("download_result"), "Download result"),
+
              uiOutput(ns("task_na")), hr(),
              uiOutput(ns("task_learner")),
              uiOutput(ns("ensemble_n_best")),
@@ -286,13 +286,9 @@ auto_ml_server <- function(id, user_data){
       })
 
       shinybusy::hide_spinner() # hide spinner
-      print(results$bmr_result )
+      print(results$bmr_result)
       #save("bmr_result", file = "bmr_result.Rdata")
       shinybusy::hide_spinner()
-    })
-    observeEvent(input$save_param, {
-      req(param_list)
-      #save("param_list", file = "param_list.Rdata")
     })
 
     # Results ----------------------------------------------------------------
@@ -308,5 +304,14 @@ auto_ml_server <- function(id, user_data){
         theme(plot.title = element_blank(), axis.text=element_text(size=14))
       return(cur_plot)
       })
+
+    output$download_result <- downloadHandler(
+      filename = function() {
+        paste0("bmr_result", ".rds")
+      },
+      content = function(con) {
+        saveRDS(results$bmr_result, con)
+      }
+    )
   })
 }
