@@ -202,17 +202,17 @@ report_server <- function(id, user_data){
           report_content <- autoStatistics::appendList(report_content,feature_content, feature)
         }
         #print(report_content)
-        View(report_content)
+        #View(report_content)
 
 
         rm(temp_numeric_cols,temp_cor_data,temp_cor_matrix)
 
-        filename = "report.html"
 
         #dev path
         # path_template <- ("./www/rep_templ_descriptive_html.Rmd")
+
+        warning("cashew")
         path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_descriptive_html.Rmd", package="autoStatistics")
-        warning("template found")
 
 
 
@@ -236,11 +236,11 @@ report_server <- function(id, user_data){
         #dev path
         #path_template <- ("./www/rep_templ_ml_html.Rmd")
 
-        tempReport <- file.path(tempdir(), "report.Rmd")
+        tempReport <- file.path(tempdir(), "report_descriptive.Rmd")
         file.copy(path_template, tempReport, overwrite = TRUE)
 
         temp_report <-
-          rmarkdown::render(tempReport,"html_document", params = list(bmr_result = results$bmr_result, param_list = results$param_list),envir = new.env(parent = globalenv()))
+          rmarkdown::render(tempReport, "html_document", params = list(bmr_result = results$bmr_result, param_list = results$param_list),envir = new.env(parent = globalenv()))
         cur_report$type <- "html"
         cur_report$path <- temp_report
         print(cur_report$path)
