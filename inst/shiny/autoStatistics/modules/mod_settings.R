@@ -14,15 +14,15 @@ settings_ui <- function(id){
       column(4,
              h3("Download"),
              fluidRow(
-               column(2, uiOutput(ns("plot_download_width"))),
-               column(2, uiOutput(ns("plot_download_height"))),
-               column(2, uiOutput(ns("plot_download_dpi"))),
-               column(2, uiOutput(ns("plot_download_format")))
+               column(3, uiOutput(ns("plot_download_width"))),
+               column(3, uiOutput(ns("plot_download_height"))),
+               column(3, uiOutput(ns("plot_download_dpi"))),
+               column(3, uiOutput(ns("plot_download_format")))
 
                ),
              fluidRow(
-               column(2, uiOutput(ns("plot_download_text_size"))),
-               column(2, uiOutput(ns("plot_download_text_font")))
+               column(3, uiOutput(ns("plot_download_text_size"))),
+               column(3, uiOutput(ns("plot_download_text_font")))
                )
              )
     ),
@@ -40,8 +40,8 @@ setting_server <- function(id){
     output$color_set <- renderUI({selectInput(ns("color_set"), "Color Set", choices = rownames(RColorBrewer::brewer.pal.info), selected = app_settings$plot_color_set)})
     output$color_custom_missing <- renderUI({
       fluidRow(
-        column(2,textInput(ns("color_custom_missing_not_na"), "not NA", value = app_settings$plot_color_miss_custom[1])),
-        column(2,textInput(ns("color_custom_missing_na"), "NA", value = app_settings$plot_color_miss_custom[2]))
+        column(3,textInput(ns("color_custom_missing_not_na"), "not NA", value = app_settings$plot_color_miss_custom[1])),
+        column(3,textInput(ns("color_custom_missing_na"), "NA", value = app_settings$plot_color_miss_custom[2]))
       )
     })
     output$color_custom_missing_check <- renderUI({

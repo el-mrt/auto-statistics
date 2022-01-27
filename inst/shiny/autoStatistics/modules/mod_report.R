@@ -1,10 +1,8 @@
-
-
-
 report_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidRow(
+      shinybusy::add_busy_spinner(spin = "fading-circle"),
       column(2,
              h3(),
              uiOutput(ns("report_type")),
@@ -127,9 +125,8 @@ report_server <- function(id, user_data){
           }
           selected_features <- selected_features[!selected_features %in% c("top")]
           selected_features <- unique(selected_features)
-          print(selected_features)
         }
-        req(user_tables$feature_imp)
+        #req(user_tables$feature_imp)
 
         # generate plots for all the selected features
         report_content <- vector(mode = "list", length = 0L)
@@ -175,7 +172,6 @@ report_server <- function(id, user_data){
           )
           cat("Scatter created \n")
           # text NA and feature imp####
-          print(user_tables$feature_imp)
           temp_text_na <- autoStatistics::generate_descr_report_text_na(feature = feature, imp_tbl = user_tables$feature_imp, task_obj = user_task$task)
           temp_text_na_obj <- autoStatistics::ReportContent$new(id = paste0(feature, "_textNA"), type = "text", content = temp_text_na)
 
@@ -193,6 +189,10 @@ report_server <- function(id, user_data){
           cat("temp_stats_obj created \n")
           # cor matrix and text ####
           temp_cor_text <- autoStatistics::generate_descr_report_cor(temp_cor_matrix, feature)
+          print(temp_cor_text)
+
+
+
           temp_cor_text_obj <- autoStatistics::ReportContent$new(id = paste0(feature,"_cor_text"), type = "text", content = temp_cor_text)
 
           feature_content <- autoStatistics::appendList(feature_content, temp_cor_text_obj, "cor_text")
@@ -202,10 +202,15 @@ report_server <- function(id, user_data){
           report_content <- autoStatistics::appendList(report_content,feature_content, feature)
         }
         #print(report_content)
-        #View(report_content)
+        View(report_content)
+        print("=====================================================================")
+        print(report_content[["UpDownShift"]][["na_text"]][["content"]])
+        print(report_content[["UpDownShift"]])
+        print("=====================================================================")
+
+
+
         rm(temp_numeric_cols,temp_cor_data,temp_cor_matrix)
-
-
 
         filename = "report.html"
 
@@ -223,9 +228,6 @@ report_server <- function(id, user_data){
         cur_report$type <- "html"
         cur_report$path <- temp_report
         print(cur_report$path)
-
-
-
       }
       else if(input$report_type == "ml"){
         req(results$bmr_result)
@@ -233,7 +235,6 @@ report_server <- function(id, user_data){
 
         #dev path
         path_template <- ("./www/rep_templ_ml_html.Rmd")
-
 
         tempReport <- file.path(tempdir(), "report.Rmd")
         file.copy(path_template, tempReport, overwrite = TRUE)
