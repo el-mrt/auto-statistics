@@ -161,7 +161,7 @@ report_server <- function(id, user_data){
           cat("Histogram created \n")
           # scatter target####
           temp_scatter <- plot_scatter_server("plot_scatter", data = user_data(), target_feature = target_column(),
-                                              selected_feature = feature, user_color = plot_color_one, point_size = 3)
+                                              selected_feature = feature, user_color = plot_color_one, point_size = 1.5)
           temp_scatter_obj <- autoStatistics::ReportContent$new(id = paste0(feature,"_scatter"), type = "ggplot", content = temp_scatter)
 
 

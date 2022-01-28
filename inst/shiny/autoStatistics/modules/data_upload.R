@@ -22,8 +22,9 @@ data_upload_ui <- function(id){
              textInput(ns("sep"), "seperator", value = ","),
              checkboxInput(ns("header"), "Has Header?", value = TRUE),
              textInput(ns("NA_string"), "NA string", value = "NaN"),
-             textInput(ns("dec_symbol"), "decimal symbol", value = "."),
-             uiOutput(ns("target_col"))
+             textInput(ns("dec_symbol"), "Decimal symbol", value = "."),
+             uiOutput(ns("target_col")),
+             textInput(ns("task_name"), "Task name", "task", )
       ),
       column(width = 10,
              DTOutput(ns("table")))
@@ -159,7 +160,7 @@ data_upload_server <- function(id){
           temp_data <- user_data()
           temp_data <- temp_data[!is.na(temp_data[[{{ target_column() }}]]), ]
 
-          user_task$task <- autoStatistics::create_task(temp_data, target_column(), user_task$type)
+          user_task$task <- autoStatistics::create_task(temp_data, target_column(), user_task$type, task_name = input$task_name)
           autoStatistics::debug_console(sprintf("new task created with type: %s", user_task$type))
           print(user_task$task)
         },

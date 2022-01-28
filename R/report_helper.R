@@ -17,6 +17,7 @@ ReportPlot <- R6::R6Class("ReportPlot", list(
   #' @param title title of the plot
   #' @param descr_key description of the plot
   #' @param plot plot to display
+  #' @param descr_dict dict with description strings
   initialize = function(title = NULL, descr_key = NULL, descr_dict = NULL, plot = NULL){
     self$title <- title
     self$descr_key <- descr_key
@@ -213,7 +214,7 @@ ReportContent <- R6::R6Class("ReportContent", list(
       return(corrplot::corrplot(self$content))
     }
     else if(self$type == "dataframe"){
-      return(print(knitr::kable(self$content, "pipe")))
+      return(print(knitr::kable(self$content, "pipe", align = "l")))
     }
   }
 ))

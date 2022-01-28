@@ -24,10 +24,10 @@ descriptive_ui <- function(id){
              )),
     fluidRow(save_plot_ui(ns("save_descr_hist"))),
     fluidRow(column(12,h3("Scatterplot - Target Feature"))),
-
     fluidRow(
       column(2,
-             uiOutput(ns("point_size"))
+             uiOutput(ns("point_size")),
+             uiOutput(ns("jitter"))
              ),
       column(10,
              plotOutput(ns("scatter")))
@@ -64,9 +64,14 @@ descriptive_server <- function(id){
     output$scatter <- renderPlot({
       plot_color <- RColorBrewer::brewer.pal(n = 3, name = app_settings$plot_color_set)[1]
       user_plot$descr_scatter <- plot_scatter_server("plot_scatter", data = user_data(), target_feature = target_column(),
-                                                     selected_feature = input$selected_feature, user_color = plot_color, point_size = input$point_size)
+                                                     selected_feature = input$selected_feature, user_color = plot_color, point_size = input$point_size, jitter=input$jitter)
       return(user_plot$descr_scatter)
     })
+
+    output$jitter <- renderUI({
+      checkboxInput(ns("jitter"), "use jitter", value = FALSE)
+    })
+
 
     # statistic summary ####
     output$stat_table <- renderPrint({

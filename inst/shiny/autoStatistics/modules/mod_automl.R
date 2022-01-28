@@ -12,20 +12,22 @@ auto_ml_ui <- function(id){
              uiOutput(ns("task_na")), hr(),
              uiOutput(ns("task_learner")),
              uiOutput(ns("ensemble_n_best")),
-             uiOutput(ns("task_featureless")),hr(),
+             hr(),
              uiOutput(ns("task_resampling")),
              fluidRow(column(4, conditionalPanel(condition = "input.task_resampling != 'auto'", tagList(uiOutput(ns("task_resampling_one_param"))), ns = ns), style = "margin-left:15px;"),
                       column(4, conditionalPanel(condition = "input.task_resampling == 'repeated_cv' || input.task_resampling == 'bootstrap'", tagList(uiOutput(ns("task_resampling_param_two"))), ns = ns))
              ),
 
-             uiOutput(ns("task_measure")), hr(),
-             uiOutput(ns("task_feature")),
+             uiOutput(ns("task_measure")),
+             hr(),
              uiOutput(ns("task_tuning")),
              conditionalPanel(condition = "input.task_tuning == true",
                               tagList(
                                 uiOutput(ns("task_ensemble")),
                                 uiOutput(ns("task_include_at")),
                                 uiOutput(ns("hpo_base_learner")),
+                                uiOutput(ns("task_feature")),
+                                uiOutput(ns("task_featureless")),
                                 uiOutput(ns("task_term_runtime")),
                                 uiOutput(ns("task_term_evals")),
                                 uiOutput(ns("task_tuning_method")),
@@ -140,7 +142,9 @@ auto_ml_server <- function(id, user_data){
     })
     observeEvent(input$task_include_at, {
       user_task$include_at <- input$task_include_at
+      autoStatistics::debug_console(sprintf("task_include_at changed. New Value: "), user_task$include_at)
     })
+
 
     # tuning----
     output$task_tuning <- renderUI({
@@ -164,7 +168,11 @@ auto_ml_server <- function(id, user_data){
     })
     observeEvent(input$task_tuning_method, {
       user_task$tuning_method <- input$task_tuning_method
+      autoStatistics::debug_console(sprintf("task_tuning_method changed. New Value: "), user_task$tuning_method)
     })
+
+
+
     # resampling ####
     ## OUTER
     output$task_resampling <- renderUI({
@@ -201,6 +209,7 @@ auto_ml_server <- function(id, user_data){
     output$task_resample_inner <- renderUI({
       selectInput(ns("task_resample_inner"), "inner resampling", choices = c("Holdout" = "holdout", "CV" = "cv"))
     })
+
     output$task_resample_inner_param <- renderUI({
       numericInput(ns("task_resample_inner_param"), "first param", 3, 1, 100, 1)
     })
@@ -216,6 +225,8 @@ auto_ml_server <- function(id, user_data){
     # update reactive Values
     observeEvent(c(input$task_resample_inner, input$task_resample_inner_param), {
       user_task$i.resampling <- list("method" = input$task_resample_inner, "params" = c(input$task_resample_inner_param))
+      autoStatistics::debug_console("user_task$i.resampling updated")
+      print(user_task$i.resampling)
     })
 
 
@@ -226,19 +237,22 @@ auto_ml_server <- function(id, user_data){
       }else{
         selectInput(ns("task_measure"), "Measure", choices = available_measure[[user_task$task$task_type]])
       }
+      observeEvent(input$task_measure, {user_task$measure <- input$task_measure})
+      autoStatistics::debug_console(sprintf("user_task$measure. New Value: "), user_task$measure)
     })
 
-    observeEvent(input$task_measure, {user_task$measure <- input$task_measure})
+
 
     # terminator####
     output$task_term_runtime <- renderUI({
       fluidRow(column(1, checkboxInput(ns("task_term_runtime"), "", value = FALSE), style = "margin-top: 20px;"),
-               column(8, numericInput(ns("task_term_runtime_param"), "runtime", min = 1, max = 1000000, value = 120)))
+               column(8, numericInput(ns("task_term_runtime_param"), "Terminator - runtime", min = 1, max = 1000000, value = 120)))
     })
     output$task_term_evals <- renderUI({
       fluidRow(column(1, checkboxInput(ns("task_term_eval"), "", value = FALSE), style = "margin-top: 20px;"),
-               column(8, numericInput(ns("task_term_eval_param"), "evals", min = 1, max = 100000, value = 10)))
+               column(8, numericInput(ns("task_term_eval_param"), "Terminator - evals", min = 1, max = 100000, value = 10)))
     })
+
     observeEvent(c(input$task_term_runtime, input$task_term_runtime_param, input$task_term_eval, input$task_term_eval_param), {
       list_term <- vector(mode = "list")
       if(input$task_term_runtime){
@@ -251,9 +265,7 @@ auto_ml_server <- function(id, user_data){
         list_term <- "auto"
       }
       user_task$terminator <- list_term
-    }
-
-    )
+    })
 
     # start----
     observeEvent(input$start, {
@@ -295,12 +307,14 @@ auto_ml_server <- function(id, user_data){
     output$bmr_result <- renderPlot({
       req(results$bmr_result)
       cur_plot <- ggplot2::autoplot(results$bmr_result$bmr, measure = results$bmr_result$measure) +
+        theme_minimal() +
         theme(axis.text=element_text(size=12))
       return(cur_plot)
     })
     output$bmr_result_ensemble <- renderPlot({
       req(results$bmr_result)
       cur_plot <- ggplot2::autoplot(results$bmr_result$bmr_best, measure = results$bmr_result$measure) +
+        theme_minimal() +
         theme(plot.title = element_blank(), axis.text=element_text(size=14))
       return(cur_plot)
       })

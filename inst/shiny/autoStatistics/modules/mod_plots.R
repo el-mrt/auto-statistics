@@ -54,18 +54,29 @@ plot_scatter_ui <- function(id){
 
 }
 
-plot_scatter_server <- function(id, data, target_feature, selected_feature, user_color, point_size){
+plot_scatter_server <- function(id, data, target_feature, selected_feature, user_color, point_size, jitter=FALSE){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     req(data, target_feature, selected_feature, user_color, point_size)
     x_feature <- data[[{{ target_feature }}]]
     y_feature <- data[[{{ selected_feature }}]]
-    cur_plot <- ggplot(data) +
-      geom_point(aes(x_feature, y_feature), color = user_color, size = point_size) +
-      labs(x = target_feature, y = selected_feature) +
-      ggtitle(paste0("Relationship ", target_feature, " and ", selected_feature))+
-      theme_minimal() +
-      theme(plot.title = element_text(hjust = 0.5))
+    if(!jitter){
+      cur_plot <- ggplot(data) +
+        geom_point(aes(x_feature, y_feature), color = user_color, size = point_size) +
+        labs(x = target_feature, y = selected_feature) +
+        ggtitle(paste0("Relationship ", target_feature, " and ", selected_feature))+
+        theme_minimal() +
+        theme(plot.title = element_text(hjust = 0.5))
+    }else{
+      cur_plot <- ggplot(data) +
+        geom_jitter(aes(x_feature, y_feature), color = user_color, size = point_size) +
+        labs(x = target_feature, y = selected_feature) +
+        ggtitle(paste0("Relationship ", target_feature, " and ", selected_feature))+
+        theme_minimal() +
+        theme(plot.title = element_text(hjust = 0.5))
+    }
+
+
 
     return(cur_plot)
   })

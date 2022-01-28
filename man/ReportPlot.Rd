@@ -46,6 +46,8 @@ Creates a new ReportPlot Object
 
 \item{\code{descr_key}}{description of the plot}
 
+\item{\code{descr_dict}}{dict with description strings}
+
 \item{\code{plot}}{plot to display}
 }
 \if{html}{\out{</div>}}

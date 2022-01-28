@@ -4,6 +4,7 @@
 #' @param target_var target variable
 #' @param type type of task. ´regr´ or ´classif´. if ´NULL´ the type is estimated.
 #' @param rm_na_target remove NAs from target column?
+#' @param task_name task name
 #'
 #' @examples
 #' create_task(iris, "Species")
@@ -16,7 +17,7 @@
 #' @import mlr3verse
 #'
 
-create_task <- function(df, target_var, type = NULL, rm_na_target = TRUE){
+create_task <- function(df, target_var, type = NULL, rm_na_target = TRUE, task_name = "task"){
   if(rm_na_target){
     df <- df[!is.na(df[[{{ target_var }}]]), ]
   }
@@ -41,6 +42,6 @@ create_task <- function(df, target_var, type = NULL, rm_na_target = TRUE){
       task <- mlr3::as_task_classif(df, target = target_var)
     }
   } else stop("variable type not supported")
-
+  task$id <- task_name
   return(task)
 }
