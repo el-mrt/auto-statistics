@@ -276,8 +276,10 @@ data_upload_server <- function(id){
     # reset session ----
     observeEvent(input$btn_reset_session,{
       session$reload()
-      user_file(NULL)
-      user_data(NULL)
+      global_path <- system.file("shiny", "autoStatistics", package = "autoStatistics")
+      print(paste0(global_path, "/global.R"))
+      source(paste0(global_path, "/global.R"))
+
     })
 })
 }
