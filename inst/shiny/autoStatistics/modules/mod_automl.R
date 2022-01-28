@@ -5,10 +5,12 @@ auto_ml_ui <- function(id){
     fluidRow(
       shinybusy::add_busy_spinner(spin = "fading-circle"),
       column(2,
+             fileInput(ns("upload_bmr"), "Upload bmr [.rds]", accept = ".rds"),
+             hr(),
              h3("Settings"),
              actionButton(ns("start"), "Start"),
              downloadButton(ns("download_result"), "Download result"),
-
+             hr(),
              uiOutput(ns("task_na")), hr(),
              uiOutput(ns("task_learner")),
              uiOutput(ns("ensemble_n_best")),
@@ -17,7 +19,6 @@ auto_ml_ui <- function(id){
              fluidRow(column(4, conditionalPanel(condition = "input.task_resampling != 'auto'", tagList(uiOutput(ns("task_resampling_one_param"))), ns = ns), style = "margin-left:15px;"),
                       column(4, conditionalPanel(condition = "input.task_resampling == 'repeated_cv' || input.task_resampling == 'bootstrap'", tagList(uiOutput(ns("task_resampling_param_two"))), ns = ns))
              ),
-
              uiOutput(ns("task_measure")),
              hr(),
              uiOutput(ns("task_tuning")),
@@ -319,13 +320,25 @@ auto_ml_server <- function(id, user_data){
       return(cur_plot)
       })
 
+
     output$download_result <- downloadHandler(
       filename = function() {
         paste0("bmr_result", ".rds")
       },
       content = function(con) {
-        saveRDS(results$bmr_result, con)
+        saveRDS(list(results$bmr_result, results$param_list), con)
       }
     )
+    # upload bmr -------------------------------------------------------------
+    observeEvent(input$upload_bmr, {
+      file <- input$upload_bmr
+      req(file)
+      temp_result <- readRDS(file$datapath)
+
+      results$bmr_result <- temp_result[[1]]
+      results$param_list <- temp_result[[2]]
+      rm(temp_result)
+      message("Upload finished")
+    })
   })
 }

@@ -228,6 +228,7 @@ report_server <- function(id, user_data){
         print(cur_report$path)
       }
       else if(input$report_type == "ml"){
+        print(results$bmr_result)
         req(results$bmr_result)
         filename = "report.html"
 
@@ -236,7 +237,7 @@ report_server <- function(id, user_data){
         #dev path
         #path_template <- ("./www/rep_templ_ml_html.Rmd")
 
-        tempReport <- file.path(tempdir(), "report_descriptive.Rmd")
+        tempReport <- file.path(tempdir(), "report.Rmd")
         file.copy(path_template, tempReport, overwrite = TRUE)
 
         temp_report <-
