@@ -40,13 +40,14 @@ data_upload_ui <- function(id){
              fluidRow(
                h4(""),
                  column(8,
-                        verbatimTextOutput(ns("warn_fct_col"), placeholder = TRUE)),
-                 column(2,
-                        actionButton(ns("btn_warn_fct_cont"), "", icon = icon("glyphicon glyphicon-ok", lib = "glyphicon")),
-                        actionButton(ns("btn_warn_fct_discard"), "", icon = icon("glyphicon glyphicon-remove", lib = "glyphicon")))
-               )
-               )
+                        conditionalPanel(condition = "output.warn_fct_col_active == true",
+                                         verbatimTextOutput(ns("warn_fct_col"), placeholder = FALSE),
+                                         actionButton(ns("btn_warn_fct_cont"), "", icon = icon("glyphicon glyphicon-ok", lib = "glyphicon")),
+                                         actionButton(ns("btn_warn_fct_discard"), "", icon = icon("glyphicon glyphicon-remove", lib = "glyphicon")),
+                                         ns = ns)
+                                         )),
              )
+      )
   )
 }
 
@@ -54,11 +55,6 @@ data_upload_ui <- function(id){
 data_upload_server <- function(id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
-
-    #debug----
-    output$session_id <- renderPrint({
-      paste0("session id:  ", session$token)
-    })
 
     # upload data----
     observeEvent(input$file, {
@@ -216,6 +212,8 @@ data_upload_server <- function(id){
               message(cond)
             },
             warning = function(cond){
+              fct_col_warn$is_active <- TRUE
+              message(paste0("WARN WHILE TRANSFORMING TO FCT COL: ", cond, "...", fct_col_warn$is_active))
               updateSelectInput(session, inputId = "fct_cols", label = "select factor column", choices = names(user_data()), selected = factor_columns())
               fct_col_warn$col_name <- c(setdiff(factor_columns(), input$fct_cols), setdiff(input$fct_cols, factor_columns()))
               temp_data <- user_data()
@@ -225,12 +223,20 @@ data_upload_server <- function(id){
               n_old_na <-sum(is.na(temp_data))
               n_na <- abs(n_new_na - n_old_na)
               fct_col_warn$text <- paste0("Converting the column '", fct_col_warn$col_name, "' would insert ", n_na, " new NAs to the column. Continue?")
+
             }
           )
         }
 
     })
     # warn text----
+    # track if active
+    output$warn_fct_col_active <- reactive({
+      print(paste0("UPDATED: ", fct_col_warn$is_active))
+      return(fct_col_warn$is_active)
+    })
+    outputOptions(output, "warn_fct_col_active", suspendWhenHidden = FALSE)
+
     output$warn_fct_col <- renderText({print(fct_col_warn$text)})
     observeEvent(input$btn_warn_fct_cont,{
       req(fct_col_warn$col_name)
@@ -239,6 +245,7 @@ data_upload_server <- function(id){
       user_data(temp_data)
       factor_columns(autoStatistics::factor_col_names(user_data()))
       fct_col_warn$text <- ""
+      fct_col_warn$is_active <- FALSE
       # get task type
       tryCatch({
         user_task$type <- autoStatistics::identify_CR(user_data(), target_column())
@@ -263,6 +270,8 @@ data_upload_server <- function(id){
     })
     observeEvent(input$btn_warn_fct_discard,{
       fct_col_warn$text <- ""
+      fct_col_warn$is_active <- FALSE
+
     })
     # reset session ----
     observeEvent(input$btn_reset_session,{
