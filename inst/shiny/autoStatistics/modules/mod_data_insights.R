@@ -8,7 +8,8 @@ data_insight_ui <- function(id){
                     h3("Correlation within the Data"),
                     br(),
                     uiOutput(ns("cor_method")),
-                    uiOutput(ns("cor_type"))
+                    uiOutput(ns("cor_type"))#,
+                    #uiOutput(ns("cor_anova"))
                     ),
              column(8, style = "height:1100px;", offset = 2,
                     plotOutput(ns("cor_plot"))
@@ -30,13 +31,16 @@ data_insight_server <- function(id, user_data){
     output$cor_type <- renderUI({
       selectInput(ns("cor_type"), "Type", choices = c("Full" = "full", "Lower" = "lower", "Upper" = "upper"))
     })
+    output$cor_anova <- renderUI({
+      selectInput(ns("cor_anova"), "Correlation method", choices = c("Pearson" = "pearson", "Anova" = "anova"))
+    })
 
 
 # cor plot ----------------------------------------------------------------
     output$cor_plot <- renderPlot({
       req(user_data())
 
-      user_plot$cor_plot <- plot_cor_server("cor_plot", data = user_data(), method = input$cor_method, type = input$cor_type)
+      user_plot$cor_plot <- plot_cor_server("cor_plot", data = user_data(), method = input$cor_method, type = input$cor_type, calc_method = "pearson")
       return(user_plot$cor_plot)
     },
     height = 1100, width = 1100

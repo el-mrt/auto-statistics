@@ -104,21 +104,28 @@ plot_cor_ui <- function(id){
   ns <- NS(id)
 }
 
-plot_cor_server <- function(id, data, method, type){
+plot_cor_server <- function(id, data, method, type, calc_method){
   moduleServer(id, function(input, output, session){
-    req(data, method, type)
+    req(data, method, type, calc_method)
 
-    numeric_cols <- sapply(user_data(), function(x){
-      if(is.numeric(x) & (!is.factor(x))){
-        return(TRUE)
-      }else{
-        return(FALSE)
-      }
-    })
-    cor_data <- data[, numeric_cols]
-    cor_matrix <- cor(cor_data, use = "pairwise.complete.obs")
+    if(calc_method == "pearson"){
+      numeric_cols <- sapply(user_data(), function(x){
+        if(is.numeric(x) & (!is.factor(x))){
+          return(TRUE)
+        }else{
+          return(FALSE)
+        }
+      })
+      cor_data <- data[, numeric_cols]
+      cor_matrix <- cor(cor_data, use = "pairwise.complete.obs")
 
-    cur_plot <- corrplot::corrplot(cor_matrix, method = method, type = type)
-    return(cur_plot)
+      cur_plot <- corrplot::corrplot(cor_matrix, method = method, type = type)
+      return(cur_plot)
+    }else if(calc_method == "anova"){
+
+    }else{
+      warning("Invalid cor_method")
+    }
+
   })
 }
