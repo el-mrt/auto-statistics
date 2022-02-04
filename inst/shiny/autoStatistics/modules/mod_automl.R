@@ -70,7 +70,7 @@ auto_ml_server <- function(id, user_data){
       if(is.null(user_task$type)){
         selectInput(ns("task_feature"), "Feature Selection", choices = c("None"), selected = "None")
       }else{
-        selectInput(ns("task_feature"), "Feature Selection", choices = available_feature_filter[[user_task$type]], selected = "no", multiple = TRUE)
+        selectInput(ns("task_feature"), "Feature Selection", choices = available_feature_filter[[user_task$type]], selected = "no", multiple = FALSE)
       }
     })
     observeEvent(input$task_feature, {
@@ -276,7 +276,7 @@ auto_ml_server <- function(id, user_data){
         "task" = user_task$task,
         "type" = user_task$type,
         "learners" = user_task$learners,
-        "ensemle" = user_task$ensemble,
+        "ensemble" = user_task$ensemble,
         "n_best" = user_task$ensemble_n_best,
         "o.resampling" = user_task$o.resampling,
         "i.resampling" = user_task$i.resampling,
