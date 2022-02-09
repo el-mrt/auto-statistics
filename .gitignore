@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 .RDataTmp
+.RDataTmp1
+bmr_result.rds

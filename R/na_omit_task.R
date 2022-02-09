@@ -10,6 +10,7 @@
 #' @export
 #'
 #' @import mlr3verse
+#' @importFrom stats na.omit
 #'
 
 na_omit_task <- function(task, na_option){

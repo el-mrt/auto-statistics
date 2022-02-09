@@ -11,6 +11,7 @@
 #' @export
 #'
 #' @import mlr3verse
+#' @importFrom dplyr arrange
 #'
 
 create_best_benchmark <- function(task, bmr, measure, n_best, resampling = NULL){
@@ -21,9 +22,9 @@ create_best_benchmark <- function(task, bmr, measure, n_best, resampling = NULL)
   }
 
   if (measure$minimize) { # checks, if measure minimizes, so that best results will be displayed in first observations
-    bmr_scores <- arrange(as.data.table(bmr$score(measure)), !!sym(measure$id))
+    bmr_scores <- dplyr::arrange(as.data.table(bmr$score(measure)), !!sym(measure$id))
   } else {
-    bmr_scores <- arrange(as.data.table(bmr$score(measure)), -!!sym(measure$id))
+    bmr_scores <- dplyr::arrange(as.data.table(bmr$score(measure)), -!!sym(measure$id))
   }
 
   n_best <- min(c(n_best, nrow(bmr_scores))) # could think about taking only learners within a certain percentile

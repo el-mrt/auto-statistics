@@ -1,0 +1,40 @@
+---
+title: "Report"
+output:
+  html_document: default
+params:
+  custom_report: false
+  descriptive_report: false
+  ml_report: false
+  custom_plots: "none"
+  descriptive_plots: "none"
+  ml_plots: "none"
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+library(tidyverse)
+```
+
+
+```{r echo=FALSE, message = FALSE}
+purrr::walk(params$custom_plot$plot, function(plot){
+  print(plot)
+  cat("\n")
+})
+
+```
+```{r echo=FALSE}
+if(params$append_custom)
+print(params$append_custom)
+```
+
+
+
+
+
+
+
+
+
+
+

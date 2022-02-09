@@ -14,7 +14,7 @@ available_feature_filter <- list(
 )
 
 available_feature_filter <- list(
-  "regr" = c("None" = "no", "Importance" = "importance", "Information Gain" = "information_gain"),
+  "regr" = c("None" = "no", "Information Gain" = "information_gain"),
   "classif" = c("None" = "no", "Importance" = "importance", "Information Gain" = "information_gain", "mrmr" = "mrmr")
 )
 cat("available_fs loaded\n")
@@ -41,7 +41,7 @@ available_tuning_methods <- c("Automatic" = "auto", "grid search" = "grid_search
 pre_feature_import_filter <- list(
   "regr" = list(
     mlr3filters::flt("information_gain"),
-    mlr3filters::flt("importance", learner = mlr3::lrn("regr.rpart")),
+    #mlr3filters::flt("importance", learner = mlr3::lrn("regr.rpart")),
     #mlr3filters::flt("relief"),
     mlr3filters::flt("performance", learner = mlr3::lrn("regr.rpart"))
   ),
@@ -57,3 +57,18 @@ pre_feature_import_filter <- list(
 # app settings ------------------------------------------------------------
 
 available_fonts <- c("serif", "sans","mono", "Times")
+
+
+# report dicts ------------------------------------------------------------
+dict_desc_report <- list(
+  "NA_none" = "There is no missing data within the feature %s and the importance rank of the feature is %s.",
+  "NA_imp" = "%s NA entries exist within the feature %s and the importance rank is %s.",
+  "NA_nimp_few_missing" = "%s NA entries exist within the feature %s and the importance rank is %s.",
+  "NA_nimp_lot_missing" = "%s NA entries exist within the feature %s and the importance rank is %s.",
+  "NA_other" = "%s NA entries exist within the feature %s and the importance rank is %s.",
+  "COR_MEDIUM" = "The feature %s has **medium correlations** with the following features: %s.",
+  "COR_LARGE" = "The features %s has **strong correlations** with the following features: %s.",
+  "NO_COR" = "The feature %s has **no medium or strong correlation** with other features."
+)
+
+

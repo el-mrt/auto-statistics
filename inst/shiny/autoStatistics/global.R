@@ -23,7 +23,7 @@ lapply(files, source)
 
 # shiny options -----------------------------------------------------------------------------------------------------------------------
 
-options(shiny.maxRequestSize = 30*1024^2) # set max size of uploaded file to 30 Mb
+options(shiny.maxRequestSize = 500*1024^2) # set max size of uploaded file to 500 Mb
 options(htmlwidgets.TOJSON_ARGS = list(na = 'string')) # show NAs in
 
 
@@ -88,8 +88,14 @@ user_plot <- reactiveValues(
   descr_scatter = NULL,
   na_per_col = NULL,
   na_comb = NULL,
-  na_dist = NULL
+  na_dist = NULL,
+  cor_plot = NULL
 )
+user_tables <- reactiveValues(
+  feature_imp = NULL,
+  stat_summary = NULL
+)
+
 
 app_settings <- reactiveValues(
   plot_color_set = "Set2",
@@ -99,19 +105,31 @@ app_settings <- reactiveValues(
   plot_download_height = 1080,
   plot_download_format = "pdf",
   plot_download_text_size = 4,
-  plot_download_text_font = "serif"
+  plot_download_text_font = "serif",
+  report_thresh_na = 0.03,
+  report_thres_import = 0.5
 )
 # results of tuning
 results <- reactiveValues(
+  param_list = NULL,
   bmr_result = NULL
 )
 
-# plots for report
+# report stuff ---------------------------------------------------------------
 
 report_plots <- reactiveValues(
   custom_report = list("plot" = vector(mode = "list", length = 0L),
                        "plot_name" = vector(mode = "list", length = 0L))
-
+)
+report_tables <- reactiveValues(
+  custom_report = vector(mode = "list", length = 0L),
+  descriptive = vector(mode = "list", length = 0L),
+  ml = vector(mode = "list", length = 0L)
+)
+report_text <- reactiveValues(
+  custom_report = vector(mode = "list", length = 0L),
+  descriptive = vector(mode = "list", length = 0L),
+  ml = vector(mode = "list", length = 0L)
 )
 
 report_settings <- reactiveValues(
@@ -121,6 +139,9 @@ report_settings <- reactiveValues(
 cur_report <- reactiveValues(
   type = NULL,
   path = NULL
+)
+custom_report_content <- reactiveValues(
+  content = NULL
 )
 
 

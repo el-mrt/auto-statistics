@@ -13,9 +13,22 @@ landing_ui <- function(id){
             img(src="ad_02.gif", align = "left",height='300px',width='250px'),
             img(src="ad_03.gif", align = "left",height='300px',width='250px')
             ),
-      column(2, offset = 8,
+      column(8,
+             h1("Description"),
+             HTML(app_descriptions[["landing_descr"]]),
+             h5(),
+             HTML(app_descriptions[["landing_descr_logo"]])
+
+             # verbatimTextOutput(app_descriptions[["landing_page"]])
+             # #includeHTML("./www/landing_text.html")
+             ),
+      column(2,
              img(src="ad_01.gif", align = "left",height='800px',width='250px')
              )
+    ),
+    fluidRow(
+      column(3, uiOutput("logo_tud")),
+      column(2, uiOutput("logo_github"))
     )
   )
 }
@@ -25,6 +38,11 @@ landing_ui <- function(id){
 landing_server <- function(id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
+    output$logo_tud <- renderUI({
+      tags$a(imageOutput("./www/Logo_TUD.png"),href="https://tu-dresden.de/bu/verkehr/ivw/bda?set_language=en")
+    })
+
+
   })
 }
 

@@ -167,6 +167,8 @@ perform_auto_ml <- function(param_list){
     message("test4.2")
     if (!("no" %in% ensemble_input)) {
       learners <- c(learners, ensemble_learners)
+
+
     }
     message("test4.3")
 
@@ -196,6 +198,7 @@ perform_auto_ml <- function(param_list){
   design <- benchmark_grid(task = task,
                            resamplings = outer_resampling,
                            learners = learners)
+
   message("test8")
   # store_models needs to be true, so that best configurations can be extracted
   bmr <- benchmark(design, store_models = TRUE)

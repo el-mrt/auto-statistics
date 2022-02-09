@@ -22,8 +22,9 @@ data_upload_ui <- function(id){
              textInput(ns("sep"), "seperator", value = ","),
              checkboxInput(ns("header"), "Has Header?", value = TRUE),
              textInput(ns("NA_string"), "NA string", value = "NaN"),
-             textInput(ns("dec_symbol"), "decimal symbol", value = "."),
-             uiOutput(ns("target_col"))
+             textInput(ns("dec_symbol"), "Decimal symbol", value = "."),
+             uiOutput(ns("target_col")),
+             textInput(ns("task_name"), "Task name", "task", )
       ),
       column(width = 10,
              DTOutput(ns("table")))
@@ -39,13 +40,14 @@ data_upload_ui <- function(id){
              fluidRow(
                h4(""),
                  column(8,
-                        verbatimTextOutput(ns("warn_fct_col"), placeholder = TRUE)),
-                 column(2,
-                        actionButton(ns("btn_warn_fct_cont"), "", icon = icon("glyphicon glyphicon-ok", lib = "glyphicon")),
-                        actionButton(ns("btn_warn_fct_discard"), "", icon = icon("glyphicon glyphicon-remove", lib = "glyphicon")))
-               )
-               )
+                        conditionalPanel(condition = "output.warn_fct_col_active == true",
+                                         verbatimTextOutput(ns("warn_fct_col"), placeholder = FALSE),
+                                         actionButton(ns("btn_warn_fct_cont"), "", icon = icon("glyphicon glyphicon-ok", lib = "glyphicon")),
+                                         actionButton(ns("btn_warn_fct_discard"), "", icon = icon("glyphicon glyphicon-remove", lib = "glyphicon")),
+                                         ns = ns)
+                                         )),
              )
+      )
   )
 }
 
@@ -53,11 +55,6 @@ data_upload_ui <- function(id){
 data_upload_server <- function(id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
-
-    #debug----
-    output$session_id <- renderPrint({
-      paste0("session id:  ", session$token)
-    })
 
     # upload data----
     observeEvent(input$file, {
@@ -74,7 +71,7 @@ data_upload_server <- function(id){
 
     })
     # read data into dataframe----
-    observeEvent(c(input$file,input$sep,input$header,input$NA_string,input$dec_symbol, input$encoding, input$btn_reset_data), {
+    observeEvent(c(input$file,input$sep,input$header,input$NA_string,input$dec_symbol, input$encoding, input$btn_reset_data, input$fct_threshold), {
       req(user_file())
       tryCatch(
         {
@@ -102,7 +99,7 @@ data_upload_server <- function(id){
       tryCatch(
         {
           col_types <- lapply(names(user_data()), function(col_name){
-            autoStatistics::identify_CR(user_data(), col_name, 6)
+            autoStatistics::identify_CR(user_data(), col_name, input$fct_threshold)
           })
           col_types <- as.vector(unlist(col_types))
           factor_col_index <- which(col_types == "classif")
@@ -159,7 +156,7 @@ data_upload_server <- function(id){
           temp_data <- user_data()
           temp_data <- temp_data[!is.na(temp_data[[{{ target_column() }}]]), ]
 
-          user_task$task <- autoStatistics::create_task(temp_data, target_column(), user_task$type)
+          user_task$task <- autoStatistics::create_task(temp_data, target_column(), user_task$type, task_name = input$task_name)
           autoStatistics::debug_console(sprintf("new task created with type: %s", user_task$type))
           print(user_task$task)
         },
@@ -175,7 +172,7 @@ data_upload_server <- function(id){
       selectInput(ns("fct_cols"), "select factor columns", choices = names(user_data()), multiple = TRUE, selected = factor_columns())
     })
     output$fct_threshold <- renderUI({
-      numericInput(ns("fct_threshold"), "threshold [WIP]", 6, 2, 100, 1)
+      numericInput(ns("fct_threshold"), "threshold", 6, 2, 100, 1)
     })
 
     observeEvent(input$fct_cols, {
@@ -215,6 +212,8 @@ data_upload_server <- function(id){
               message(cond)
             },
             warning = function(cond){
+              fct_col_warn$is_active <- TRUE
+              message(paste0("WARN WHILE TRANSFORMING TO FCT COL: ", cond, "...", fct_col_warn$is_active))
               updateSelectInput(session, inputId = "fct_cols", label = "select factor column", choices = names(user_data()), selected = factor_columns())
               fct_col_warn$col_name <- c(setdiff(factor_columns(), input$fct_cols), setdiff(input$fct_cols, factor_columns()))
               temp_data <- user_data()
@@ -224,12 +223,20 @@ data_upload_server <- function(id){
               n_old_na <-sum(is.na(temp_data))
               n_na <- abs(n_new_na - n_old_na)
               fct_col_warn$text <- paste0("Converting the column '", fct_col_warn$col_name, "' would insert ", n_na, " new NAs to the column. Continue?")
+
             }
           )
         }
 
     })
     # warn text----
+    # track if active
+    output$warn_fct_col_active <- reactive({
+      print(paste0("UPDATED: ", fct_col_warn$is_active))
+      return(fct_col_warn$is_active)
+    })
+    outputOptions(output, "warn_fct_col_active", suspendWhenHidden = FALSE)
+
     output$warn_fct_col <- renderText({print(fct_col_warn$text)})
     observeEvent(input$btn_warn_fct_cont,{
       req(fct_col_warn$col_name)
@@ -238,6 +245,7 @@ data_upload_server <- function(id){
       user_data(temp_data)
       factor_columns(autoStatistics::factor_col_names(user_data()))
       fct_col_warn$text <- ""
+      fct_col_warn$is_active <- FALSE
       # get task type
       tryCatch({
         user_task$type <- autoStatistics::identify_CR(user_data(), target_column())
@@ -262,12 +270,16 @@ data_upload_server <- function(id){
     })
     observeEvent(input$btn_warn_fct_discard,{
       fct_col_warn$text <- ""
+      fct_col_warn$is_active <- FALSE
+
     })
     # reset session ----
     observeEvent(input$btn_reset_session,{
       session$reload()
-      user_file(NULL)
-      user_data(NULL)
+      global_path <- system.file("shiny", "autoStatistics", package = "autoStatistics")
+      print(paste0(global_path, "/global.R"))
+      source(paste0(global_path, "/global.R"))
+
     })
 })
 }

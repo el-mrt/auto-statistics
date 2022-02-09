@@ -4,6 +4,7 @@ output:
   html_document: default
 params:
   custom_plot: "none"
+  append_custom: true
 ---
 
 ```{r setup, include=FALSE, echo=FALSE}
@@ -11,22 +12,13 @@ library(tidyverse)
 ```
 
 
-```{r echo=FALSE}
+```{r echo=FALSE, results = 'asis'}
+defaultW <- getOption("warn")
+options(warn = -1)
 purrr::walk(params$custom_plot$plot, function(plot){
   print(plot)
   cat("\n")
 })
-
+options(warn = defaultW)
 ```
-
-
-
-
-
-
-
-
-
-
-
 

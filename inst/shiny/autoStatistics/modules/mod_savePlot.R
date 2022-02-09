@@ -1,6 +1,3 @@
-
-
-
 save_plot_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -15,7 +12,8 @@ save_plot_ui <- function(id){
   )
 }
 
-save_plot_server <- function(id, plot_save, plot_width = 1920, plot_height = 1080, plot_dpi = 300, text_size = app_settings$plot_download_text_size, report = NULL){
+save_plot_server <- function(id, plot_save, plot_width = 1920, plot_height = 1080, plot_dpi = 300, text_size = app_settings$plot_download_text_size, report = NULL,
+                             type = NULL){
   moduleServer(id, function(input, output, session){
 
     output$download <- downloadHandler(
@@ -37,6 +35,7 @@ save_plot_server <- function(id, plot_save, plot_width = 1920, plot_height = 108
       # add name
       # check if missing name
       if(input$filename == ""){
+
         report_plots[[cur_report]][["plot_name"]] <- autoStatistics::appendList(report_plots[[cur_report]][["plot_name"]]," ")
         report_plots[[cur_report]][["plot"]] <- autoStatistics::appendList(
           report_plots[[cur_report]][["plot"]],
@@ -65,3 +64,31 @@ save_plot_server <- function(id, plot_save, plot_width = 1920, plot_height = 108
       })
     })
   }
+
+save_table_ui <- function(id){
+  ns <- NS(id)
+  tagList(
+    fluidRow(
+      column(2,style = "padding-left: 45px;",
+            actionButton(ns("add_report"), label = "", icon = icon("glyphicon glyphicon-plus", lib = "glyphicon"), style="color: black; margin-top:24px; height: 35px;"))
+    )
+
+  )
+}
+
+save_table_server <- function(id, report, tbl = NULL, tbl_name){
+  moduleServer(id, function(input, output, session){
+    ns <- session$ns
+    observeEvent(input$add_report, {
+      req(tbl)
+      switch(report,
+             custom = {report_tables[["custom_report"]][[tbl_name]] <- tbl},
+             descriptive = {report_tables[["descriptive"]][[tbl_name]] <- tbl},
+             ml = {report_tables[["ml"]][[tbl_name]] <- tbl}
+      )
+    })
+  })
+}
+
+
+

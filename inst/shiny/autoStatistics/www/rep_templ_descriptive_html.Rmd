@@ -1,0 +1,53 @@
+---
+title: "Descriptive Report"
+output:
+  html_document: default
+params:
+  content: "none"
+  custom_plot: "none"
+  append_custom: false
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+library(tidyverse)
+corrplot_setup <- list(
+  data = params$content$cor_matrix
+)
+```
+
+```{r echo=FALSE, results = 'asis'}
+defaultW <- getOption("warn")
+options(warn = -1)
+
+cat("\n")
+params$content[["cor_matrix"]]$print_report()
+cat("\n")
+
+features <- names(params$content)
+features <- features[!features %in% "cor_matrix"]
+for(feature in features){
+  cat('\n###', feature, '\n')
+  feature_content <- params$content[[feature]]
+  purrr::walk(feature_content, function(x){
+    cat("\n")
+    x$print_report()
+    cat("\n")
+  })
+}
+
+options(warn = defaultW)
+
+```
+
+
+```{r echo=FALSE, results = 'asis'}
+if(params$append_custom){
+  cat('\n##', 'Custom Report', '\n')
+  purrr::walk(params$custom_plot$plot, function(plot){
+    print(plot)
+    cat("\n")
+  })  
+}
+
+```
+
