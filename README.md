@@ -21,4 +21,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 - [Nhung Tuyet Trinh](https://github.com/Nhungi)
 
 ## Usage
-See the wiki
+See the [wiki](https://github.com/el-mrt/auto-statistics/wiki/Usage)
