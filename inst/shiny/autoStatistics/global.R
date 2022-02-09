@@ -23,7 +23,7 @@ lapply(files, source)
 
 # shiny options -----------------------------------------------------------------------------------------------------------------------
 
-options(shiny.maxRequestSize = 500*1024^2) # set max size of uploaded file to 500 Mb
+options(shiny.maxRequestSize = 5000*1024^2) # set max size of uploaded file to 500 Mb
 options(htmlwidgets.TOJSON_ARGS = list(na = 'string')) # show NAs in
 
 
