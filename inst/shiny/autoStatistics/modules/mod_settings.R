@@ -4,14 +4,14 @@ settings_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidRow(style = "margin-left: 15px;",
-      column(4,
+      column(5,
              h3("Colors"),
              uiOutput(ns("color_set")),
              uiOutput(ns("color_custom_missing_check")),
              conditionalPanel(condition = "input.color_custom_missing_check == true",
                               uiOutput(ns("color_custom_missing")), ns = ns)
              ),
-      column(4,
+      column(5,
              h3("Download"),
              fluidRow(
                column(3, uiOutput(ns("plot_download_width"))),
