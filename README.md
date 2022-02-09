@@ -1,7 +1,7 @@
 # AutoStatistics
 > Project work about an automated statistican
 
-Dieses Projekt wurde in Rahmen der Lehrveranstaltung Application of Data Analytics am Lehrstuhl (Chair) of Big Data Analytics in Transportation erstellt der TU Dresden erstellt. Innerhalb der Shiny App ist es möglich verschiedene Deskriptive Statistiken zu generieren und Machine Learning Pipelines zu evaluieren. 
+This project was created as part of the course Application of Data Analytics at the Chair of Big Data Analytics in Transportation at TU Dresden. Within the Shiny App it is possible to generate different descriptive statistics and to evaluate machine learning pipelines.
 
 ## Installation
 ```{r install, eval = FALSE}
