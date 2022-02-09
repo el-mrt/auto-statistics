@@ -13,7 +13,7 @@ remotes::install_github("el-mrt/auto-statistics")
 autoStatistics::run_shiny()
 ```
 ## License
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/el-mrt/auto-statistics/blob/main/LICENSE) file for details
 
 ## Authors
 - [Martin Gruber](https://github.com/el-mrt)
