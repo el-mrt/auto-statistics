@@ -3,7 +3,6 @@
 #' @param task task
 #' @param na_option na_option
 #'
-#' @examples
 #'
 #' @return task
 #'

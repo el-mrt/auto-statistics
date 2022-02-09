@@ -3,8 +3,6 @@
 #' @param learners list of learners
 #' @param task_type task type
 #'
-#' @examples
-#'
 #' @return learners with shortened ids
 #'
 #' @export

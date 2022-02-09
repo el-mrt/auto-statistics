@@ -96,7 +96,6 @@ generate_descr_report_text_na <- function(feature, imp_tbl, task_obj, na_thresho
 generate_descr_report_cor <- function(cor_matrix, feature, cor_thresholds = c(0.3,0.5)){
   list_return <- vector(mode = "list", length = 0L)
 
-
   diag(cor_matrix) <- 0  # exlude correlation of 1 with itself
   cor_matrix <- as.data.frame(cor_matrix)
   #View(as.data.frame(cor_matrix))
