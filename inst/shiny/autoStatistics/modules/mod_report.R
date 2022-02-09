@@ -18,7 +18,7 @@ report_ui <- function(id){
              downloadButton(ns("download_report"), "Download")
              ),
       column(10,
-             h3("Preview Report"),
+             h3("Preview report"),
              htmlOutput(ns("preview_report")),
              )
     )
@@ -31,8 +31,9 @@ report_server <- function(id, user_data){
     ns <- session$ns
     # general -----------------------------------------------------------
     output$report_type <- renderUI({
-      selectInput(ns("report_type"), label = "report type", multiple = FALSE, selected = "custom",
-                  choices = c("Custom" = "custom", "Machine Learning" = "ml", "Descriptive" = "descriptive"))
+      selectInput(ns("report_type"), label = "Report type", multiple = FALSE, selected = "custom",
+                  choices = c("Descriptive" = "descriptive", "Machine Learning" = "ml", "Custom" = "custom"))
+      #choices = c("Custom" = "custom", "Machine Learning" = "ml", "Descriptive" = "descriptive"))
     })
     observeEvent(input$report_type, {
       report_settings$type <- input$report_type

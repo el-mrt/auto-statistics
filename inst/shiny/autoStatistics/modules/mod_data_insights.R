@@ -5,7 +5,7 @@ data_insight_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidRow(column(2,
-                    h3("Correlation within the Data"),
+                    h3("Correlation within the data"),
                     br(),
                     uiOutput(ns("cor_method")),
                     uiOutput(ns("cor_type"))#,

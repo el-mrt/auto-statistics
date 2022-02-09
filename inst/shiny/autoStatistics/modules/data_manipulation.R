@@ -3,7 +3,7 @@ data_man_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidRow(style = "height: 40px; margin-bottom: 0px;",
-      column(4, h3("Remove Column")), column(4, h3("Remove NAs"))
+      column(4, h3("Remove column")), column(4, h3("Remove NAs"))
     ),
     fluidRow(hr(), style = "height:10px; margin-top: 0px; margin-bottom: 30px;"),
     fluidRow(
@@ -29,7 +29,7 @@ data_man_server <- function(id, user_data){
     # select col remove ----
     output$select_col_remove <- renderUI({
       validate(need(user_data(), message = "upload your data"))
-      selectInput(ns("select_col_remove"), "select column", choices = names(user_data()))
+      selectInput(ns("select_col_remove"), "Select feature", choices = names(user_data()))
     })
     # remove btn ----
     output$btn_remove <- renderUI({
@@ -82,15 +82,15 @@ data_man_server <- function(id, user_data){
     # remove NAS----
     output$select_col_na <- renderUI({
       validate(need(user_data(), message = FALSE))
-      selectInput(ns("select_col_na"), "select column", choices = names(user_data()))
+      selectInput(ns("select_col_na"), "Select feature", choices = names(user_data()))
     })
     output$btn_naomit <- renderUI({
       validate(need(user_data(), message = FALSE))
-      actionButton(ns("btn_naomit"), "omit")
+      actionButton(ns("btn_naomit"), "Omit")
     })
     output$btn_naomit_all <- renderUI({
       validate(need(user_data(), message = FALSE))
-      actionButton(ns("btn_naomit_all"), "omit all")
+      actionButton(ns("btn_naomit_all"), "Omit all")
     })
     observeEvent(input$btn_naomit,{
       temp_data <- user_data()

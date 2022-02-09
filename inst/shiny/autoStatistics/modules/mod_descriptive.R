@@ -33,7 +33,7 @@ descriptive_ui <- function(id){
              plotOutput(ns("scatter")))
              ),
     fluidRow(save_plot_ui(ns("save_descr_scatter"))),
-    fluidRow(column(12, h3("statistic summary"))),
+    fluidRow(column(12, h3("Statistic summary"))),
     fluidRow(column(2, save_table_ui(ns("save_tbl_stat_summary")), style = "margin-left:-30px;"),
              column(10,verbatimTextOutput(ns("stat_table"))))
     )
@@ -43,12 +43,12 @@ descriptive_server <- function(id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     output$selected_feature <- renderUI({
-      selectInput(ns("selected_feature"), "select feature", choices = names(user_data()), multiple = FALSE)
+      selectInput(ns("selected_feature"), "Select feature", choices = names(user_data()), multiple = FALSE)
     })
 
     # hist####
     output$bin_width <- renderUI({
-      sliderInput(ns("bin_width"), "bin width", min = 0.001, max = 1, value = 0.3, step = 0.001)
+      sliderInput(ns("bin_width"), "Bin width", min = 0.001, max = 1, value = 0.3, step = 0.001)
     })
     output$hist <- renderPlot({
       plot_color <- RColorBrewer::brewer.pal(n = 3, name = app_settings$plot_color_set)[1]
@@ -58,7 +58,7 @@ descriptive_server <- function(id){
 
     # scatter####
     output$point_size <- renderUI({
-      numericInput(ns("point_size"), "point size", value = 2, step = 1, min = 1, max = 100)
+      numericInput(ns("point_size"), "Point size", value = 2, step = 1, min = 1, max = 100)
     })
 
     output$scatter <- renderPlot({
@@ -69,7 +69,7 @@ descriptive_server <- function(id){
     })
 
     output$jitter <- renderUI({
-      checkboxInput(ns("jitter"), "use jitter", value = FALSE)
+      checkboxInput(ns("jitter"), "Use jitter", value = FALSE)
     })
 
 

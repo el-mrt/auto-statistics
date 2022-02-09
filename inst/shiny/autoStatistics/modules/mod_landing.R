@@ -14,7 +14,8 @@ landing_ui <- function(id){
             #img(src="ad_03.gif", align = "left",height='300px',width='250px')
             ),
       column(8,
-             h1("Description"),
+             #h1("Description"),
+             h1(" "),
              HTML(app_descriptions[["landing_descr"]]),
              h5(),
              HTML(app_descriptions[["landing_descr_logo"]])

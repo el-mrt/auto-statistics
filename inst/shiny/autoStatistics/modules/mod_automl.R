@@ -13,6 +13,7 @@ auto_ml_ui <- function(id){
              hr(),
              uiOutput(ns("task_na")), hr(),
              uiOutput(ns("task_learner")),
+             uiOutput(ns("task_featureless")),
              uiOutput(ns("ensemble_n_best")),
              hr(),
              uiOutput(ns("task_resampling")),
@@ -28,7 +29,6 @@ auto_ml_ui <- function(id){
                                 uiOutput(ns("task_include_at")),
                                 uiOutput(ns("hpo_base_learner")),
                                 uiOutput(ns("task_feature")),
-                                uiOutput(ns("task_featureless")),
                                 uiOutput(ns("task_term_runtime")),
                                 uiOutput(ns("task_term_evals")),
                                 uiOutput(ns("task_tuning_method")),
@@ -105,14 +105,14 @@ auto_ml_server <- function(id, user_data){
       autoStatistics::debug_console(paste(c("learners updated. New Learners are: ", user_task$learners), collapse = ", "))
     })
     output$hpo_base_learner <- renderUI({
-      checkboxInput(ns("hpo_base_learner"), "additional base learners", value = FALSE)
+      checkboxInput(ns("hpo_base_learner"), "Additional base learners", value = FALSE)
     })
     observeEvent(input$hpo_base_learner, {
       user_task$hpo_base_learner <- input$hpo_base_learner
     })
     # ensemble----
     output$task_ensemble <- renderUI({
-      selectInput(ns("task_ensemble"), label = "ensemble", choices = available_ensemble, selected = "no")
+      selectInput(ns("task_ensemble"), label = "Ensemble", choices = available_ensemble, selected = "no")
     })
     observeEvent(input$task_ensemble, {
       if(input$task_ensemble == "both"){
@@ -123,7 +123,7 @@ auto_ml_server <- function(id, user_data){
       autoStatistics::debug_console(sprintf("ensemble learner changed. New Value: %s", user_task$ensemble))
     })
     output$ensemble_n_best <- renderUI({
-      numericInput("ensemble_n_best", "benchmark n best learners", 5, 1, 100, 1)
+      numericInput("ensemble_n_best", "Benchmark n best learners", 5, 1, 100, 1)
     })
     observeEvent(input$ensemble_n_best, {
       user_task$ensemble_n_best <- input$ensemble_n_best
@@ -131,7 +131,7 @@ auto_ml_server <- function(id, user_data){
     })
     # featureless ----
     output$task_featureless <- renderUI({
-      checkboxInput(ns("task_featureless"), "use featureless learner", value = FALSE)
+      checkboxInput(ns("task_featureless"), "Use featureless learner", value = FALSE)
     })
     observeEvent(input$task_featureless, {
       user_task$incl_featureless <- input$task_featureless
@@ -139,7 +139,7 @@ auto_ml_server <- function(id, user_data){
     })
     # include_at -----
     output$task_include_at <- renderUI({
-      checkboxInput(ns("task_include_at"), "include Autotuner", TRUE)
+      checkboxInput(ns("task_include_at"), "Include Autotuner", TRUE)
     })
     observeEvent(input$task_include_at, {
       user_task$include_at <- input$task_include_at
@@ -177,7 +177,7 @@ auto_ml_server <- function(id, user_data){
     # resampling ####
     ## OUTER
     output$task_resampling <- renderUI({
-      selectInput(ns("task_resampling"),"outer resampling", choices = c("Automatic" = "auto", "Holdout" = "holdout", "CV" = "cv", "Repeated-CV" = "repeated_cv", "Bootstrap" = "bootstrap"),selected = "auto")
+      selectInput(ns("task_resampling"),"Outer resampling", choices = c("Automatic" = "auto", "Holdout" = "holdout", "CV" = "cv", "Repeated-CV" = "repeated_cv", "Bootstrap" = "bootstrap"),selected = "auto")
     })
     output$task_resampling_one_param <- renderUI({
       fluidRow(
@@ -208,7 +208,7 @@ auto_ml_server <- function(id, user_data){
     })
     ## INNER
     output$task_resample_inner <- renderUI({
-      selectInput(ns("task_resample_inner"), "inner resampling", choices = c("Holdout" = "holdout", "CV" = "cv"))
+      selectInput(ns("task_resample_inner"), "Inner resampling", choices = c("Holdout" = "holdout", "CV" = "cv"))
     })
 
     output$task_resample_inner_param <- renderUI({

@@ -2,7 +2,7 @@ app_descriptions <- list(
   "plot_mis_per_col" = "This plot shows the missing data in each feature. Note: x_label linebreakes decides when to split the labels. Flipping the coordinates can be helpful if long names are created.",
   "plot_mis_na_comb" = "This plot shows which features share missing data in each row. Note: x_label linebreakes decides when to split the labels. use names is often impractical with larger numbers of variables",
   "plot_mis_hist" = "This plot shows the distribution of missing data of a specified feature with respect to the target feature. Futher it is possible to extend this to a scatterplot and select a second feature.",
-  "landing_descr" = "<p>This Shiny app was created as part of the Application of Data Analytics course and is designed to provide insight into the descriptive properties of a dataset and subsequently test various machine learning algorithms and strategies.</p>
+  "landing_descr" = "<font size='+1'><p>This Shiny app was created as part of the Application of Data Analytics course and is designed to provide insight into the descriptive properties of a dataset and subsequently test various machine learning algorithms and strategies.</p>
     <p><strong>Overview: </strong></p>
     <p><span style='text-decoration: underline;'>Upload Data:</span></p>
     <p>Upload your data to the app.  You can also adjust parameters here to ensure that the data is read correctly and select the TargetFeature of the dataset. In addition, factor features can also be specified here.</p>
@@ -23,5 +23,6 @@ app_descriptions <- list(
   <a href='https://tu-dresden.de/bu/verkehr/ivw/bda?set_language=en'><img src='logo_big_data.png' alt='TUD Big Data' width='230' height='65'></a>
   <a href='https://github.com/el-mrt/auto-statistics'><img src='logo_github.png' alt='Github' width='65' height='65'></a>
   </center>
+  </font>
   "
   )

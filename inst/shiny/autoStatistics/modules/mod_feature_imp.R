@@ -5,7 +5,7 @@ feature_importance_ui <- function(id){
   tagList(
     fluidRow(
       column(8, style = "margin-left:15px;",
-             h3("Feature Importance")
+             h3("Feature importance")
              ),
       column(1,
              shinybusy::add_busy_spinner(spin = "fading-circle")

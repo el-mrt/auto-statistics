@@ -19,9 +19,9 @@ data_upload_ui <- function(id){
       column(width = 2,
              fileInput(ns("file"), "Upload Data"),
              selectInput(ns("encoding"), "File encoding", choices = c("Default" = "", "Latin1" = "Latin1", "UTF-8" = "UTF-8", "UCS-2LE" = "UCS-2LE", "UTF-16LE" = "UTF-16LE", "German_Germany.1252" = "German_Germany.1252"), selected = ""),
-             textInput(ns("sep"), "seperator", value = ","),
-             checkboxInput(ns("header"), "Has Header?", value = TRUE),
-             textInput(ns("NA_string"), "NA string", value = "NaN"),
+             textInput(ns("sep"), "Seperator", value = ","),
+             checkboxInput(ns("header"), "Has Header", value = TRUE),
+             textInput(ns("NA_string"), "NA string", value = "NA"),
              textInput(ns("dec_symbol"), "Decimal symbol", value = "."),
              uiOutput(ns("target_col")),
              textInput(ns("task_name"), "Task name", "task", )
@@ -134,7 +134,7 @@ data_upload_server <- function(id){
     # select target column and create task----
     output$target_col <- renderUI({
       if(is.null(target_column())){target_column(names(user_data())[1])}
-      selectInput(ns("target_col"), "select Target Column", names(user_data()), selected = target_column())
+      selectInput(ns("target_col"), "Select target feature", names(user_data()), selected = target_column())
     })
     observeEvent(input$target_col, {
       req(user_data())
@@ -169,10 +169,10 @@ data_upload_server <- function(id){
     # select factor cols----
     output$fct_cols <- renderUI({
       req(user_data())
-      selectInput(ns("fct_cols"), "select factor columns", choices = names(user_data()), multiple = TRUE, selected = factor_columns())
+      selectInput(ns("fct_cols"), "Select factor columns", choices = names(user_data()), multiple = TRUE, selected = factor_columns())
     })
     output$fct_threshold <- renderUI({
-      numericInput(ns("fct_threshold"), "threshold", 6, 2, 100, 1)
+      numericInput(ns("fct_threshold"), "Threshold", 6, 2, 100, 1)
     })
 
     observeEvent(input$fct_cols, {

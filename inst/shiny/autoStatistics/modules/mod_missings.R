@@ -66,7 +66,7 @@ missings_server <- function(id, user_data, target_col){
     # flip coordinates
     output$na_per_col_flip_coord <- renderUI({
       req(user_data())  # req()
-      checkboxInput(ns("na_per_col_flip_coord"), "flip Coordinates?", value = TRUE)
+      checkboxInput(ns("na_per_col_flip_coord"), "Flip Coordinates?", value = TRUE)
     })
     # plot
     output$plot_na_per_col <- renderPlot({
@@ -104,7 +104,7 @@ missings_server <- function(id, user_data, target_col){
     # top n
     output$na_comb_topn <- renderUI({
       req(user_data()) # req()
-      numericInput(ns("na_comb_topn"), "show top n combinations", 10, 1, 200, 1)
+      numericInput(ns("na_comb_topn"), "Show top n combinations", 10, 1, 200, 1)
     })
     # line break
     output$na_comb_line_break <- renderUI({
@@ -114,12 +114,12 @@ missings_server <- function(id, user_data, target_col){
     # use names
     output$na_comb_use_names <- renderUI({
       req(user_data()) # req()
-      checkboxInput(ns("na_comb_use_names"), "use names", value = FALSE)
+      checkboxInput(ns("na_comb_use_names"), "Use names", value = FALSE)
     })
     # group features
     output$na_comb_use_group <- renderUI({
       req(user_data())
-      checkboxInput(ns("na_comb_use_group"), "group it", value = FALSE)
+      checkboxInput(ns("na_comb_use_group"), "Group it", value = FALSE)
     })
     observeEvent(input$start_na_comb, {
       req(user_data())
@@ -194,19 +194,19 @@ missings_server <- function(id, user_data, target_col){
     # col1
     output$na_hist_col1 <- renderUI({
       req(user_data()) # req()
-      selectInput(ns("na_hist_col1"), "Column 1", names(user_data()))
+      selectInput(ns("na_hist_col1"), "Feature 1", names(user_data()))
     })
 
     # bin width
     output$na_hist_bins <- renderUI({
       req(user_data()) # req()
-      sliderInput(ns("na_hist_bins"), "bin width", min = 0.001, max = 1, value = 0.02, step = 0.001)
+      sliderInput(ns("na_hist_bins"), "Bin width", min = 0.001, max = 1, value = 0.02, step = 0.001)
     })
 
     # column 2
     output$na_hist_col2 <- renderUI({
       req(user_data()) # req()
-      selectInput(ns("na_hist_col2"), "Column 2", c("None", names(user_data())))
+      selectInput(ns("na_hist_col2"), "Feature 2", c("None", names(user_data())))
     })
 
     # plot

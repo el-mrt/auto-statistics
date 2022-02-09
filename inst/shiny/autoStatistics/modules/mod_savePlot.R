@@ -3,7 +3,7 @@ save_plot_ui <- function(id){
   tagList(
     fluidRow(
       column(1, style = "padding-left: 30px; padding-right: 0px;",
-             textInput(ns("filename"), "filename", value = ""),
+             textInput(ns("filename"), "Filename", value = ""),
              ),
       column(11, style = "padding-left: 5px;",
              downloadButton(ns("download"), label="", style="color: black; margin-top:24px; height: 35px;"),
