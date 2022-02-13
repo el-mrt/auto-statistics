@@ -7,6 +7,5 @@ Maintainer: Martin Gruber <Martin.Gruber@mailbox.tu-dresden.de>
 Description: Project work in the master at the TU Dresden. This package contains an approach to implement an autoML approach. For this purpose a shiny app was also built, which is included in the package. 
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 RoxygenNote: 7.1.2
-Depends: shiny, devtools, R6, dplyr, ggplot2, stringr, mlr3verse, e1071, kknn, ranger, xgboost, adagio, mlr3, xtable, knitr, shinydashboard, DT, purrr, shinybusy
+Depends: shiny, devtools, R6, dplyr, ggplot2, stringr, mlr3verse, e1071, kknn, ranger, xgboost, adagio, mlr3, xtable, knitr, shinydashboard, DT, purrr, shinybusy, corrplot, FSelectorRcpp, rmarkdown, tidyverse
