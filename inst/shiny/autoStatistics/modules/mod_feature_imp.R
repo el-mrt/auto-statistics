@@ -19,7 +19,7 @@ feature_importance_ui <- function(id){
              DTOutput(ns("table"))
              )
     ),
-    fluidRow(save_table_ui(ns("save_feature_imp"))),
+    #fluidRow(save_table_ui(ns("save_feature_imp"))),
   )
 }
 
