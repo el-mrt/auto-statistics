@@ -54,11 +54,17 @@ report_server <- function(id, user_data){
 
 
 # REPORT ------------------------------------------------------------------
-    output$descr_report_features <- renderUI({
-      req(user_data())
-      selectInput(ns("descr_report_features"), "Select Featues", choices = c("Top5" = "top", names(user_data())), multiple = TRUE, selected = "top")
-    })
 
+    output$descr_report_features <- renderUI({
+      #req(user_data())
+      selectInput(ns("descr_report_features"), "Select Features", choices = c("Top5" = "top", names(user_data())), multiple = TRUE, selected = "top")
+    })
+    observeEvent(input$descr_report_features, {
+      report_settings$descriptive_features <- input$descr_report_features
+      cat(paste0(input$descr_report_features, " updated\n"))
+      print(report_settings$descriptive_features)
+    })
+    outputOptions(output, "descr_report_features", suspendWhenHidden = FALSE)
 # generate report ---------------------------------------------------------
     output$download_report <- downloadHandler(
       # For PDF output, change this to "report.pdf"
@@ -92,13 +98,15 @@ report_server <- function(id, user_data){
         cur_report$type <- "html"
         cur_report$path <- temp_report
         print(cur_report$path)
-
       }
 
 # descriptive report ------------------------------------------------------
       else if(input$report_type == "descriptive"){
         # check if feature imp already calculated if top n is in descr_report_features
-        selected_features <- input$descr_report_features
+        selected_features <- report_settings$descriptive_features
+        print(report_settings$descriptive_features)
+        print(input$descr_report_features)
+        print(paste0("selected_features: ", selected_features))
 
         if(c("top") %in% selected_features){
           if(is.null(user_tables$feature_imp)){
@@ -202,17 +210,10 @@ report_server <- function(id, user_data){
           # append to report content ####
           report_content <- autoStatistics::appendList(report_content,feature_content, feature)
         }
-        #print(report_content)
-        #View(report_content)
+
+        #rm(temp_numeric_cols,temp_cor_data,temp_cor_matrix)
 
 
-        rm(temp_numeric_cols,temp_cor_data,temp_cor_matrix)
-
-
-        #dev path
-        # path_template <- ("./www/rep_templ_descriptive_html.Rmd")
-
-        warning("cashew")
         path_template <- system.file("shiny", "autoStatistics", "www", "rep_templ_descriptive_html.Rmd", package="autoStatistics")
 
 

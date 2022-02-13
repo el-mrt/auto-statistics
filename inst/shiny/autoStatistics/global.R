@@ -134,7 +134,8 @@ report_text <- reactiveValues(
 
 report_settings <- reactiveValues(
   type = NULL,
-  append_custom = FALSE
+  append_custom = FALSE,
+  descriptive_features = NULL
 )
 cur_report <- reactiveValues(
   type = NULL,
