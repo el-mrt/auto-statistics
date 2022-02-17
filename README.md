@@ -22,3 +22,8 @@ This project is licensed under the MIT License - see the [LICENSE.md](https://gi
 
 ## Usage
 See the [wiki](https://github.com/el-mrt/auto-statistics/wiki/Usage)
+
+## Demo
+A demo of the app is available [here](http://94.250.202.215:3838/BigData/).
+
+*Note: the server is not very performant and it might not be the  latest version is not available.*
